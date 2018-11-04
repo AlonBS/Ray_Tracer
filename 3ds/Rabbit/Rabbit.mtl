@@ -1,0 +1,27 @@
+# 
+# 
+newmtl Rabbit
+Ns 96.078431
+Ka 0.500000 0.500000 0.500000
+Kd 0.640000 0.000000 0.640000
+Ks 0.300000 0.300000 0.300000
+Ni 1.000000
+Ns 30
+d 1.000000
+illum 1
+map_Ks Rabbit_S.tga
+map_Kd Rabbit_D.tga
+
+
+newmtl Rabbit2
+Ns 96.078431
+Ka 0.500000 0.500000 0.500000
+Kd 0.640000 0.000000 0.640000
+Ks 0.300000 0.300000 0.300000
+Ni 1.000000
+Ns 30
+d 1.000000
+illum 1
+map_Ks Rabbit_S.tga
+map_Kd Rabbit_D.tga
+
