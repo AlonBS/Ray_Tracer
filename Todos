@@ -1,8 +1,0 @@
-
-
-- Test all transformations on objects
-- Make sure specular and diffuse lighting also work on transformed object
-- Transform normals for mesh objects
-- Insert bounding-box intersection op.
-- Support refractions
-- support bump-maps
