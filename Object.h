@@ -87,7 +87,7 @@ public:
 
 	virtual const void print() const;
 
-	/* Just for fun - using trailing return value */
+
 	auto properties() -> ObjectProperties& { return _properties; };
 	auto ambient () -> vec3& { return _properties._ambient; }
 	auto emission() -> vec3& { return _properties._emission; }

@@ -57,12 +57,12 @@ Triangle::~Triangle()
 
 bool Triangle::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties)
 {
-	GLfloat 		 dist1, dist2;
-	vec3    		 point1, point2;
-	vec3			 norm1, norm2;
-	bool    		 res1, res2;
-	ObjectTexColors  texColors1, texColors2;
-	ObjectProperties properties1, properties2;
+	GLfloat 		 /*dist1,*/ dist2;
+	vec3    		 /*point1,*/ point2;
+	vec3			 /*norm1,*/ norm2;
+	bool    		 /*res1,*/ res2;
+	ObjectTexColors  /*texColors1,*/ texColors2;
+	ObjectProperties /*properties1,*/ properties2;
 
 	// This is used for implementation stages - we use the other intersection as back up -
 	// will be removed later on
@@ -116,11 +116,11 @@ bool Triangle::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, O
 bool
 Triangle::intersectsRayM(Ray &r, GLfloat &dist, vec3* point, vec3* normal, vec2* texCoords)
 {
-	GLfloat 		 dist1, dist2;
-	vec3    		 point1, point2;
-	vec3			 norm1, norm2;
-	bool    		 res1, res2;
-	vec2			 texCoords1, texCoords2;
+	GLfloat 		 /*dist1,*/ dist2;
+	vec3    		 /*point1,*/ point2;
+	vec3			 /*norm1,*/ norm2;
+	bool    		 /*res1,*/ res2;
+	vec2			 /*texCoords1,*/ texCoords2;
 
 	// This is used for implementation stages - we use the other intersection as back up -
 	// will be removed later on

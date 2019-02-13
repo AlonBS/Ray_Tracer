@@ -47,7 +47,7 @@ public:
 	std::vector<PointLight*>& getPointLights() { return pointLights; }
 	std::vector<DirectionalLight*>& getDirectionalLights() { return directionalLights; }
 
-	Image* getTexture(int i) { assert(i >= 0 && i < textures.size()); return textures[i]; }
+	Image* getTexture(uint i) { assert(i < textures.size()); return textures[i]; }
 
 	Attenuation_t& Attenuation() { return attenuation; }
 

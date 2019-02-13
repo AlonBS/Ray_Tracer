@@ -5,7 +5,7 @@ INCFLAGS  = -I /usr/include/GL -I ./utilities/include -I /usr/include/boost
 LINKFLAGS  = -lassimp -lfreeimage -lGLEW -L /usr/lib/x86_64-linux-gnu/ -lboost_filesystem -lboost_system 
 
 
-CFLAGS    = -g -std=c++17 -pthread #-fopenmp 
+CFLAGS    = -Wall -g -std=c++17 -pthread #-fopenmp 
 CC        = g++
 SRCS      = main.cpp \
 	    Image.cpp \

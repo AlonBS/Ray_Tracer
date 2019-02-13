@@ -23,7 +23,7 @@ struct RenderInfo {
 
 	GLuint maxDepth;
 
-	std::string outputFile;
+	//std::string outputFile;
 
 	Camera camera;
 

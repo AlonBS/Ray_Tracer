@@ -152,12 +152,10 @@ int main()
 	vector<fs::path> files;
 	get_all_scenes(directory, ext, files);
 
-	Image *img = nullptr;
 	string fileName;
 
 	cout << "Ray Tracer working..." << endl;
 
-	int tid;
 
 	for (fs::path p : files) {
 

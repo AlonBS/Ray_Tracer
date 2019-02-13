@@ -4,6 +4,8 @@ This document describes the major topic I wish to implemet within this project, 
 Topics:
 1) Update README with instructions to install. Also add command line options with help menus. Update regularily as features are added. 
 2) Add examples of scenes with keywords. (This is based on EDX for the most part).
+2b) Change to singleton patterns for scenemanager, and add argument parser
+2c) Add better error handling 
 3) Add more primitive objects - Cyllinder etc. Add scenes dipicting those images.
 4) Shadows - support soft shadows
 5) Support reflections and refractions. 
@@ -20,7 +22,7 @@ Topics:
 
 TODOs:
 
-
+- Check meshes textures memory allocation and free. 
 - Test all transformations on objects
 - Make sure specular and diffuse lighting also work on transformed object
 - Transform normals for mesh objects

@@ -18,8 +18,8 @@ class Triangle: public Object {
 private:
 
 		vec3 A,B,C ; 		// This triangle vertices
-		vec2 Auv, Buv, Cuv; // Vertices texture uv-mapping
 		vec3 AN,BN,CN ; 	// Normals to the above vertices, respectively.
+		vec2 Auv, Buv, Cuv; // Vertices texture uv-mapping
 		vec3 N;     		// Face normal to the triangle
 
 		bool __iRay (Ray &r, GLfloat &dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties, vec2* texCoords=nullptr);

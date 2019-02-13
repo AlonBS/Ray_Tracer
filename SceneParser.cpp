@@ -1,22 +1,4 @@
 /*****************************************************************************/
-/* This is the program skeleton for homework 2 in CSE167 by Ravi Ramamoorthi */
-/* Extends HW 1 to deal with shading, more transforms and multiple objects   */
-/*****************************************************************************/
-
-/*****************************************************************************/
-// This file is readfile.cpp.  It includes helper functions for matrix 
-// transformations for a stack (matransform) and to rightmultiply the 
-// top of a stack.  These functions are given to aid in setting up the 
-// transformations properly, and to use glm functions in the right way.  
-// Their use is optional in your program.  
-
-
-// The functions readvals and readfile do basic parsing.  You can of course 
-// rewrite the parser as you wish, but we think this basic form might be 
-// useful to you.  It is a very simple parser.
-
-// Please fill in parts that say YOUR CODE FOR HW 2 HERE. 
-// Read the other parts to get a context of what is going on. 
 
 /*****************************************************************************/
 
@@ -48,21 +30,20 @@ struct Commands {
 
 	// General Scene
 	const string size          = "size";
-	const string maxdepth      = "maxdepth";
-	const string output        = "output";
+	const string maxdepth      = "maxDepth";
 
 	// Camera
 	const string camera        = "camera";
 
 	// Geometry and objects
 	const string sphere        = "sphere";
-	const string maxverts      = "maxverts";
-	const string maxvertnorms  = "maxvertnorms";
+	const string maxverts      = "maxVerts";
+	const string maxvertnorms  = "maxVertNorms";
 	const string vertex        = "vertex";
-	const string vertexnormal  = "vertexnormal";
+	const string vertexnormal  = "vertexNormal";
 	const string vertexTex     = "vertexTex";
 	const string tri           = "tri";
-	const string trinormal     = "trinormal";
+	const string trinormal     = "triNormal";
 	const string triTex        = "triTex";
 	const string texture       = "texture";
 	const string bindTexture   = "bindTexture";
@@ -93,7 +74,7 @@ struct Commands {
 
 /////////////////////////////////////INIT STATIC MEMBERS ///////////////////////////////////////////////////
 
-set<string> SceneParser::general = {Commands.size, Commands.maxdepth, Commands.output};
+set<string> SceneParser::general = {Commands.size, Commands.maxdepth};
 string 	    SceneParser::camera = Commands.camera;
 set<string> SceneParser::geometry = {Commands.sphere, Commands.maxverts, Commands.maxvertnorms,
 									 Commands.vertex, Commands.vertexnormal, Commands.vertexTex, Commands.tri,
@@ -295,8 +276,6 @@ SceneParser::handleGeneralCommand(stringstream& s, string& cmd)
 		readValues(s, 1, values);
 		renderInfo->maxDepth = values[0];
 
-	} else if (cmd == Commands.output) {
-		s >> renderInfo->outputFile;
 	}
 
 }
@@ -395,6 +374,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 	else if (cmd == Commands.trinormal) {
 		readValues(s, 3, values);
 		// TODO - need to transform normals too ?
+		//TODO - transform !! )no
 		Object *triangle = new Triangle(renderInfo->vertices[values[0] * 2],
 				renderInfo->vertices[values[1] * 2],
 				renderInfo->vertices[values[2] * 2],
@@ -444,8 +424,6 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 
 		Image *texture = new Image(0, 0);
 		texture->loadImage(textureFile);
-
-		//Image *texture = new Image(textureFile);
 
 		renderInfo->scene.addTexture(texture);
 	}

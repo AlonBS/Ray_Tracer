@@ -46,6 +46,7 @@ private:
 	glm::vec3 specular;
 	GLfloat shininess;
 
+	//TODO - check memory free here.
 	Image *_ambientTexture;
 	Image *_diffuseTexture;
 	Image *_specularTexture;
