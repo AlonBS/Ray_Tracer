@@ -6,12 +6,12 @@ Current list of features supported:
 ====================================
 - Intersections with primitives: Triangles, Spheres, ..., 
 - Transformations: Scale, Rotation and translate. Also support transformations stacks (for transforms hierarchy) 
-- Blinn-Phong illumination module - including normals interpolation and attenuations.
+- Blinn-Phong illumination module - including normals interpolation and attenuation.
 - Rendering of models comprised of multiple meshes with (partial) material properties. 
 - Textures to primitives and models (even multiple textures types - such as diffuse-texture etc.). 
 - Point lights, directional lights. 
 - Recursive lighting calculations. Max recursion depth is currently limited to 5. 
-- Multicore rendering
+- Multi-core rendering
 
 
 
@@ -164,18 +164,38 @@ Translate followed by rotate, followed by scale command.
 
 Lights:
 --------
-directional
-point
-attenuation
+Lights are also subjected to the current transform on top of the transformation stack. 
+
+	directional <dir-v3> <color-v3> - Creates a directional light with direction <dir> and with color <color>. 
+		Color valus should range between 0 to 1.
+	point <pos-v3> <color-v3> - Creates a point light at the position <pos> with color <color>. Colors should range
+		between 0 to 1.
+	attenuation <constant-f> <linear-f> <quadratic-f> - Sets the constant, linear and quadratic coefficients in the
+		attenuation equation:
+			Atten = 1 / (K_c + (K_l*d) + (K_q*d^2)) where:
+			K_c - is the constant factor.
+			K_l - is the linear factor.
+			K_q - the quadratic factor.
+			d - Distance between light source and surface (this means that this only affect point lights,
+				and not directional lights). 
+
 
 
 Materials:
 ----------
-ambient
-diffuse
-specular
-shininess
-emission";
+These commands define the properties of the surface that should be taken into consideration when calculating the
+light at the specific point. Currently, the shading model implemented is Blinn-Phong:
+https://en.wikipedia.org/wiki/Blinn%E2%80%93Phong_shading_model. 
+They way these are used is first to define the material properties, then any object created after that will get these
+properties until they are overwritten. It's not mandatory to specify each value - default values will be used otherwise. 
+Note: If complex object is created (using "model" command) - it can have it's own material properties, per part, in which
+case, the properties listed here will be multiplied with them. Making these values 'global' in that manner. 
+
+	ambient <color-v3> - The ambient factor. Default vec3(0.2f, 0.2f, 0.2f)
+	diffuse  <color-v3> - The diffusive factor. Default vec3(0.0f, 0.0f, 0.0f)
+	specular  <color-v3> - The specular factor. Default vec3(0.2f, 0.2f, 0.2f)
+	shininess  <color-i> - The shininess factor. Default 0f
+	emission  <color-v3> - The emission factor. Default vec3(0.0f, 0.0f, 0.0f)
 
 
 
@@ -205,7 +225,4 @@ Version History:
 - Initial release, simple red square. 
 - Parse commands
 
-
-
-gsettings set org.gnome.settings-daemon.plugins.xsettings overrides '@a{sv} {"Gtk/ShellShowsAppMenu": <int32 0>}'
 
