@@ -201,6 +201,12 @@ case, the properties listed here will be multiplied with them. Making these valu
 
 Version History:
 
+1.3:
+- Added command line arguemnts support. Also added brtter error handling. Some minor code cleanup were made. 
+
+1.2:
+- Changes mechanism to arguments, and remove output file name from scene.
+
 1.1:
 - Moved to a separate git and added readme and instructions. 
 
