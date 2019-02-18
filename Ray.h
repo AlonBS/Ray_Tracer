@@ -24,7 +24,7 @@ public:
 
 	friend Ray operator* (const glm::mat4& M, const Ray& r);
 
-	const void print() const
+	void print() const
 	{
 		std::cout << "O: (" << origin.x << "," << origin.y << "," << origin.z << ") |" ;
 		std::cout << "D: (" << direction.x << "," << direction.y << "," << direction.z << ")" << std::endl;

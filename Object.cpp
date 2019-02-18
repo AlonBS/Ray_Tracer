@@ -78,7 +78,7 @@ vec3 Object::getSpecularTextureColor(vec2& uv)
 
 
 
-const void Object::print() const
+void Object::print() const
 {
 	printVec3("Ambient", _properties._ambient);
 	printVec3("_emission", _properties._emission);

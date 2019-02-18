@@ -256,6 +256,9 @@ Triangle::__iRay(Ray &r,
 		if (properties) {
 			*properties = {};
 		}
+		if (texCoords) {
+
+		}
 
 		return true;
 	}
@@ -349,21 +352,9 @@ Triangle::__iRay2(Ray &r,
 }
 
 
-const void Triangle::print() const
+void Triangle::print() const
 {
 	cout << "TRIANGLE" << endl;
 	Object::print();
 }
-
-
-
-
-
-
-
-#if 0
-
-
-
-#endif
 

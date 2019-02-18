@@ -37,7 +37,7 @@ public:
 
 	virtual bool intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties);
 
-	virtual const void print() const;
+	virtual void print() const;
 };
 
 #endif /* SPHERE_H_ */

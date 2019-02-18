@@ -1,11 +1,12 @@
 This document describes the major topic I wish to implemet within this project, and also a list of minor bugs and fixes to do.
 
 
-Topics:
-1) Update README with instructions to install. Also add command line options with help menus. Update regularily as features are added. 
+Major Topics:
+1) Update README with instructions to install. Also add command line options with help menus. Update regularily as features are added. (DONE)
+1b) Add command line parsing. 
 2) Add examples of scenes with keywords. (This is based on EDX for the most part).
 2b) Change to singleton patterns for scenemanager, and add argument parser
-2c) Add better error handling 
+2c) Add better error handling (within file parser, as well as program itself) 
 3) Add more primitive objects - Cyllinder etc. Add scenes dipicting those images.
 4) Shadows - support soft shadows
 5) Support reflections and refractions. 
@@ -22,6 +23,10 @@ Topics:
 
 TODOs:
 
+- Add Wall and Wextra flags and fix all warnings. (DONE)
+- Remove Unused Variables. (DONE)
+- Add supported files format for result image. (DONE)
+- Fix unknown command maxvertx
 - Check meshes textures memory allocation and free. 
 - Fix mesh properties multiply operator when value is not given (default) 
 - Test all transformations on objects

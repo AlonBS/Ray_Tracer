@@ -79,14 +79,23 @@ vec3 Image::getPixel(int col, int row)
 void Image::saveImage(std::string& fileName) const
 {
 	string extension = boost::filesystem::extension(fileName);
-	if ( boost::iequals(extension, ".jpg") || boost::iequals(extension, ".jpeg") ) {
-
-		FreeImage_Save(FIF_JPEG, bitmap, fileName.c_str(), 0);
-	}
-	else if ( boost::iequals(extension, ".png") ) {
-
+	if ( boost::iequals(extension, ".png"))
 		FreeImage_Save(FIF_PNG, bitmap, fileName.c_str(), 0);
+
+	else if ( boost::iequals(extension, ".jpg") || boost::iequals(extension, ".jpeg") )
+		FreeImage_Save(FIF_JPEG, bitmap, fileName.c_str(), 0);
+
+	else if ( boost::iequals(extension, ".bmp") )
+			FreeImage_Save(FIF_BMP, bitmap, fileName.c_str(), 0);
+
+	else if ( boost::iequals(extension, ".tiff") )
+			FreeImage_Save(FIF_TIFF, bitmap, fileName.c_str(), 0);
+
+	else {
+
+		std::cerr << "Unsupported file format: " << extension << ". Result wasn't saved." << std::endl;
 	}
+
 
 	std::cout << "\tImage saved to: " << fileName << std::endl;
 }

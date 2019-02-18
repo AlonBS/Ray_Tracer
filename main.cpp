@@ -17,6 +17,9 @@
 #define BOOST_FILESYSTEM_VERSION 3
 #define BOOST_FILESYSTEM_NO_DEPRECATED
 #define FILES_EXTENSION ".rt"
+#define DEFUALT_RESULT_FORMAT ".png"
+
+#define CURRENT_VERSION "1.3"
 
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
@@ -26,14 +29,10 @@ using namespace std;
 namespace fs = ::boost::filesystem;
 namespace po = ::boost::program_options;
 
-static void print_usage()
-{
-	std::cout << "Usage: ray_tracer <input-file | input-dir> [output-dir]" << std::endl;
-	std::cout << "Where:" << std::endl;
-	std::cout << "\t<input-file | input-dir> - Is the path to a scene file, or scenes directory following the syntax specific within README file" << std::endl;
-	std::cout << "\t[output-dir] - Optional - is the directory where to save the results. If not specified, results will be saved in the same directory of input files." << std::endl;
 
-}
+string resultFormat;
+fs::path outputDirectory;
+
 
 // return the filenames of all files that have the specified extension
 static void get_all_scenes(const fs::path& root, const string& ext, vector<fs::path>& ret)
@@ -56,103 +55,115 @@ static void get_all_scenes(const fs::path& root, const string& ext, vector<fs::p
 }
 
 
-static void parse_args(int argc, char *argv[], vector<fs::path>& scenes, string& output_dir)
+static void parse_args(int argc, char *argv[], vector<fs::path>& scenes)
 {
-	// Declare the supported options.
-	po::options_description desc("Allowed options");
-	desc.add_options()
-	    ("help,h", "show this message")
-		("version,v", "Current Version of the program")
-	    ("input", po::value<string>(), "The path to a scene file, or scenes directory following the syntax specific within README file")
-		("output", po::value<string>(), "The directory where to save the results. If not specified, results will be saved in the same directory of input files.")
-	;
-
-	po::variables_map vm;
-	po::store(po::parse_command_line(argc, argv, desc), vm);
-	po::notify(vm);
-
-	if (vm.count("help")) {
-	    cout << desc << "\n";
-	    exit(1);
-	}
-
-	std::cout << vm["input"].as<string>() << std::endl;
-	std::cout << vm["output"].as<string>() << std::endl;
-
-	exit(0);
-
-	if (vm.count("compression")) {
-	    cout << "Compression level was set to "	 << vm["compression"].as<int>() << ".\n";
-	} else {
-	    cout << "Compression level was not set.\n";
-	}
-
-}
+	try {
+		// Declare the supported options.
+		po::options_description desc("Ray-Tracer parameters");
+		desc.add_options()
+			("help,h", "show this message")
+			("version,v", "Current Version of the program")
+			("input,i", po::value<string>(), "The path to a scene file, or scenes directory following the syntax specific within README file.")
+			("output,o", po::value<string>(), "Optional - The directory where to save the results. If not specified, results will be saved in the same directory of input files.")
+			("format", po::value<string>()->default_value(DEFUALT_RESULT_FORMAT), "Optional - The file format in which scenes result will be saved. Currently supported types are: png, jpeg, jpg, bmp, tiff.")
+		;
 
 
-static void parse_args2(int argc, char *argv[], vector<fs::path>& scenes, string& output_dir)
-{
-	if (argc <= 1) {
-		std::cout << "Wrong number of arguments.\n" << std::endl;
-		print_usage();
-		exit(-1);
-	}
+		po::variables_map vm;
+		po::store(po::parse_command_line(argc, argv, desc), vm);
+		po::notify(vm);
 
-	fs::path input{argv[1]};
-	if (!fs::exists(input)) {
-		std::cout << "No such file or directory: " << input << std::endl;
-		exit(-1);
-	}
-	if (fs::is_directory(input)) {
-		string ext = FILES_EXTENSION;
-		get_all_scenes(input, ext, scenes);
-	}
-	else {
-		scenes.push_back(input);
-	}
+		if (vm.count("help")) {
+			cout << desc << "\n";
+			exit(0);
+		}
+		if (vm.count("version")) {
+			cout << "Version: " << CURRENT_VERSION << std::endl;
+			exit(0);
+		}
 
-	fs::path output;
-	if (argc <= 2) { // No output directory
-		output = input.parent_path();
-	}
-	else { // output directory given -
-		output = argv[2];
-	}
-
-
-	if (!fs::exists(output)) {
-		if (!fs::create_directory(output)) {
-
-			std::cout << "Could not create directory for the results." << std::endl;
+		if (vm.count("input") == 0) {
+			cout << "No input scene or scenes directory was given." << endl;
+			std::cout << "Try --help for usage" << std::endl;
 			exit(-1);
+		}
+
+		fs::path input{vm["input"].as<string>()};
+		if (!fs::exists(input)) {
+			std::cout << "No such file or directory: " << input << std::endl;
+			exit(-1);
+		}
+
+		if (fs::is_directory(input)) {
+			string ext = FILES_EXTENSION;
+			get_all_scenes(input, ext, scenes);
+		}
+		else {
+			scenes.push_back(input);
+		}
+
+		if (vm.count("output") == 0) {
+			outputDirectory = input.parent_path();
+		}
+		else {
+			outputDirectory = vm["output"].as<string>();
+		}
+
+		if (!fs::exists(outputDirectory)) {
+			if (!fs::create_directory(outputDirectory)) {
+
+				std::cout << "Could not create directory for the results." << std::endl;
+				exit(-1);
+			}
+		}
+
+		std::cout << "Results are saved at: " << outputDirectory << std::endl;
+
+		if (vm.count("format")) {
+			string form = vm["format"].as<string>();
+			// For the incompetent user
+			if (form[0] == '.') {
+				resultFormat = form;
+			}
+			else {
+				resultFormat = "." + form;
+			}
 		}
 	}
 
-	std::cout << "Results are saved at: " << output << std::endl;
+	catch (boost::program_options::unknown_option& e) {
+		std::cerr << e.what() << std::endl;
+		std::cout << "Try --help for usage" << std::endl;
+		exit(-1);
+	}
 
+	catch (boost::program_options::invalid_command_line_syntax& e) {
 
+		std::cout << "Invalid Command line syntax" << std::endl;
+		std::cout << e.what() << std::endl;
+		exit(-3);
+	}
+
+	//	catch (boost::bad_any_cast& e) {
+	//
+	//		std::cout << e.what() << std::endl;
+	//		exit(-3);
+	//	}
 }
 
 
 
-static void render_scene(string &fileName, string& outputDirectory)
+static void render_scene(string fileName)
 {
 
 	RenderInfo *renderInfo = SceneParser::readFile(fileName.c_str());
 
 	RayTracer rayTracer;
-	Image *img = rayTracer.rayTrace(fileName, renderInfo->camera, renderInfo->scene, renderInfo->width, renderInfo->height, renderInfo->maxDepth);
+	Image *img = rayTracer.rayTrace(renderInfo->camera, renderInfo->scene, renderInfo->width, renderInfo->height, renderInfo->maxDepth);
 
-	fs::path p = fileName;
-
-	string output = outputDirectory + "/" + fileName;
-//	if (renderInfo->outputFile.empty()) {
-//		// No output file was given
-//		output = fileName + "_result.png";
-//	}
-//	else {
-//		output = p.parent_path().generic_string() + "/" + renderInfo->outputFile;
-//	}
+	string output = outputDirectory.generic_string() + "/"	+
+					fs::path{fileName}.stem().generic_string() +
+					"_result" + resultFormat;
 
 	img->saveImage(output);
 
@@ -164,37 +175,26 @@ static void render_scene(string &fileName, string& outputDirectory)
 int main(int argc, char *argv[])
 {
 
-	vector<fs::path> files;
-	string outputDirectory;
-	parse_args(argc, argv, files, outputDirectory);
-
+	vector<fs::path> files{};
+	parse_args(argc, argv, files);
 
 	struct timeval start, end;
 	GLdouble time, totalTime;
 
-
 	FreeImage_Initialise();
 
-	//fs::path directory = "./scenes/b";
-	//string ext = ".test";
-
-	//get_all_scenes(directory, ext, files);
-
-	string fileName;
 
 	cout << "Ray Tracer working..." << endl;
-
 
 	for (fs::path p : files) {
 
 		gettimeofday(&start, NULL);
 
-
-		std::cout << "\tRendering " << p.filename() << "..." << endl;
-		string file = p.generic_string();
-		render_scene(file, outputDirectory);
-
-		std::cout << "\tFinished rendering " << p.filename() << "..." << endl;
+		{
+			std::cout << "\tRendering " << p.filename() << "..." << endl;
+			render_scene(p.generic_string());
+			std::cout << "\tFinished rendering " << p.filename() << "..." << endl;
+		}
 
 		gettimeofday(&end, NULL);
 
@@ -211,6 +211,7 @@ int main(int argc, char *argv[])
 	FreeImage_DeInitialise();
 	return 0;
 }
+
 
 
 

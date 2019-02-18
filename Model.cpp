@@ -167,7 +167,7 @@ Model::processMesh(aiMesh *mesh, const aiScene *scene)
 
 		vertices.push_back(vertex);
 	}
-	// now wak through each of the mesh's faces (a face is a mesh its triangle) and retrieve the corresponding vertex indices.
+	// now walk through each of the mesh's faces (a face is a mesh its triangle) and retrieve the corresponding vertex indices.
 	for(unsigned int i = 0; i < mesh->mNumFaces; i++)
 	{
 		aiFace face = mesh->mFaces[i];
@@ -177,7 +177,7 @@ Model::processMesh(aiMesh *mesh, const aiScene *scene)
 	}
 
 	// Process materials
-	if(mesh->mMaterialIndex >= 0)
+//	if(mesh->mMaterialIndex >= 0)
 	{
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 		aiColor3D c (0.0f, 0.0f, 0.0f);

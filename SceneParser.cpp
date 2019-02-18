@@ -284,6 +284,7 @@ SceneParser::handleGeneralCommand(stringstream& s, string& cmd)
 void
 SceneParser::handleCameraCommand(stringstream& s, string& cmd)
 {
+	(void) cmd; //Suppress warning - maybe we'll have more camera options in the future.
 	readValues(s, 10, values);
 	vec3 eyeInit = glm::vec3(values[0], values[1], values[2]);
 	vec3 center  = glm::vec3(values[3], values[4], values[5]);

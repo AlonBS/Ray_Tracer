@@ -36,7 +36,7 @@ public:
 	virtual ~RayTracer();
 
 
-	Image* rayTrace(string& fileName, Camera & camera, Scene & scene, GLuint width, GLuint height, GLuint maxDepth);
+	Image* rayTrace(Camera& camera, Scene& scene, GLuint width, GLuint height, GLuint maxDepth);
 
 private:
 

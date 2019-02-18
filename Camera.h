@@ -74,7 +74,7 @@ public:
 	}
 
 
-	const void print () const
+	void print () const
 	{
 		cout << "**** Camera Info ****" << std::endl;
 		cout << "\tEye init: (" << eyeInit.x << "," << eyeInit.y << "," << eyeInit.z << ")" << endl;
@@ -85,7 +85,7 @@ public:
 		cout << "\tV: (" << v.x << "," << v.y << "," << v.z << ")" << endl;
 		cout << "\tFov X: " << glm::degrees(fovX) << ". Fov Y: " << glm::degrees(fovY) << endl;
 		cout << "\t(w,h) = (" << width << "," << height << ")" << endl;
-		std::cout << "**** Camera Info END ****" << std::endl;
+		cout << "**** Camera Info END ****" << endl;
 	}
 
 

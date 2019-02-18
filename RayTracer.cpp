@@ -29,7 +29,7 @@ RayTracer::~RayTracer() {
 }
 
 
-Image* RayTracer::rayTrace(string& fileName, Camera & camera, Scene & scene, GLuint width, GLuint height, GLuint maxDepth)
+Image* RayTracer::rayTrace(Camera & camera, Scene & scene, GLuint width, GLuint height, GLuint maxDepth)
 {
 	Image *image = new Image(width, height);
 

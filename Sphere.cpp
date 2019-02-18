@@ -97,7 +97,7 @@ bool Sphere::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Obj
 }
 
 
-const void Sphere::print() const
+void Sphere::print() const
 {
 	std::cout << "Center: (" << center.x << "," << center.y << "," << center.z << ") | Radius: " << radius << std::endl;
 	Object::print();

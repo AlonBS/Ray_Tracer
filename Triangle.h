@@ -41,7 +41,7 @@ public:
 
 	bool intersectsRayM(Ray &r, GLfloat &dist, vec3* point, vec3* normal, vec2* texCoords);
 
-	virtual const void print() const;
+	virtual void print() const;
 };
 
 #endif /* TRIANGLE_H_ */

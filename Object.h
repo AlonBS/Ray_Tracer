@@ -85,7 +85,7 @@ public:
 
 	friend std::ostream& operator<< (std::ostream& out, const Object & obj);
 
-	virtual const void print() const;
+	virtual void print() const;
 
 
 	auto properties() -> ObjectProperties& { return _properties; };
