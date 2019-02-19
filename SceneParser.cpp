@@ -37,13 +37,13 @@ struct Commands {
 
 	// Geometry and objects
 	const string sphere        = "sphere";
-	const string maxverts      = "maxVerts";
-	const string maxvertnorms  = "maxVertNorms";
+	const string maxVerts      = "maxVerts";
+	const string maxVertNorms  = "maxVertNorms";
 	const string vertex        = "vertex";
-	const string vertexnormal  = "vertexNormal";
+	const string vertexNormal  = "vertexNormal";
 	const string vertexTex     = "vertexTex";
 	const string tri           = "tri";
-	const string trinormal     = "triNormal";
+	const string triNormal     = "triNormal";
 	const string triTex        = "triTex";
 	const string texture       = "texture";
 	const string bindTexture   = "bindTexture";
@@ -74,16 +74,16 @@ struct Commands {
 
 /////////////////////////////////////INIT STATIC MEMBERS ///////////////////////////////////////////////////
 
-set<string> SceneParser::general = {Commands.size, Commands.maxdepth};
+set<string> SceneParser::general{Commands.size, Commands.maxdepth};
 string 	    SceneParser::camera = Commands.camera;
-set<string> SceneParser::geometry = {Commands.sphere, Commands.maxverts, Commands.maxvertnorms,
-									 Commands.vertex, Commands.vertexnormal, Commands.vertexTex, Commands.tri,
-									 Commands.trinormal, Commands.triTex, Commands.texture, Commands.bindTexture, Commands.unbindTexture,
-									 Commands.model};
-set<string> SceneParser::transformations = {Commands.translate, Commands.rotate, Commands.scale,
-											Commands.pushTransform, Commands.popTransform};
-set<string> SceneParser::lights = {Commands.directional, Commands.point, Commands.attenuation};
-set<string> SceneParser::materials = {Commands.ambient, Commands.diffuse, Commands.specular, Commands.shininess, Commands.emission};
+set<string> SceneParser::geometry{Commands.sphere, Commands.maxVerts, Commands.maxVertNorms,
+								  Commands.vertex, Commands.vertexNormal, Commands.vertexTex, Commands.tri,
+								  Commands.triNormal, Commands.triTex, Commands.texture, Commands.bindTexture, Commands.unbindTexture,
+								  Commands.model};
+set<string> SceneParser::transformations {Commands.translate, Commands.rotate, Commands.scale,
+										  Commands.pushTransform, Commands.popTransform};
+set<string> SceneParser::lights {Commands.directional, Commands.point, Commands.attenuation};
+set<string> SceneParser::materials {Commands.ambient, Commands.diffuse, Commands.specular, Commands.shininess, Commands.emission};
 
 
 vec3 SceneParser::ambient  = vec3(0.2f, 0.2f, 0.2f);
@@ -102,45 +102,46 @@ stack<mat4> SceneParser::transformsStack;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
 bool
 SceneParser::inSet(set<string>& set, string& cmd)
 {
 	return set.find(cmd) != set.end();
 }
 bool
-SceneParser::isGeneralCommand(std::string& cmd)
+SceneParser::isGeneralCommand(string& cmd)
 {
 	return inSet(general, cmd);
 }
 
 bool
-SceneParser::isCameraCommand(std::string& cmd)
+SceneParser::isCameraCommand(string& cmd)
 {
 	return cmd == SceneParser::camera;
 }
 bool
-SceneParser::isGeometryCommand(std::string& cmd)
+SceneParser::isGeometryCommand(string& cmd)
 {
 	return inSet(geometry, cmd);
 }
 bool
-SceneParser::isTransformationsCommand(std::string& cmd)
+SceneParser::isTransformationsCommand(string& cmd)
 {
 	return inSet(transformations, cmd);
 }
 bool
-SceneParser::isLightsCommand(std::string& cmd)
+SceneParser::isLightsCommand(string& cmd)
 {
 	return inSet(lights, cmd);
 }
 bool
-SceneParser::isMaterialsCommand(std::string& cmd)
+SceneParser::isMaterialsCommand(string& cmd)
 {
 	return inSet(materials, cmd);
 }
 
 CommandType
-SceneParser::identifyCommand(std::string & cmd)
+SceneParser::identifyCommand(string & cmd)
 {
 	if (isGeneralCommand(cmd)) {
 		return GENERAL;
@@ -197,8 +198,8 @@ SceneParser::readFile(const char* fileName)
 	in.open(fileName);
 	if (!in.is_open()) {
 
-		std::cout << "Unable to open file for read" << std::endl;
-		std::cout << "Given file name was: " << fileName << std::endl;
+		cerr << "Unable to open file for read: " << fileName << endl;
+		return nullptr;
 	}
 
 	// Default transform
@@ -249,7 +250,7 @@ SceneParser::readFile(const char* fileName)
 		case UNKNOWN_COMMAND:
 		default:
 
-			cout << "Unknown command: " << cmd << ".\n Skipped. " << endl;
+			cout << "\nUnknown command: " << cmd << ". Skipped. " << endl;
 			break;
 		}
 
@@ -319,12 +320,12 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		renderInfo->scene.addObject(sphere);
 	}
 
-	else if (cmd == Commands.maxverts) {
+	else if (cmd == Commands.maxVerts) {
 		// New object is coming
 		renderInfo->vertices.clear();
 	}
 
-	else if (cmd == Commands.maxvertnorms) {
+	else if (cmd == Commands.maxVertNorms) {
 		// New Object is coming
 		renderInfo->verticesNormals.clear();
 	}
@@ -334,7 +335,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		renderInfo->vertices.push_back(vec3(values[0], values[1], values[2]));
 	}
 
-	else if (cmd == Commands.vertexnormal) {
+	else if (cmd == Commands.vertexNormal) {
 		readValues(s, 6, values);
 		renderInfo->verticesNormals.push_back(vec3(values[0], values[1], values[2]));
 		renderInfo->verticesNormals.push_back(vec3(values[3], values[4], values[5]));
@@ -372,7 +373,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		renderInfo->scene.addObject(triangle);
 	}
 
-	else if (cmd == Commands.trinormal) {
+	else if (cmd == Commands.triNormal) {
 		readValues(s, 3, values);
 		// TODO - need to transform normals too ?
 		//TODO - transform !! )no

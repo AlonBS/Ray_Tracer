@@ -15,7 +15,7 @@ diffuse 0.3 0.3 0.3
 specular 0.0 0.0 0.0
 shininess 0
 
-maxverts 4 
+maxVerts 4 
 
 vertex +4 0 +4 
 vertex +4 0 -4

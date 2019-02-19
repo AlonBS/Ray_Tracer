@@ -3,10 +3,11 @@ This document describes the major topic I wish to implemet within this project, 
 
 Major Topics:
 1) Update README with instructions to install. Also add command line options with help menus. Update regularily as features are added. (DONE)
-1b) Add command line parsing. 
-2) Add examples of scenes with keywords. (This is based on EDX for the most part).
-2b) Change to singleton patterns for scenemanager, and add argument parser
-2c) Add better error handling (within file parser, as well as program itself) 
+1b) Add command line parsing. (Done)
+2) Add examples of scenes with keywords. (This is based on EDX, but includes new keywords for added features).
+2b) Change to singleton patterns for scenemanager, sceneparser and raytracer
+2c) Add better error handling (within file parser, as well as program itself)
+2d) Add option to usage non multi-threaded rendering - for debug purposes mainly. (Done)
 3) Add more primitive objects - Cyllinder etc. Add scenes dipicting those images.
 4) Shadows - support soft shadows
 5) Support reflections and refractions. 
@@ -18,6 +19,7 @@ Major Topics:
 11) More shading - more on softshadow, glossy effects, subsurface scattering
 12) Monte-Carlo
 13) Lighing Models: Ray Traceing vs Monte-Carlo vs Path-tracing vs Photon mapping - and make them available to use interchangeably.
+14) Allow GPU rendering. 
 
 
 
@@ -26,7 +28,8 @@ TODOs:
 - Add Wall and Wextra flags and fix all warnings. (DONE)
 - Remove Unused Variables. (DONE)
 - Add supported files format for result image. (DONE)
-- Fix unknown command maxvertx
+- Fix unknown command maxvertx (Done)
+- Check General texture from primitives not working 
 - Check meshes textures memory allocation and free. 
 - Fix mesh properties multiply operator when value is not given (default) 
 - Test all transformations on objects

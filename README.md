@@ -50,7 +50,7 @@ Argument can have various types, each one will be added a suffix, indicating the
 	'_v3' - vector3 (that is, 3 float numbers)
 	'_v2' - vector2
 	'_s' - string.
-Note the <Command> keyword are case insensitive, but for better readability, are written in C-naming conventions. 
+Note the <Command> keyword are case sensitive, and are written in C-naming conventions. 
 
 Scene General:
 --------------
@@ -111,7 +111,7 @@ Primitives and Models:
 				contain a very large numbers of polygons, which means the the render time can take
 				much longer. Also note that usually these objects tend to be very large, so scaling is
 				needed (See transformations section below). 
-	texture <path-s> - Loads and saves a texture specified with the given path, relative to the execution directory.
+	texture <path_s> - Loads and saves a texture specified with the given path, relative to the execution directory.
 		This is done using FreeImage library, which supports nomerous files formats (JPEG, PNG, TIF, BMP
 		to name a few. See full list here: http://freeimage.sourceforge.net/features.html).
 		A defined texture will be automatically assigned with an index (starting with 0), for being able to bind
@@ -166,11 +166,11 @@ Lights:
 --------
 Lights are also subjected to the current transform on top of the transformation stack. 
 
-	directional <dir-v3> <color-v3> - Creates a directional light with direction <dir> and with color <color>. 
+	directional <dir_v3> <color_v3> - Creates a directional light with direction <dir> and with color <color>. 
 		Color valus should range between 0 to 1.
-	point <pos-v3> <color-v3> - Creates a point light at the position <pos> with color <color>. Colors should range
+	point <pos_v3> <color_v3> - Creates a point light at the position <pos> with color <color>. Colors should range
 		between 0 to 1.
-	attenuation <constant-f> <linear-f> <quadratic-f> - Sets the constant, linear and quadratic coefficients in the
+	attenuation <constant_f> <linear_f> <quadratic_f> - Sets the constant, linear and quadratic coefficients in the
 		attenuation equation:
 			Atten = 1 / (K_c + (K_l*d) + (K_q*d^2)) where:
 			K_c - is the constant factor.
@@ -191,11 +191,21 @@ properties until they are overwritten. It's not mandatory to specify each value 
 Note: If complex object is created (using "model" command) - it can have it's own material properties, per part, in which
 case, the properties listed here will be multiplied with them. Making these values 'global' in that manner. 
 
-	ambient <color-v3> - The ambient factor. Default vec3(0.2f, 0.2f, 0.2f)
-	diffuse  <color-v3> - The diffusive factor. Default vec3(0.0f, 0.0f, 0.0f)
-	specular  <color-v3> - The specular factor. Default vec3(0.2f, 0.2f, 0.2f)
-	shininess  <color-i> - The shininess factor. Default 0f
-	emission  <color-v3> - The emission factor. Default vec3(0.0f, 0.0f, 0.0f)
+	ambient <color_v3> - The ambient factor. Default vec3(0.2f, 0.2f, 0.2f)
+	diffuse  <color_v3> - The diffusive factor. Default vec3(0.0f, 0.0f, 0.0f)
+	specular  <color_v3> - The specular factor. Default vec3(0.2f, 0.2f, 0.2f)
+	shininess  <color_i> - The shininess factor. Default 0f
+	emission  <color_v3> - The emission factor. Default vec3(0.0f, 0.0f, 0.0f)
+
+
+
+Scene Example:
+--------------
+With this repository, I've included examples of many scenes and their rendered result. For simplicity sake, let's look at a simple scene.
+The result image can be found in "./Rendered_Scenes/ExampleScene.png
+
+
+
 
 
 

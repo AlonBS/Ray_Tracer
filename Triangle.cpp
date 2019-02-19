@@ -332,7 +332,7 @@ Triangle::__iRay2(Ray &r,
 			*normal = this->N; //TODO - interpolated normal
 
 		vec2 uv;
-		uv = alpha * Auv + beta * Buv + gamma * Cuv;
+		uv = (alpha*Auv) + (beta*Buv) + (gamma*Cuv);
 		if (texColors) {
 			texColors->_ambientTexColor  = this->getAmbientTextureColor(uv);
 			texColors->_diffuseTexColor  = this->getDiffuseTextureColor(uv);

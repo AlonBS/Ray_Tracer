@@ -15,7 +15,7 @@ shininess 20
 emission 0 0 0
 
 
-maxverts 8
+maxVerts 8
 
 vertex -1 -1 -1
 vertex +1 -1 -1 

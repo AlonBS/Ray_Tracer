@@ -28,7 +28,7 @@ specular 0 0 0
 # Though it's probably simpler you just implement this, for later 
 # parts of the assignment.
 
-maxverts 4 
+maxVerts 4 
 
 vertex -1 -1 0 
 vertex +1 -1 0

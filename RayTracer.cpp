@@ -29,7 +29,7 @@ RayTracer::~RayTracer() {
 }
 
 
-Image* RayTracer::rayTrace(Camera & camera, Scene & scene, GLuint width, GLuint height, GLuint maxDepth)
+Image* RayTracer::rayTraceMT(Camera & camera, Scene & scene, GLuint width, GLuint height, GLuint maxDepth)
 {
 	Image *image = new Image(width, height);
 
@@ -80,27 +80,25 @@ Image* RayTracer::rayTrace(Camera & camera, Scene & scene, GLuint width, GLuint 
 }
 
 
-// OLD CODE - single threaded - for benchmark purposes
-//
-//Image* RayTracer::rayTrace(string& fileName, Camera & camera, Scene & scene, GLuint width, GLuint height, GLuint maxDepth)
-//{
-//	Image *image = new Image(width, height);
-//	vec3 color;
-//	GLfloat completed;
-//
-//	for (GLuint i = 0 ; i < width ; ++i)
-//	{
-//		for (GLuint j = 0 ; j < height; ++j)
-//		{
-//
-//			Ray ray = camera.generateRay(i + .5, j - .5);
-//			color = recursiveRayTrace(scene, ray, maxDepth);
-//			image->setPixel(i, j, color);
-//		}
-//	}
-//
-//	return image;
-//}
+// single threaded - for benchmark purposes and debugging
+Image* RayTracer::rayTraceST(Camera & camera, Scene & scene, GLuint width, GLuint height, GLuint maxDepth)
+{
+	Image *image = new Image(width, height);
+	vec3 color;
+
+	for (GLuint i = 0 ; i < width ; ++i)
+	{
+		for (GLuint j = 0 ; j < height; ++j)
+		{
+
+			Ray ray = camera.generateRay(i + .5, j - .5);
+			color = recursiveRayTrace(scene, ray, maxDepth);
+			image->setPixel(i, j, color);
+		}
+	}
+
+	return image;
+}
 
 
 vec3 RayTracer::recursiveRayTrace(Scene& scene, Ray & ray, GLuint depth)

@@ -65,7 +65,7 @@ private:
 	static bool isLightsCommand(string&);
 	static bool isMaterialsCommand(string&);
 
-	static CommandType identifyCommand(std::string &);
+	static CommandType identifyCommand(string &);
 
 	static void rightMultiply(const mat4 & M, stack<mat4> &transfstack);
 	static bool readValues(std::stringstream &s, const int numValues, GLfloat *values);

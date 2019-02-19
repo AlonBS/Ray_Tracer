@@ -29,7 +29,7 @@ using namespace std;
 namespace fs = ::boost::filesystem;
 namespace po = ::boost::program_options;
 
-
+bool singleThreaded = false;
 string resultFormat;
 fs::path outputDirectory;
 
@@ -66,6 +66,7 @@ static void parse_args(int argc, char *argv[], vector<fs::path>& scenes)
 			("input,i", po::value<string>(), "The path to a scene file, or scenes directory following the syntax specific within README file.")
 			("output,o", po::value<string>(), "Optional - The directory where to save the results. If not specified, results will be saved in the same directory of input files.")
 			("format", po::value<string>()->default_value(DEFUALT_RESULT_FORMAT), "Optional - The file format in which scenes result will be saved. Currently supported types are: png, jpeg, jpg, bmp, tiff.")
+			("single-thread,s", po::bool_switch(&singleThreaded), "Flag to force single thread rendering. Default behavior is multi-threaded.")
 		;
 
 
@@ -117,7 +118,6 @@ static void parse_args(int argc, char *argv[], vector<fs::path>& scenes)
 			}
 		}
 
-		std::cout << "Results are saved at: " << outputDirectory << std::endl;
 
 		if (vm.count("format")) {
 			string form = vm["format"].as<string>();
@@ -157,9 +157,21 @@ static void render_scene(string fileName)
 {
 
 	RenderInfo *renderInfo = SceneParser::readFile(fileName.c_str());
+	if (!renderInfo) {
+		cerr << "Scene: " << fileName << " was not rendered." << endl;
+		return;
+	}
 
 	RayTracer rayTracer;
-	Image *img = rayTracer.rayTrace(renderInfo->camera, renderInfo->scene, renderInfo->width, renderInfo->height, renderInfo->maxDepth);
+	Image *img = nullptr;
+
+	if (singleThreaded) {
+		rayTracer.rayTraceST(renderInfo->camera, renderInfo->scene, renderInfo->width, renderInfo->height, renderInfo->maxDepth);
+	}
+	else {
+		rayTracer.rayTraceMT(renderInfo->camera, renderInfo->scene, renderInfo->width, renderInfo->height, renderInfo->maxDepth);
+	}
+
 
 	string output = outputDirectory.generic_string() + "/"	+
 					fs::path{fileName}.stem().generic_string() +
@@ -183,8 +195,9 @@ int main(int argc, char *argv[])
 
 	FreeImage_Initialise();
 
+	cout << "Ray Tracer working:" << endl;
+	cout << "=====================\n" << endl;
 
-	cout << "Ray Tracer working..." << endl;
 
 	for (fs::path p : files) {
 
@@ -208,9 +221,12 @@ int main(int argc, char *argv[])
 	GLuint seconds = (GLuint)totalTime % 60;
 	cout << "Finished working.\nTotal Time: " << minutes << " minutes and " << seconds << " seconds." << endl;
 
+	std::cout << "Results are saved at: " << outputDirectory << std::endl;
+
 	FreeImage_DeInitialise();
 	return 0;
 }
+
 
 
 

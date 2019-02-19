@@ -1,11 +1,8 @@
 
+# HELLO Scene - An example scene to show the syntax and usage 
+
 size 640 480 
-
 camera 0 4 13 0 0 0 0 1 0 45
-
-# lighting/material definitions
-# for initial testing, you should get the geometry right
-# you may want to use dummy (constant) shading, ignoring these lines
 
 attenuation 1 0.0 0.0
 
@@ -19,17 +16,17 @@ diffuse 0.3 0.3 0.3
 specular 0.3 0.3 0.3
 shininess 32
 
-maxverts 4 
+maxVerts 4 
 
 vertexTex +8 0 +8 1 1
 vertexTex +8 0 -8 0 1
 vertexTex -8 0 +8 1 0
 vertexTex -8 0 -8 0 0 
 
-vertex +8 0 +8
-vertex +8 0 -8
-vertex -8 0 +8
-vertex -8 0 -8 
+#vertex +8 0 +8
+#vertex +8 0 -8
+#vertex -8 0 +8
+#vertex -8 0 -8 
 
 pushTransform
 
@@ -47,16 +44,13 @@ unbindTexture
 popTransform
 pushTransform
 
-
-
-bindTexture 1
-
+	bindTexture 1
 	diffuse 0.3 0.3 0.3 
 	specular 0.0 0.0 0.0
 	popTransform
 	pushTransform
-#translate -1.5 .8 0.65
-	translate 0 0 0
 	sphere -0.5 2.8 -.65 1.5
-unbindTexture
+	unbindTexture
+
+popTransform
 

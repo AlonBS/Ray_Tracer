@@ -27,7 +27,7 @@ shininess 16
 
 # Now specify the geometry.  First the cube, then the spheres
 
-maxverts 8
+maxVerts 8
 
 vertex -1 -1 -1
 vertex +1 -1 -1 
