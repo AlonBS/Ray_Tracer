@@ -19,7 +19,7 @@
 #define FILES_EXTENSION ".rt"
 #define DEFUALT_RESULT_FORMAT ".png"
 
-#define CURRENT_VERSION "1.3"
+#define CURRENT_VERSION "1.4"
 
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>

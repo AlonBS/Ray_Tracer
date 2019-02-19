@@ -83,7 +83,7 @@ Primitives and Models:
 		previously defined (using 'vertex' command. The numbering is the same as arrays. 
 		The first 'vertex' is indexed 0 etc. 
 	triNormal - Creates a triangle from vertices defined us the 'vertexNormal' command.
-	triTex - Creates a triangle from vertices defined by the 'triTex' command. 
+	triTex - Creates a triangle from vertices defined by the 'vertexTex' command. 
 	maxverts <num-i> - Declares the number of vertices that will be declared following this command.
 		This is a legacy command, to be compatible with Edx.org/CG specifications. It is not needed. 
 	maxVertNorms <num-i> - same as above, but for the vertexNorm command.
@@ -201,8 +201,79 @@ case, the properties listed here will be multiplied with them. Making these valu
 
 Scene Example:
 --------------
-With this repository, I've included examples of many scenes and their rendered result. For simplicity sake, let's look at a simple scene.
+With this repository, I've included examples of many scenes and their rendered result. For simplicity sake,
+let's look at a simple scene.
 The result image can be found in "./Rendered_Scenes/ExampleScene.png
+
+""""""""""""
+# HELLO Scene - An example scene to show the syntax and usage 
+
+size 640 480 # The result image will be 640 by 480 pixels.
+camera 0 4 13 0 0 0 0 1 0 45 # create a camera
+
+attenuation 1 0.0 0.0 # define attenuation factor 
+
+texture ./scenes/a/wood2.jpeg # declare a texture - this texture is automatically indexed to 0
+texture ./scenes/a/earth.png # indexed to 1
+
+#directional 1 -1 0 1 0 0 
+# at the point lights
+point 1 7 5 1 1 1
+point -1 7 5 1 1 1
+# defined material properties for the first object to be created. Notice that this is overwritten next, so it has no affect.
+diffuse 0.3 0.3 0.3 
+specular 0.3 0.3 0.3
+shininess 32
+
+maxVerts 4 #legacy command - not mandatory
+
+# Define 4 verticies (with texture mapping coordinates) to later simulate a wooden floor
+vertexTex +8 0 +8 1 1 # index is 0
+vertexTex +8 0 -8 0 1 # index is 1
+vertexTex -8 0 +8 1 0 # index is 2
+vertexTex -8 0 -8 0 0 # index is 3
+
+#vertex +8 0 +8
+#vertex +8 0 -8
+#vertex -8 0 +8
+#vertex -8 0 -8 
+
+# create the floor
+pushTransform
+
+	bindTexture 0 # we bind the wood2.jpeg texture. every object created from now on, will have
+		      # this texture applied (globally)
+	ambient 0.1 0.1 0.1 # the object material properties
+	diffuse 0.1 0.1 0.1
+	specular .8 0.8 0.8
+	shininess 16
+	triTex 0 1 2 # actually create a triangle with texture. The newly created triangle will have
+		     # the bound texture and the last specified materials properties (and transformations)
+		     # the verticies to used are by index, which was assigen when those were created (vertexTex cmd)
+	triTex 1 3 2
+
+	unbindTexture
+
+
+popTransform # no transformations were applied to the floor, but if there were any, this would make sure that the 
+             # following objects won't be affected by this
+pushTransform
+	# The indentation is for better readability 
+	bindTexture 1 # bind earth.png texture
+	diffuse 0.3 0.3 0.3 
+	specular 0.0 0.0 0.0
+#	translate 0 1 -2
+	sphere -0.5 2.8 -.65 1.5
+	scale 3 3 3 # this will have no affect, since the object was already created. If we we're to create the model below,
+	            # then it will be scaled by the given factors. 
+#	model ./3ds/cube/cube.obj
+	unbindTexture
+
+popTransform
+
+"""""""""""" (End Scene)
+
+
 
 
 
@@ -210,9 +281,15 @@ The result image can be found in "./Rendered_Scenes/ExampleScene.png
 
 
 Version History:
+1.4:
+- Fixed textures not showing in primitives or models.
+- Added single thread rendering
+- Added example scene + description in README
+- minor bug fixes
 
 1.3:
-- Added command line arguemnts support. Also added brtter error handling. Some minor code cleanup were made. 
+- Added command line arguemnts support.
+- Also added brtter error handling. Some minor code cleanup were made. 
 
 1.2:
 - Changes mechanism to arguments, and remove output file name from scene.

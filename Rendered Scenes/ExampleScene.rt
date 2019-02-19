@@ -43,17 +43,14 @@ unbindTexture
 
 popTransform
 pushTransform
-
+	# The indentation is for better readability 
 	bindTexture 1
 	diffuse 0.3 0.3 0.3 
 	specular 0.0 0.0 0.0
-#	popTransform
-#	pushTransform
 #	translate 0 1 -2
 	sphere -0.5 2.8 -.65 1.5
 	scale 3 3 3
 #	model ./3ds/cube/cube.obj
-#	model ./3ds/pencil-obj/pencil.obj
 	unbindTexture
 
 popTransform
