@@ -41,6 +41,12 @@ void Object::setTexture(Image *texture)
 	if (texture == nullptr)
 		return;
 
+	// TODO - Currently, an object has one texture. Its meshes can have different types of texture.
+	// The texture bound from .rt file is global, and is similar in all attributes. Next phases, different global textures will be supported.
+	// This idiom will enable us to quickly expand the functionality.
+	this->_ambientTexture = texture;
+	this->_diffuseTexture = texture;
+	this->_speularTexture = texture;
 //	this->_texture = texture;
 //	this->_textured = true;
 

@@ -166,10 +166,10 @@ static void render_scene(string fileName)
 	Image *img = nullptr;
 
 	if (singleThreaded) {
-		rayTracer.rayTraceST(renderInfo->camera, renderInfo->scene, renderInfo->width, renderInfo->height, renderInfo->maxDepth);
+		img = rayTracer.rayTraceST(renderInfo->camera, renderInfo->scene, renderInfo->width, renderInfo->height, renderInfo->maxDepth);
 	}
 	else {
-		rayTracer.rayTraceMT(renderInfo->camera, renderInfo->scene, renderInfo->width, renderInfo->height, renderInfo->maxDepth);
+		img = rayTracer.rayTraceMT(renderInfo->camera, renderInfo->scene, renderInfo->width, renderInfo->height, renderInfo->maxDepth);
 	}
 
 

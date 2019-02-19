@@ -94,6 +94,13 @@ Image* RayTracer::rayTraceST(Camera & camera, Scene & scene, GLuint width, GLuin
 			Ray ray = camera.generateRay(i + .5, j - .5);
 			color = recursiveRayTrace(scene, ray, maxDepth);
 			image->setPixel(i, j, color);
+
+
+		}
+
+		if (i % 20 == 0) {
+			cout << "\tProgress: [ "<< setprecision(1) << fixed << (i / (GLfloat)width) * 100.0 << "% ] \r";
+			cout.flush();
 		}
 	}
 

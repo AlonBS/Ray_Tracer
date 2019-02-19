@@ -10,6 +10,7 @@
 #include <set>
 #include <GL/glew.h>
 #include <GL/glut.h>
+#include <boost/algorithm/string.hpp>
 
 #include "SceneParser.h"
 #include "Camera.h"
@@ -186,7 +187,6 @@ SceneParser::readValues(stringstream &s, const int numOfVals, GLfloat* values)
 }
 
 
-
 RenderInfo*
 SceneParser::readFile(const char* fileName)
 {
@@ -212,6 +212,7 @@ SceneParser::readFile(const char* fileName)
 	while (in) {
 
 		getline(in, str);
+		boost::algorithm::trim(str);
 
 		// Ignore comments and white spaces of any kind
 		if ( !((str.find_first_not_of(" \t\r\n") != string::npos) && (str[0] != '#') ))  {
