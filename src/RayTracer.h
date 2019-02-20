@@ -32,12 +32,25 @@ typedef struct Intersection {
 
 class RayTracer {
 public:
-	RayTracer();
-	virtual ~RayTracer();
+
+	static RayTracer& getIntance();
+
+	RayTracer(RayTracer const&) = delete;             // Copy construct
+	RayTracer(RayTracer&&) = delete;                  // Move construct
+	RayTracer& operator=(RayTracer const&) = delete;  // Copy assign
+	RayTracer& operator=(RayTracer &&) = delete;      // Move assign
+
+
+
 
 
 	Image* rayTraceMT(Camera& camera, Scene& scene, GLuint width, GLuint height, GLuint maxDepth);
 	Image* rayTraceST(Camera& camera, Scene& scene, GLuint width, GLuint height, GLuint maxDepth);
+
+protected:
+
+	RayTracer();
+	virtual ~RayTracer();
 
 private:
 

@@ -86,8 +86,6 @@ private:
 	static GLuint maxDepth;
 
 	static RenderInfo* renderInfo;
-
-
 };
 
 

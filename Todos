@@ -5,7 +5,7 @@ Major Topics:
 1) Update README with instructions to install. Also add command line options with help menus. Update regularily as features are added. (DONE)
 1b) Add command line parsing. (Done)
 2) Add examples of scenes with keywords. (This is based on EDX, but includes new keywords for added features). (Done)
-2b) Change to singleton patterns for scenemanager, sceneparser and raytracer
+2b) Change to singleton patterns for scenemanager, sceneparser and raytracer - (Aborted)
 2c) Add better error handling (within file parser, as well as program itself)
 2d) Add option to usage non multi-threaded rendering - for debug purposes mainly. (Done)
 3) Add more primitive objects - Cyllinder etc. Add scenes dipicting those images.

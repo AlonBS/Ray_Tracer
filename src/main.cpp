@@ -143,12 +143,6 @@ static void parse_args(int argc, char *argv[], vector<fs::path>& scenes)
 		std::cout << e.what() << std::endl;
 		exit(-3);
 	}
-
-	//	catch (boost::bad_any_cast& e) {
-	//
-	//		std::cout << e.what() << std::endl;
-	//		exit(-3);
-	//	}
 }
 
 
