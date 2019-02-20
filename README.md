@@ -11,7 +11,9 @@ Current list of features supported:
 - Textures to primitives and models (even multiple textures types - such as diffuse-texture etc.). 
 - Point lights, directional lights. 
 - Recursive lighting calculations. Max recursion depth is currently limited to 5. 
-- Multi-core rendering
+- Multi-core rendering and Single-Core rendering. 
+- Command line argument parse
+- Saved image formats supported: .png, .jpeg, .jpg, .bmp, .tiff
 
 
 
@@ -27,30 +29,40 @@ Installation (For Ubuntu and Debian Distros)
 
 Usage: 
 ======
-./ray_tracer <file_name | directory> <output_directory>
-where:
-	- file_name: is a path to a the scene to parse. It MUST follow the syntax of a scene as described below. 
-	- directory: is a path to a directory which contains scene in the supported syntax. All scene within this
-		     directory will be rendered and save.
-		     Note: only files of the same directory will be rendered, and sub directories will be ignored. 
-	- output_directory: The directory where the resulted scenes (images) will be saved. Each scene is saved with
-			    the "_res" suffix. If not specified, results will be saved in the same directory of
-                            the scenes.
-	
+
+basic: ./ray_tracer -i <input>
+or run ./ray_tracer -h to get full list of options and arguments:
+
+  -h [ --help ]           show this message
+  -v [ --version ]        Current Version of the program
+  -i [ --input ] arg      The path to a scene file, or scenes directory 
+                          following the syntax specific within README file.
+			  Applies only to direct directory. No recursive 
+                          sub-directories search is performed.
+  -o [ --output ] arg     Optional - The directory where to save the results. 
+                          If not specified, results will be saved in the same 
+                          directory of input files.
+  --format arg (=.png)    Optional - The file format in which scenes result 
+                          will be saved. Currently supported types are: png, 
+                          jpeg, jpg, bmp, tiff.
+  -s [ --single-thread ]  Flag to force single thread rendering. Default 
+                          behavior is multi-threaded.
+
+
 Other values are specified within each scene separately. 
 
 
 
 Scene Keywords and Syntax:
 ==========================
-The general syntax is <Command> [Argument_1] [Argument_n] - each argument separated by a single white space.
-Argument can have various types, each one will be added a suffix, indicating the exact type, where:
+The general syntax is <Command> [Argument_1] [Argument_n] - each argument is separated by a single white space.
+Arguments can have various types, each one will be added a suffix, indicating the exact type, where:
 	'_i' - integer
 	'_f' - float
 	'_v3' - vector3 (that is, 3 float numbers)
 	'_v2' - vector2
 	'_s' - string.
-Note the <Command> keyword are case sensitive, and are written in C-naming conventions. 
+Note the <Command> keywords are case sensitive, and are written in C-naming conventions. 
 
 Scene General:
 --------------
