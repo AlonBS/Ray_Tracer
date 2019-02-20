@@ -11,22 +11,25 @@
 #include <vector>
 #include "Object.h"
 #include "Lights.h"
-
-
+#include "Camera.hpp"
 
 
 class Scene {
 
 private:
 
-	std::vector<Object*> 	  		objects;
-	std::vector<Image*>				textures;
+	GLuint 							_width, _height;
+	GLuint			 				_maxDepth;
 
-	std::vector<PointLight*>  		pointLights;
-	std::vector<DirectionalLight*>  directionalLights;
+	Camera							_camera;
 
+	std::vector<Object*> 	  		_objects;
+	std::vector<Image*>				_textures;
 
-	Attenuation_t attenuation;
+	std::vector<PointLight*>  		_pointLights;
+	std::vector<DirectionalLight*>  _directionalLights;
+
+	Attenuation_t _attenuation;
 
 
 public:
@@ -34,23 +37,33 @@ public:
 	Scene();
 	virtual ~Scene();
 
-	void addObject(Object *obj) { objects.push_back(obj); }
-	void addTexture(Image *texture) { textures.push_back(texture); }
+	GLuint& width() { return _width;}
+	const GLuint& width() const { return _width;}
+	GLuint& height() { return _height;}
+	const GLuint& height() const { return _height;}
 
-	void addPointLight(PointLight *light) { pointLights.push_back(light); }
-	void addDirectionalLight(DirectionalLight *light) { directionalLights.push_back(light); }
+	GLuint& maxDepth() { return _maxDepth;}
+	const GLuint& maxDepth() const { return _maxDepth;}
 
-	//void setAttenuation(Attenuation& atten) { this->attenuation = atten; }
+	Camera& camera() {return _camera;}
 
 
-	std::vector<Object*>& getObjects() { return objects; }
-	std::vector<PointLight*>& getPointLights() { return pointLights; }
-	std::vector<DirectionalLight*>& getDirectionalLights() { return directionalLights; }
+	void addObject(Object *obj) { _objects.push_back(obj); }
+	std::vector<Object*>& getObjects() { return _objects; }
 
-	Image* getTexture(uint i) { assert(i < textures.size()); return textures[i]; }
+	void addTexture(Image *texture) { _textures.push_back(texture); }
+	Image* getTexture(uint i) { assert(i < _textures.size()); return _textures[i]; }
 
-	Attenuation_t& Attenuation() { return attenuation; }
+	void addPointLight(PointLight *light) { _pointLights.push_back(light); }
+	std::vector<PointLight*>& getPointLights() { return _pointLights; }
+
+	void addDirectionalLight(DirectionalLight *light) { _directionalLights.push_back(light); }
+	std::vector<DirectionalLight*>& getDirectionalLights() { return _directionalLights; }
+
+	Attenuation_t& attenuation() { return _attenuation; }
 
 };
 
 #endif /* SCENE_H_ */
+
+

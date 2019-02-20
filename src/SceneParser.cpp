@@ -13,7 +13,6 @@
 #include <boost/algorithm/string.hpp>
 
 #include "SceneParser.h"
-#include "Camera.h"
 #include "Object.h"
 #include "Sphere.h"
 #include "Triangle.h"
@@ -21,8 +20,11 @@
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+#include "Camera.hpp"
 
 using namespace std;
+
+#define RECURSION_DEFAULT_DEPTH 2
 
 
 
@@ -93,12 +95,21 @@ vec3 SceneParser::specular = vec3(0.0f, 0.0f, 0.0f);
 vec3 SceneParser::emission = vec3(0.0f, 0.0f, 0.0f);
 GLfloat SceneParser::shininess = 0.0f;
 GLfloat SceneParser::values[MAX_POSSIBLE_VALUES] = {};
-RenderInfo* SceneParser::renderInfo = nullptr;
 
 Attenuation SceneParser::attenuation = { .constant = 1.0f, .linear = 0.0f, .quadratic = 0.0f};
-GLuint 		SceneParser::maxDepth = 3;
+GLuint 		SceneParser::maxDepth = RECURSION_DEFAULT_DEPTH;
 
-stack<mat4> SceneParser::transformsStack;
+stack<mat4> SceneParser::transformsStack{};
+
+vector<glm::vec3> SceneParser::vertices{};
+vector<glm::vec3> SceneParser::verticesNormals;
+
+vector<glm::vec3> SceneParser::verticesTexV{};
+vector<glm::vec2> SceneParser::verticesTexT{};
+
+Image* SceneParser::boundTexture = nullptr;
+bool SceneParser::textureIsBound = false;
+Scene* SceneParser::scene = nullptr;
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -187,13 +198,13 @@ SceneParser::readValues(stringstream &s, const int numOfVals, GLfloat* values)
 }
 
 
-RenderInfo*
+Scene*
 SceneParser::readFile(const char* fileName)
 {
 	string str, cmd;
 	ifstream in;
 
-	renderInfo = new RenderInfo();
+
 
 	in.open(fileName);
 	if (!in.is_open()) {
@@ -202,12 +213,13 @@ SceneParser::readFile(const char* fileName)
 		return nullptr;
 	}
 
+	scene = new Scene();
+
 	// Default transform
 	transformsStack.push(mat4(1.0));
-
 	// Default attenuation
-	renderInfo->scene.Attenuation() = attenuation;
-	renderInfo->maxDepth = maxDepth;
+	scene->attenuation() = attenuation;
+	scene->maxDepth() = maxDepth;
 
 	while (in) {
 
@@ -259,7 +271,13 @@ SceneParser::readFile(const char* fileName)
 
 	in.close();
 
-	return SceneParser::renderInfo;
+	/* BUffers clean up */
+	vertices.clear();
+	verticesNormals.clear();
+	verticesTexV.clear();
+	verticesTexT.clear();
+
+	return scene;
 }
 
 
@@ -271,12 +289,12 @@ SceneParser::handleGeneralCommand(stringstream& s, string& cmd)
 	if (cmd == Commands.size) {
 
 		readValues(s, 2, values);
-		renderInfo->width = values[0];
-		renderInfo->height = values[1];
+		scene->width() = values[0];
+		scene->height() = values[1];
 	} else if (cmd == Commands.maxdepth) {
 
 		readValues(s, 1, values);
-		renderInfo->maxDepth = values[0];
+		scene->maxDepth() = values[0];
 
 	}
 
@@ -293,7 +311,7 @@ SceneParser::handleCameraCommand(stringstream& s, string& cmd)
 	vec3 upInit  = glm::vec3(values[6], values[7], values[8]);
 	//upinit = Transform::upvector(upinit, eyeinit);
 	GLfloat fovy = values[9];
-	renderInfo->camera = Camera(eyeInit, center, upInit, fovy, renderInfo->width, renderInfo->height);
+	scene->camera() = Camera(eyeInit, center, upInit, fovy, scene->width(), scene->height());
 	//transformsStack.top() = lookAt(eyeInit,center,upInit);
 }
 
@@ -315,45 +333,45 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		sphere->invTransform() = inverse(sphere->transform());
 		sphere->invTransposeTrans() = mat3(transpose(sphere->invTransform()));
 
-		if (renderInfo->textureIsBound) {
-			sphere->setTexture(renderInfo->boundTexture);
+		if (textureIsBound) {
+			sphere->setTexture(boundTexture);
 		}
-		renderInfo->scene.addObject(sphere);
+		scene->addObject(sphere);
 	}
 
 	else if (cmd == Commands.maxVerts) {
 		// New object is coming
-		renderInfo->vertices.clear();
+		vertices.clear();
 	}
 
 	else if (cmd == Commands.maxVertNorms) {
 		// New Object is coming
-		renderInfo->verticesNormals.clear();
+		verticesNormals.clear();
 	}
 
 	else if (cmd == Commands.vertex) {
 		readValues(s, 3, values);
-		renderInfo->vertices.push_back(vec3(values[0], values[1], values[2]));
+		vertices.push_back(vec3(values[0], values[1], values[2]));
 	}
 
 	else if (cmd == Commands.vertexNormal) {
 		readValues(s, 6, values);
-		renderInfo->verticesNormals.push_back(vec3(values[0], values[1], values[2]));
-		renderInfo->verticesNormals.push_back(vec3(values[3], values[4], values[5]));
+		verticesNormals.push_back(vec3(values[0], values[1], values[2]));
+		verticesNormals.push_back(vec3(values[3], values[4], values[5]));
 	}
 
 	else if (cmd == Commands.vertexTex) {
 		readValues(s, 5, values);
-		renderInfo->verticesTexV.push_back(vec3(values[0], values[1], values[2]));
-		renderInfo->verticesTexT.push_back(vec2(values[3], values[4]));
+		verticesTexV.push_back(vec3(values[0], values[1], values[2]));
+		verticesTexT.push_back(vec2(values[3], values[4]));
 	}
 
 
 	else if (cmd == Commands.tri) {
 		readValues(s, 3, values);
-		vec3 A = vec3 (transformsStack.top() * vec4(renderInfo->vertices[values[0]], 1.0f));
-		vec3 B = vec3 (transformsStack.top() * vec4(renderInfo->vertices[values[1]], 1.0f));
-		vec3 C = vec3 (transformsStack.top() * vec4(renderInfo->vertices[values[2]], 1.0f));
+		vec3 A = vec3 (transformsStack.top() * vec4(vertices[values[0]], 1.0f));
+		vec3 B = vec3 (transformsStack.top() * vec4(vertices[values[1]], 1.0f));
+		vec3 C = vec3 (transformsStack.top() * vec4(vertices[values[2]], 1.0f));
 		Object *triangle = new Triangle(A, B, C);
 
 //		Object *triangle = new Triangle(renderInfo.vertcies[values[0]],
@@ -368,37 +386,37 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 //		triangle->transform() = transformsStack.top();
 //		triangle->invTransform() = inverse(triangle->transformMat);
 //		triangle->invTransposeTrans() = transpose(triangle->invTransformMat);
-		if (renderInfo->textureIsBound) {
-			triangle->setTexture(renderInfo->boundTexture);
+		if (textureIsBound) {
+			triangle->setTexture(boundTexture);
 		}
-		renderInfo->scene.addObject(triangle);
+		scene->addObject(triangle);
 	}
 
 	else if (cmd == Commands.triNormal) {
 		readValues(s, 3, values);
 		// TODO - need to transform normals too ?
 		//TODO - transform !! )no
-		Object *triangle = new Triangle(renderInfo->vertices[values[0] * 2],
-				renderInfo->vertices[values[1] * 2],
-				renderInfo->vertices[values[2] * 2],
-				renderInfo->vertices[values[0] * 2 - 1],
-				renderInfo->vertices[values[1] * 2 - 1],
-				renderInfo->vertices[values[2] * 2 - 1]);
+		Object *triangle = new Triangle(vertices[values[0] * 2],
+										vertices[values[1] * 2],
+										vertices[values[2] * 2],
+										vertices[values[0] * 2 - 1],
+										vertices[values[1] * 2 - 1],
+										vertices[values[2] * 2 - 1]);
 
-		if (renderInfo->textureIsBound) {
-			triangle->setTexture(renderInfo->boundTexture);
+		if (textureIsBound) {
+			triangle->setTexture(boundTexture);
 		}
-		renderInfo->scene.addObject(triangle);
+		scene->addObject(triangle);
 	}
 
 	else if (cmd == Commands.triTex) {
 		readValues(s, 3, values);
-		vec3 A = vec3 (transformsStack.top() * vec4(renderInfo->verticesTexV[values[0]], 1.0f));
-		vec3 B = vec3 (transformsStack.top() * vec4(renderInfo->verticesTexV[values[1]], 1.0f));
-		vec3 C = vec3 (transformsStack.top() * vec4(renderInfo->verticesTexV[values[2]], 1.0f));
-		vec2 Auv = vec2(renderInfo->verticesTexT[values[0]]);
-		vec2 Buv = vec2(renderInfo->verticesTexT[values[1]]);
-		vec2 Cuv = vec2(renderInfo->verticesTexT[values[2]]);
+		vec3 A = vec3 (transformsStack.top() * vec4(verticesTexV[values[0]], 1.0f));
+		vec3 B = vec3 (transformsStack.top() * vec4(verticesTexV[values[1]], 1.0f));
+		vec3 C = vec3 (transformsStack.top() * vec4(verticesTexV[values[2]], 1.0f));
+		vec2 Auv = vec2(verticesTexT[values[0]]);
+		vec2 Buv = vec2(verticesTexT[values[1]]);
+		vec2 Cuv = vec2(verticesTexT[values[2]]);
 
 		Object *triangle = new Triangle(A, B, C, Auv, Buv, Cuv);
 
@@ -414,10 +432,10 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		//		triangle->transform() = transformsStack.top();
 		//		triangle->invTransform() = inverse(triangle->transformMat);
 		//		triangle->invTransposeTrans() = transpose(triangle->invTransformMat);
-		if (renderInfo->textureIsBound) {
-			triangle->setTexture(renderInfo->boundTexture);
+		if (textureIsBound) {
+			triangle->setTexture(boundTexture);
 		}
-		renderInfo->scene.addObject(triangle);
+		scene->addObject(triangle);
 	}
 
 	else if (cmd == Commands.texture) {
@@ -428,20 +446,20 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		Image *texture = new Image(0, 0);
 		texture->loadImage(textureFile);
 
-		renderInfo->scene.addTexture(texture);
+		scene->addTexture(texture);
 	}
 
 	else if (cmd == Commands.bindTexture) {
 
 			readValues(s, 1, values);
 
-			renderInfo->boundTexture = renderInfo->scene.getTexture(values[0]);
-			renderInfo->textureIsBound = true;
+			boundTexture = scene->getTexture(values[0]);
+			textureIsBound = true;
 	}
 
 	else if (cmd == Commands.unbindTexture) {
 
-			renderInfo->textureIsBound = false;
+			textureIsBound = false;
 		}
 
 	else if (cmd == Commands.model) {
@@ -456,7 +474,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		model->diffuse() = diffuse;
 		model->specular() = specular;
 		model->shininess() = shininess;
-		renderInfo->scene.addObject(model);
+		scene->addObject(model);
 	}
 }
 
@@ -502,7 +520,7 @@ SceneParser::handleLightsCommand(stringstream& s, string& cmd)
 		vec3 color = vec3(values[3], values[4], values[5]);
 		DirectionalLight *dirLight = new DirectionalLight(color, dir);
 
-		renderInfo->scene.addDirectionalLight(dirLight);
+		scene->addDirectionalLight(dirLight);
 	}
 
 	else if (cmd == Commands.point) {
@@ -511,7 +529,7 @@ SceneParser::handleLightsCommand(stringstream& s, string& cmd)
 		vec3 pos = vec3(transformsStack.top() * vec4(values[0], values[1], values[2], 1.0f));
 		vec3 color = vec3(values[3], values[4], values[5]);
 		PointLight *pointLight = new PointLight(color, pos);
-		renderInfo->scene.addPointLight(pointLight);
+		scene->addPointLight(pointLight);
 	}
 
 	else if (cmd == Commands.attenuation) {
@@ -522,7 +540,7 @@ SceneParser::handleLightsCommand(stringstream& s, string& cmd)
 				.quadratic = values[2]
 		};
 
-		renderInfo->scene.Attenuation() = atten;
+		scene->attenuation() = atten;
 	}
 
 }

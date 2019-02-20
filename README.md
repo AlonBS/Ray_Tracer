@@ -293,6 +293,10 @@ popTransform
 
 
 Version History:
+1.5:
+- Major code refactor. Removed Render Info file, and change scene / camera hierarcies.
+- Code clean up
+
 1.4:
 - Fixed textures not showing in primitives or models.
 - Added single thread rendering

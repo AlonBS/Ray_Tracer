@@ -8,6 +8,7 @@
 #ifndef CAMERA_H_
 #define CAMERA_H_
 
+#include <GL/glew.h>
 #include <glm/glm.hpp>
 #include "Ray.h"
 

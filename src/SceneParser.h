@@ -6,8 +6,6 @@
 
 #include <GL/glew.h>
 
-#include "Camera.h"
-#include "RenderInfo.h"
 
 #include <iostream>
 #include <string>
@@ -15,6 +13,8 @@
 #include <sstream>
 #include <set>
 #include <stack>
+#include "Camera.hpp"
+#include "Scene.h"
 
 using namespace std;
 
@@ -38,7 +38,7 @@ class SceneParser {
 
 public:
 
-	static RenderInfo* readFile(const char* fileName);
+	static Scene* readFile(const char* fileName);
 
 private:
 
@@ -50,7 +50,6 @@ private:
 	static set<string> lights;
 	static set<string> materials;
 
-	static stack<mat4> transformsStack;
 
 	static bool inSet(set<string> &, string&);
 
@@ -75,17 +74,38 @@ private:
 	static void handleMaterialsCommand(stringstream&, string&);
 
 
+
+	/*
+	 *  These values serve as buffer for commands that are fully determined
+	 *   when an object is created.
+	 */
+
+	static GLfloat values[MAX_POSSIBLE_VALUES];
 	static vec3 ambient;
 	static vec3 diffuse;
 	static vec3 specular;
 	static vec3 emission;
 	static GLfloat shininess;
-	static GLfloat values[MAX_POSSIBLE_VALUES];
 
 	static Attenuation attenuation;
 	static GLuint maxDepth;
 
-	static RenderInfo* renderInfo;
+	static stack<mat4> transformsStack;
+
+	static vector<glm::vec3> vertices;
+	static vector<glm::vec3> verticesNormals;
+
+	static vector<glm::vec3> verticesTexV; // For Vertices with textures mapping
+	static vector<glm::vec2> verticesTexT; // The texture mapping
+
+	static Image *boundTexture;
+	static bool textureIsBound;
+
+	/***********************************************************************/
+
+
+
+	static Scene* scene;
 };
 
 

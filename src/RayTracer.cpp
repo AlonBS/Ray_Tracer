@@ -29,11 +29,12 @@ RayTracer::~RayTracer() {
 }
 
 
-Image* RayTracer::rayTraceMT(Camera & camera, Scene & scene, GLuint width, GLuint height, GLuint maxDepth)
+Image* RayTracer::rayTraceMT(Scene& scene)
+		/*Camera & camera, Scene & scene, GLuint width, GLuint height, GLuint maxDepth)*/
 {
-	Image *image = new Image(width, height);
+	Image *image = new Image(scene.width(), scene.height());
 
-	size_t max = width * height;
+	size_t max = scene.width() * scene.height();
 	size_t cores = std::thread::hardware_concurrency();
 	volatile atomic<size_t> count(0);
 	vector<future<void>> future_vector;
@@ -41,7 +42,7 @@ Image* RayTracer::rayTraceMT(Camera & camera, Scene & scene, GLuint width, GLuin
 	while (cores--)
 	{
 	    future_vector.push_back(
-	        std::async(launch::async, [=, &camera, &scene, &count]()
+	        std::async(launch::async, [=, &scene, &count]()
 	        {
 	            while (true)
 	            {
@@ -49,11 +50,11 @@ Image* RayTracer::rayTraceMT(Camera & camera, Scene & scene, GLuint width, GLuin
 	                if (index >= max)
 	                    break;
 
-	                GLuint i = index % width;
-	                GLuint j = index / width;
+	                GLuint i = index % scene.width();
+	                GLuint j = index / scene.width();
 
-	                Ray ray = camera.generateRay(i + .5, j - .5);
-	                vec3 color = recursiveRayTrace(scene, ray, maxDepth);
+	                Ray ray = scene.camera().generateRay(i + .5, j - .5);
+	                vec3 color = recursiveRayTrace(scene, ray, scene.maxDepth());
 	                image->setPixel(i, j, color);
 	            }
 	        }));
@@ -81,25 +82,24 @@ Image* RayTracer::rayTraceMT(Camera & camera, Scene & scene, GLuint width, GLuin
 
 
 // single threaded - for benchmark purposes and debugging
-Image* RayTracer::rayTraceST(Camera & camera, Scene & scene, GLuint width, GLuint height, GLuint maxDepth)
+Image* RayTracer::rayTraceST(Scene& scene)
+		/*Camera & camera, Scene & scene, GLuint width, GLuint height, GLuint maxDepth)*/
 {
-	Image *image = new Image(width, height);
+	Image *image = new Image(scene.width(), scene.height());
 	vec3 color;
 
-	for (GLuint i = 0 ; i < width ; ++i)
+	for (GLuint i = 0 ; i < scene.width() ; ++i)
 	{
-		for (GLuint j = 0 ; j < height; ++j)
+		for (GLuint j = 0 ; j < scene.height(); ++j)
 		{
-
-			Ray ray = camera.generateRay(i + .5, j - .5);
-			color = recursiveRayTrace(scene, ray, maxDepth);
+			Ray ray = scene.camera().generateRay(i + .5, j - .5);
+			color = recursiveRayTrace(scene, ray, scene.maxDepth());
 			image->setPixel(i, j, color);
-
 
 		}
 
 		if (i % 20 == 0) {
-			cout << "\tProgress: [ "<< setprecision(1) << fixed << (i / (GLfloat)width) * 100.0 << "% ] \r";
+			cout << "\tProgress: [ "<< setprecision(1) << fixed << (i / (GLfloat)scene.width()) * 100.0 << "% ] \r";
 			cout.flush();
 		}
 	}
@@ -199,7 +199,7 @@ vec3 RayTracer::computeLight(Scene& scene, Ray& r, Intersection& hit)
 
 			tempColor = __blinn_phong(hit.properties, hit.texColors, p->_color, srDir, hit.normal, halfAng);
 			// take attenuation into account
-			GLfloat atten = 1 / (scene.Attenuation().constant + scene.Attenuation().linear * maxDist + scene.Attenuation().quadratic * maxDist * maxDist);
+			GLfloat atten = 1 / (scene.attenuation().constant + scene.attenuation().linear * maxDist + scene.attenuation().quadratic * maxDist * maxDist);
 			tempColor *= atten;
 			color += tempColor;
 		}

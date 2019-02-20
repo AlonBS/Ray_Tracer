@@ -14,25 +14,25 @@ Scene::Scene() {
 
 Scene::~Scene() {
 
-	for (auto* o : objects) {
+	for (auto* o : _objects) {
 		delete o;
 	}
 
-	for (auto* t : textures) {
+	for (auto* t : _textures) {
 		delete t;
 	}
 
-	for (auto* p : pointLights) {
+	for (auto* p : _pointLights) {
 		delete p;
 	}
 
-	for (auto* d : directionalLights) {
+	for (auto* d : _directionalLights) {
 		delete d;
 	}
 
-	objects.clear();
-	textures.clear();
-	pointLights.clear();
-	directionalLights.clear();
+	_objects.clear();
+	_textures.clear();
+	_pointLights.clear();
+	_directionalLights.clear();
 }
 

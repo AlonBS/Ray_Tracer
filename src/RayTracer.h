@@ -11,10 +11,10 @@
 #include "GL/glew.h"
 #include "Image.h"
 #include "Scene.h"
-#include "Camera.h"
 #include "Ray.h"
 
 #include <vector>
+#include "Camera.hpp"
 
 
 typedef struct Intersection {
@@ -33,24 +33,13 @@ typedef struct Intersection {
 class RayTracer {
 public:
 
-	static RayTracer& getIntance();
-
-	RayTracer(RayTracer const&) = delete;             // Copy construct
-	RayTracer(RayTracer&&) = delete;                  // Move construct
-	RayTracer& operator=(RayTracer const&) = delete;  // Copy assign
-	RayTracer& operator=(RayTracer &&) = delete;      // Move assign
-
-
-
-
-
-	Image* rayTraceMT(Camera& camera, Scene& scene, GLuint width, GLuint height, GLuint maxDepth);
-	Image* rayTraceST(Camera& camera, Scene& scene, GLuint width, GLuint height, GLuint maxDepth);
-
-protected:
-
 	RayTracer();
 	virtual ~RayTracer();
+
+	Image* rayTraceMT(Scene& scene);
+
+	Image* rayTraceST(Scene& scene);
+
 
 private:
 

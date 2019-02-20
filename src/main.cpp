@@ -7,10 +7,9 @@
 #include <sys/time.h>
 #include <iomanip>
 
+#include "Camera.hpp"
 #include "Object.h"
 #include "SceneParser.h"
-#include "Camera.h"
-#include "RenderInfo.h"
 #include "Image.h"
 #include "RayTracer.h"
 
@@ -19,7 +18,7 @@
 #define FILES_EXTENSION ".rt"
 #define DEFUALT_RESULT_FORMAT ".png"
 
-#define CURRENT_VERSION "1.4"
+#define CURRENT_VERSION "1.5"
 
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
@@ -150,8 +149,8 @@ static void parse_args(int argc, char *argv[], vector<fs::path>& scenes)
 static void render_scene(string fileName)
 {
 
-	RenderInfo *renderInfo = SceneParser::readFile(fileName.c_str());
-	if (!renderInfo) {
+	Scene *scene = SceneParser::readFile(fileName.c_str());
+	if (!scene) {
 		cerr << "Scene: " << fileName << " was not rendered." << endl;
 		return;
 	}
@@ -160,10 +159,10 @@ static void render_scene(string fileName)
 	Image *img = nullptr;
 
 	if (singleThreaded) {
-		img = rayTracer.rayTraceST(renderInfo->camera, renderInfo->scene, renderInfo->width, renderInfo->height, renderInfo->maxDepth);
+		img = rayTracer.rayTraceST(*scene);
 	}
 	else {
-		img = rayTracer.rayTraceMT(renderInfo->camera, renderInfo->scene, renderInfo->width, renderInfo->height, renderInfo->maxDepth);
+		img = rayTracer.rayTraceMT(*scene);
 	}
 
 
@@ -174,7 +173,7 @@ static void render_scene(string fileName)
 	img->saveImage(output);
 
 	delete img;
-	delete renderInfo;
+	delete scene;
 }
 
 
