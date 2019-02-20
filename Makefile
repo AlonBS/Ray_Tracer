@@ -7,18 +7,19 @@ LINKFLAGS  = -lassimp -lfreeimage -lGLEW -L /usr/lib/x86_64-linux-gnu/ \
 
 CFLAGS    = -Wall -Wextra -g -std=c++17 -pthread #-fopenmp 
 CC        = g++
-SRCS      = main.cpp \
-	    Image.cpp \
-	    Ray.cpp \
-	    RayTracer.cpp \
-	    Scene.cpp \
-            SceneParser.cpp \
-            Object.cpp \
-            Sphere.cpp \
-            Triangle.cpp \
-            Lights.cpp \
-            Mesh.cpp \
-            Model.cpp
+SRC_DIR   = ./src
+SRCS      = $(SRC_DIR)/main.cpp \
+	    $(SRC_DIR)/Image.cpp \
+	    $(SRC_DIR)/Ray.cpp \
+	    $(SRC_DIR)/RayTracer.cpp \
+	    $(SRC_DIR)/Scene.cpp \
+            $(SRC_DIR)/SceneParser.cpp \
+            $(SRC_DIR)/Object.cpp \
+            $(SRC_DIR)/Sphere.cpp \
+            $(SRC_DIR)/Triangle.cpp \
+            $(SRC_DIR)/Lights.cpp \
+            $(SRC_DIR)/Mesh.cpp \
+            $(SRC_DIR)/Model.cpp
             
 	    
 
