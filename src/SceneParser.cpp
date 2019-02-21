@@ -17,6 +17,7 @@
 #include "Sphere.h"
 #include "Triangle.h"
 #include "Model.h"
+#include "Cylinder.h"
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -40,6 +41,7 @@ struct Commands {
 
 	// Geometry and objects
 	const string sphere        = "sphere";
+	const string cylinder      = "cylinder";
 	const string maxVerts      = "maxVerts";
 	const string maxVertNorms  = "maxVertNorms";
 	const string vertex        = "vertex";
@@ -79,7 +81,7 @@ struct Commands {
 
 set<string> SceneParser::general{Commands.size, Commands.maxdepth};
 string 	    SceneParser::camera = Commands.camera;
-set<string> SceneParser::geometry{Commands.sphere, Commands.maxVerts, Commands.maxVertNorms,
+set<string> SceneParser::geometry{Commands.sphere, Commands.cylinder, Commands.maxVerts, Commands.maxVertNorms,
 								  Commands.vertex, Commands.vertexNormal, Commands.vertexTex, Commands.tri,
 								  Commands.triNormal, Commands.triTex, Commands.texture, Commands.bindTexture, Commands.unbindTexture,
 								  Commands.model};
@@ -337,6 +339,26 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 			sphere->setTexture(boundTexture);
 		}
 		scene->addObject(sphere);
+	}
+
+	else if (cmd == Commands.cylinder) {
+		readValues(s, 4, values);
+		vec3 center = glm::vec3(0, 0, 0);
+		GLfloat radius = 1;
+		Object *cylinder = new Cylinder(center, radius);
+		cylinder->ambient() = ambient;
+		cylinder->emission() = emission;
+		cylinder->diffuse() = diffuse;
+		cylinder->specular() = specular;
+		cylinder->shininess() = shininess;
+		cylinder->transform() = transformsStack.top();
+		cylinder->invTransform() = inverse(cylinder->transform());
+		cylinder->invTransposeTrans() = mat3(transpose(cylinder->invTransform()));
+
+		if (textureIsBound) {
+			cylinder->setTexture(boundTexture);
+		}
+		scene->addObject(cylinder);
 	}
 
 	else if (cmd == Commands.maxVerts) {

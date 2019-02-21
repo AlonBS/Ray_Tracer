@@ -179,12 +179,11 @@ static void render_scene(string fileName)
 
 int main(int argc, char *argv[])
 {
-
 	vector<fs::path> files{};
 	parse_args(argc, argv, files);
 
-	struct timeval start, end;
-	GLdouble time, totalTime;
+	struct timeval start {}, end = {};
+	GLdouble time = 0, totalTime = 0;
 
 	FreeImage_Initialise();
 

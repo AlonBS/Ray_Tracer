@@ -19,8 +19,9 @@ SRCS      = $(SRC_DIR)/main.cpp \
             $(SRC_DIR)/Triangle.cpp \
             $(SRC_DIR)/Lights.cpp \
             $(SRC_DIR)/Mesh.cpp \
-            $(SRC_DIR)/Model.cpp
-            
+            $(SRC_DIR)/Model.cpp \
+            $(SRC_DIR)/Cylinder.cpp \
+                        
 	    
 
 OBJS      = $(SRCS:.cpp=.o)

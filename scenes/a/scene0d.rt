@@ -44,11 +44,17 @@ unbindTexture
 popTransform
 pushTransform
 
-	ambient 0.1 0.1 0.1	
+	bindTexture 1
 	diffuse 0.3 0.3 0.3 
 	specular 0.0 0.0 0.0
-	translate 0 3 0
-	cylinder 1 1 2
+#	popTransform
+#	pushTransform
+#	translate 0 1 -2
+#	sphere -0.5 2.8 -.65 1.5
+	scale 3 3 3
+#	model ./3ds/cube/cube.obj
+#	model ./3ds/pencil-obj/pencil.obj
+	unbindTexture
 
 popTransform
 

@@ -31,6 +31,7 @@ TODOs:
 - Add supported files format for result image. (DONE)
 - Fix unknown command maxvertx (Done)
 - Check General texture from primitives and meshes not working. (Done)
+- Check valgrind Issues (Done - Problem with linking Freeimage (31 blocks) 
 
 - Comment code
 - Check meshes textures memory allocation and free. 
