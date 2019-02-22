@@ -16,7 +16,7 @@
 using namespace glm;
 
 const GLfloat EPSILON  = 0.0001f;
-const GLfloat INFINITE = FLT_MAX;
+//const GLfloat INFINITY = FLT_MAX;
 const GLfloat PI = 3.1415926f;
 const vec3 COLOR_WHITE = vec3(1.0f, 1.0f, 1.0f);
 const vec3 COLOR_BLACK = vec3(0.0f, 0.0f, 0.0f);

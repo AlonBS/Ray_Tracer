@@ -135,7 +135,7 @@ vec3 RayTracer::recursiveRayTrace(Scene& scene, Ray & ray, GLuint depth)
 
 Intersection RayTracer::intersectScene(Scene & scene, Ray& ray)
 {
-	GLfloat minDist = INFINITE;
+	GLfloat minDist = INFINITY;
 	GLfloat dist;
 	vec3 point;
 	vec3 normal;
@@ -211,7 +211,7 @@ vec3 RayTracer::computeLight(Scene& scene, Ray& r, Intersection& hit)
 		srDir = normalize(p->_direction);
 		srOrigin = hit.point + EPSILON * srDir; // Move a little to avoid floating point errors
 		shadowRay = Ray(srOrigin, srDir);
-		maxDist = INFINITE;
+		maxDist = INFINITY;
 
 
 		if (isVisibleToLight(scene.getObjects(), shadowRay, maxDist)) {

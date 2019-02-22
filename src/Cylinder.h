@@ -22,6 +22,8 @@ private:
 	glm::vec3 center;
 	GLfloat radius;
 
+	GLfloat minCap, maxCap;
+
 	vec3 __calculateTexture(vec3& p);
 
 
@@ -30,6 +32,8 @@ public:
 	Cylinder(const glm::vec3 & center, GLfloat &radius)
 	: Object(), center(center), radius(radius)
 	{
+		minCap = -5;
+		maxCap = 5;
 
 	}
 	virtual ~Cylinder() {}

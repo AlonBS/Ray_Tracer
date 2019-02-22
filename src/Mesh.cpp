@@ -84,7 +84,7 @@ Mesh::__triangulate(vector<Vertex> vertices, vector<unsigned int> indices)
 bool
 Mesh::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, vec2* texCoords, MeshProperties* properties)
 {
-	GLfloat minDist = INFINITE;
+	GLfloat minDist = INFINITY;
 
 	GLfloat tDist;
 	vec3 tP, tN;
@@ -108,7 +108,7 @@ Mesh::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, vec2* texC
 		}
 	}
 
-	if (minDist == INFINITE) {
+	if (minDist == INFINITY) {
 		return false;
 	}
 

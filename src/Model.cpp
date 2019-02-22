@@ -45,7 +45,7 @@ Model::~Model()
 bool
 Model::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties)
 {
-	GLfloat minDist = INFINITE;
+	GLfloat minDist = INFINITY;
 
 	GLfloat tDist;
 	vec3 tP, tN;
@@ -73,7 +73,7 @@ Model::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, ObjectTex
 		}
 	}
 
-	if (minDist == INFINITE) {
+	if (minDist == INFINITY) {
 		return false;
 	}
 
