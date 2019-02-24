@@ -33,7 +33,6 @@ bool Cylinder::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, O
 	vec3    ip, ip2; // Intersection points
 
 	bool single_intersection = false;
-	bool has_t3 = false, has_t4 = false;
 
 	A = (tr.direction.x*tr.direction.x) + (tr.direction.y*tr.direction.y);
 	B = (2*tr.origin.x*tr.direction.x) + (2*tr.origin.y*tr.direction.y);
@@ -108,9 +107,7 @@ bool Cylinder::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, O
 	}
 
 
-
-
-
+	// This is the normal at intersection point. (The Cylinder is aligned with the z-axis)
 	vec3 n = vec3(ip - vec3(0,0, ip.z));
 
 	// M * p - to transform point back

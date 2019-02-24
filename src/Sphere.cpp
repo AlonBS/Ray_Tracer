@@ -67,7 +67,10 @@ bool Sphere::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Obj
 
 
 	intersection_point = tr.origin + t * tr.direction;
+	// The normal at intersection point (to the canonical sphere)
 	vec3 n = vec3(intersection_point - center);
+	// The normal transformation fix
+	n = normalize(vec3(mat3(this->invTransposeTrans()) * n));
 
 	// M * p - to transform point back
 	intersection_point = vec3(this->transform() * vec4(intersection_point, 1.0f));
@@ -78,14 +81,13 @@ bool Sphere::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Obj
 		*point = intersection_point;
 	}
 	if (normal) {
-		*normal = normalize(vec3(mat3(this->invTransposeTrans()) * n));
+		*normal = n;
 	}
 	if (texColors) {
 
-		vec3 d = normalize(intersection_point - center);
 		vec2 uv;
-		uv.x = 0.5 + atan2(d.x, d.z) / (2 * PI);
-		uv.y = 0.5 + 0.5 * d.y;
+		uv.x = 0.5 + atan2(n.x, n.z) / (2 * PI);
+		uv.y = 0.5 + 0.5 * n.y;
 		texColors->_ambientTexColor  = this->getAmbientTextureColor(uv);
 		texColors->_diffuseTexColor  = this->getDiffuseTextureColor(uv);
 		texColors->_specularTexColor = this->getSpecularTextureColor(uv);

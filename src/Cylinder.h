@@ -24,8 +24,6 @@ private:
 
 	GLfloat minCap, maxCap;
 
-	vec3 __calculateTexture(vec3& p);
-
 
 public:
 

@@ -23,8 +23,6 @@ private:
 	glm::vec3 center;
 	GLfloat radius;
 
-	vec3 __calculateTexture(vec3& p);
-
 
 public:
 

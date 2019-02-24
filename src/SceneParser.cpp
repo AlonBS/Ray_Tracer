@@ -265,7 +265,7 @@ SceneParser::readFile(const char* fileName)
 		case UNKNOWN_COMMAND:
 		default:
 
-			cout << "\nUnknown command: " << cmd << ". Skipped. " << endl;
+			cout << "\tUnknown command: " << cmd << ". Skipped. " << endl;
 			break;
 		}
 
@@ -278,6 +278,8 @@ SceneParser::readFile(const char* fileName)
 	verticesNormals.clear();
 	verticesTexV.clear();
 	verticesTexT.clear();
+	boundTexture = nullptr;
+	textureIsBound = false;
 
 	return scene;
 }
@@ -323,7 +325,19 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 {
 	if (cmd == Commands.sphere) {
 		readValues(s, 4, values);
-		vec3 center = glm::vec3(values[0], values[1], values[2]);
+		printMat4("TRANSform: ", transformsStack.top());
+//		vec3 center = glm::vec3(values[0], values[1], values[2]);
+		vec3 center = glm::vec3(0, 0, 0);
+		mat4 t = transformsStack.top();
+		mat4 fresh = mat4(1.0);
+		fresh = glm::translate(fresh, vec3(values[0], values[1], values[2]));
+
+		transformsStack.top() = fresh * transformsStack.top(); // yes - left multiplied!
+//		printMat4("Fresh: ", fresh);
+//		transformsStack.top() = glm::translate(fresh, vec3(values[0], values[1], values[2]));
+//		transformsStack.top() = glm::rotate(transformsStack.top(), radians(180.f), vec3(0, 1, 0));
+
+		//center = vec3 (transformsStack.top() * vec4(center, 1.0f)); // TODO - ? ? ?
 		GLfloat radius = values[3];
 		Object *sphere = new Sphere(center, radius);
 		sphere->ambient() = ambient;
@@ -334,6 +348,10 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		sphere->transform() = transformsStack.top();
 		sphere->invTransform() = inverse(sphere->transform());
 		sphere->invTransposeTrans() = mat3(transpose(sphere->invTransform()));
+
+		printMat4("Transform: ", sphere->transform());
+		printMat4("Inv Tr: ", sphere->invTransform());
+		printMat4("Mult: ", sphere->transform() * sphere->invTransform());
 
 		if (textureIsBound) {
 			sphere->setTexture(boundTexture);
@@ -482,6 +500,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 	else if (cmd == Commands.unbindTexture) {
 
 			textureIsBound = false;
+			boundTexture = nullptr;
 		}
 
 	else if (cmd == Commands.model) {

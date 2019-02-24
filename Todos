@@ -32,12 +32,14 @@ TODOs:
 - Fix unknown command maxvertx (Done)
 - Check General texture from primitives and meshes not working. (Done)
 - Check valgrind Issues (Done - Problem with linking Freeimage (31 blocks) 
+- Check meshes textures memory allocation and free. (DONE)
 
+- Test all transformations on objects - Current
+
+- Fix texture on triangles not from model
 - Comment code
-- Check meshes textures memory allocation and free. 
 - Fix mesh properties multiply operator when value is not given (default) 
 - Stop recursion of light contribution is minor. 
-- Test all transformations on objects.
 - Fix textures when applying transformations. 
 - Consider Normal transformation when adding normals to meshes. (Model.cpp)
 - Interpolate normals in triangles. (Triangle.cpp)
