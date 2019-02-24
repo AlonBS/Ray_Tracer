@@ -105,6 +105,7 @@ bool Cylinder::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, O
 
 	// This is the normal at intersection point. (The Cylinder is aligned with the z-axis)
 	vec3 n = vec3(ip - vec3(0,0, ip.z));
+	n = normalize(vec3(mat3(this->invTransposeTrans()) * n));
 
 	// M * p - to transform point back
 	ip = vec3(this->transform() * vec4(ip, 1.0f));
@@ -115,14 +116,15 @@ bool Cylinder::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, O
 		*point = ip;
 	}
 	if (normal) {
-		*normal = normalize(vec3(mat3(this->invTransposeTrans()) * n));
+		*normal = n;
 	}
 	if (texColors) {
 
-		vec3 d = normalize(ip - center);
+		cout << "HERE" << endl;
+
 		vec2 uv;
-		uv.x = 0.5 + atan2(d.x, d.z) / (2 * PI);
-		uv.y = 0.5 + 0.5 * d.y;
+		uv.x = 0.5 + atan2(n.x, n.z) / (2 * PI);
+		uv.y = 0.5 + 0.5 * n.y;
 		texColors->_ambientTexColor  = this->getAmbientTextureColor(uv);
 		texColors->_diffuseTexColor  = this->getDiffuseTextureColor(uv);
 		texColors->_specularTexColor = this->getSpecularTextureColor(uv);
