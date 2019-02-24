@@ -352,7 +352,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 
 	else if (cmd == Commands.cylinder) {
 		readValues(s, 5, values);
-		vec3 center = glm::vec3(0 ,0 , 0);
+		vec3 center = glm::vec3(0, 0, 0);
 		mat4 objectTranslation = glm::translate(mat4(1.0), vec3(values[0], values[1], values[2]));
 		transformsStack.top() = objectTranslation * transformsStack.top(); // yes - left multiplied! - see note at sphere
 
@@ -367,6 +367,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		cylinder->transform() = transformsStack.top();
 		cylinder->invTransform() = inverse(cylinder->transform());
 		cylinder->invTransposeTrans() = mat3(transpose(cylinder->invTransform()));
+
 
 		if (textureIsBound) {
 			cylinder->setTexture(boundTexture);
@@ -455,7 +456,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 
 		Object *triangle = new Triangle(A, B, C, Auv, Buv, Cuv);
 
-		//		Object *triangle = new Triangle(renderInfo.vertcies[values[0]],
+		//		Object *triangle = new Triangle(renderInfo.vertcies[values[0]],git di
 		//												renderInfo.vertcies[values[1]],
 		//												renderInfo.vertcies[values[2]]);
 		triangle->ambient() = ambient;

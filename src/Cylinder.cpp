@@ -25,7 +25,7 @@ bool Cylinder::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, O
 	Ray tr = this->invTransform() * r; // Transformed ray
 	GLfloat A, B, C;
 	GLfloat discriminant, disc_root;
-	GLfloat t1, t2, t3 = INFINITY, t4 = INFINITY, t;
+	GLfloat t1 = INFINITY, t2 = INFINITY, t3 = INFINITY, t4 = INFINITY, t = INFINITY;
 	vec3    ip, ip2; // Intersection points
 
 	bool single_intersection = false;
@@ -120,11 +120,17 @@ bool Cylinder::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, O
 	}
 	if (texColors) {
 
-		cout << "HERE" << endl;
-
 		vec2 uv;
-		uv.x = 0.5 + atan2(n.x, n.z) / (2 * PI);
-		uv.y = 0.5 + 0.5 * n.y;
+		uv.x = acos(ip.x / radius) / (2*PI);
+		//uv.x = (atan2(ip.x, ip.y) + PI) / (2*PI);
+		//uv.y = 0.5 + 0.5 * n.z / (-minCap + maxCap);
+		uv.y = (ip.z) / (-minCap + maxCap);
+
+		uv = glm::clamp(uv,0.f, 1.f);
+
+
+		printVec2("UV", uv);
+
 		texColors->_ambientTexColor  = this->getAmbientTextureColor(uv);
 		texColors->_diffuseTexColor  = this->getDiffuseTextureColor(uv);
 		texColors->_specularTexColor = this->getSpecularTextureColor(uv);
@@ -139,7 +145,7 @@ bool Cylinder::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, O
 
 void Cylinder::print() const
 {
-	std::cout << "Cylinder Center: (" << center.x << "," << center.y << "," << center.z << ") | Radius: " << radius << std::endl;
+	std::cout << "Cylinder Center: (" << center.x << "," << center.y << "," << center.z << ") | Radius: " << radius << " | minCap: " << minCap << " | Max Cap: " << maxCap << std::endl;
 	Object::print();
 }
 

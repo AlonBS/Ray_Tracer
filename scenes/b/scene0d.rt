@@ -9,6 +9,8 @@ attenuation 1 0.0 0.0
 texture ./scenes/a/wood2.jpeg
 texture ./scenes/a/stripes.png
 texture ./scenes/a/checkers.png
+texture ./scenes/a/lines.jpg
+texture ./scenes/a/cola.jpg
 
 
 #directional 1 -1 0 1 0 0 
@@ -48,20 +50,23 @@ unbindTexture
 
 popTransform
 pushTransform
-
-#	bindTexture 2
-	ambient 0.1 0.5 0.1	
+	bindTexture 4
+	ambient 0.1 0.1 0.1	
 	diffuse 0.3 0.3 0.3 
 	specular 0.3 0.3 0.3
 	shininess 2
-#	translate -3 0 0
-	rotate 0 0 1 90
-	cylinder 0 0 0 6 1
+	#translate -3 0 0
+	#rotate 1 0 0 90
+	cylinder 0 0 0 6 2
+
+popTransform
+pushTransform
 	
 #	model ./3ds/cube/cube.obj
-#	sphere -2 2 0 2
+	#sphere -2 2 0 2
+	translate 1 0 0
 	#sphere 0 0 0 1
-#	unbindTexture
+	unbindTexture
 
 popTransform
 

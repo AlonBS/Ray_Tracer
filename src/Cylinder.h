@@ -27,10 +27,8 @@ private:
 public:
 
 	Cylinder(const glm::vec3 & center, GLfloat& height, GLfloat &radius)
-	: Object(), center(center), minCap(-height/2), maxCap(height/2), radius(radius)
+	: Object(), center(center), minCap(-height/2.0f), maxCap(height/2.0f), radius(radius)
 	{
-		cout << "Min" << minCap<< endl;
-		cout << "Max" << maxCap<< endl;
 
 	}
 	virtual ~Cylinder() {}

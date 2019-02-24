@@ -25,7 +25,7 @@ bool Sphere::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Obj
 	Ray tr = this->invTransform() * r; // Transformed ray
 	GLfloat A, B, C;
 	GLfloat discriminant, disc_root;
-	GLfloat t1, t2, t;
+	GLfloat t1, t2, t = INFINITY;
 	vec3    intersection_point;
 
 
