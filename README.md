@@ -83,7 +83,9 @@ Primitives and Models:
 -----------------------
 	sphere <position_v3> <radius_f>: Creates a sphere at the given position, with a radius of the specified size.
 		Note that the position is in world-coordinates. Which means the transformations applied to this object
-		might cause it to render in another location. This is true for all primitives and models. 
+		might cause it to render in another location. This is true for all primitives and models.
+	cylinder <position_v3> <height> <radius_f>: Creates a finite cylinder centered at position, with the given height and radius.
+		This means that the height define the caps of the cylinder. 
 	vertex <pos-v3> - Creates a single vertex, we can later be used to create a triangle.
 	vertexNormal <pos-v3> <norm-v3> - Defined a vertex as before, but also defined the surface normal.
 		Note the vertecies defined in this way are completely indepetnted of vertecies defined using the

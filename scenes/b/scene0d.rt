@@ -47,27 +47,20 @@ unbindTexture
 popTransform
 pushTransform
 
-	bindTexture 1
+#	bindTexture 1
 	ambient 0.1 0.5 0.1	
 	diffuse 0.3 0.3 0.3 
 	specular 0.3 0.3 0.3
 	shininess 2
-	translate -1 0 0
-	#cylinder 1 1 2
-	rotate 0 1 0 180
-	#scale 1 1 1 
-
+	translate -3 0 0
+	rotate 0 1 0 90
+	cylinder -2 0 0 2 2
+	
 #	model ./3ds/cube/cube.obj
-	sphere -2 2 0 1
+	#sphere -2 2 0 1
 	#sphere 0 0 0 1
-	unbindTexture
+#	unbindTexture
 
 popTransform
 
-
-#Transform: :
-#	-1	0	8.74228e-08	0
-#	0	1	0	0
-#	-8.74228e-08	0	-1	0
-#	2	2	-1.74846e-07	1
 

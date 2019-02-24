@@ -20,18 +20,15 @@ class Cylinder: public Object {
 private:
 
 	glm::vec3 center;
-	GLfloat radius;
-
 	GLfloat minCap, maxCap;
+	GLfloat radius;
 
 
 public:
 
-	Cylinder(const glm::vec3 & center, GLfloat &radius)
-	: Object(), center(center), radius(radius)
+	Cylinder(const glm::vec3 & center, GLfloat& height, GLfloat &radius)
+	: Object(), center(center), minCap(-height/2), maxCap(height/2), radius(radius)
 	{
-		minCap = -5;
-		maxCap = 5;
 
 	}
 	virtual ~Cylinder() {}

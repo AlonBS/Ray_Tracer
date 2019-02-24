@@ -14,17 +14,13 @@ using namespace glm;
 
 bool Cylinder::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties)
 {
-	// To find intersection between Ray and Sphere represented the following way:
-	// 	Sphere: (P - C )^2 - r^2 = 0
-	// 	Ray:    (o + d*x)
+	// To find intersection between Ray and canonical cylinder, we need to solve the following equation:
+	// 	Cylinder: x^2 + y^2 = R^2
+	// 	Ray:    (o + d*t)
 	// we must solve a quadratic equations the form of Ax^2 + Bx + C = 0, where:
-	// 	A: d^2
-	//  B: 2 * d * (o - c)
-	// 	C: (o -c)^2 - r^2
-
-	minCap = -5;
-	maxCap = 5;
-
+	// 	A: d.x^2 + d.y^2
+	//  B: 2*o.x*d.x + 2*o.y*d.y
+	// 	C: o.x^2 + o.y^2 - r^2
 
 	Ray tr = this->invTransform() * r; // Transformed ray
 	GLfloat A, B, C;
@@ -36,7 +32,7 @@ bool Cylinder::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, O
 
 	A = (tr.direction.x*tr.direction.x) + (tr.direction.y*tr.direction.y);
 	B = (2*tr.origin.x*tr.direction.x) + (2*tr.origin.y*tr.direction.y);
-	C = (tr.origin.x*tr.origin.x) + (tr.origin.y*tr.origin.y) - 1;
+	C = (tr.origin.x*tr.origin.x) + (tr.origin.y*tr.origin.y) - (radius * radius);
 
 	discriminant = (B*B) - 4*A*C;
 	if (discriminant < 0) {

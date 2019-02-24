@@ -325,19 +325,14 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 {
 	if (cmd == Commands.sphere) {
 		readValues(s, 4, values);
-		printMat4("TRANSform: ", transformsStack.top());
-//		vec3 center = glm::vec3(values[0], values[1], values[2]);
+
+		/* We want to allow the user to define a sphere at a specific location in addition to be able to translate it.
+		 * To achieve this, we actually create a canonical sphere at (0,0,0) at we derive the translation from the given
+		 * coordinates. Note that we want to achieve the T*R*S*(Obj) order of multiplication. So we left multiply here.
+		 */
 		vec3 center = glm::vec3(0, 0, 0);
-		mat4 t = transformsStack.top();
-		mat4 fresh = mat4(1.0);
-		fresh = glm::translate(fresh, vec3(values[0], values[1], values[2]));
-
-		transformsStack.top() = fresh * transformsStack.top(); // yes - left multiplied!
-//		printMat4("Fresh: ", fresh);
-//		transformsStack.top() = glm::translate(fresh, vec3(values[0], values[1], values[2]));
-//		transformsStack.top() = glm::rotate(transformsStack.top(), radians(180.f), vec3(0, 1, 0));
-
-		//center = vec3 (transformsStack.top() * vec4(center, 1.0f)); // TODO - ? ? ?
+		mat4 objectTranslation = glm::translate(mat4(1.0), vec3(values[0], values[1], values[2]));
+		transformsStack.top() = objectTranslation * transformsStack.top(); // yes - left multiplied!
 		GLfloat radius = values[3];
 		Object *sphere = new Sphere(center, radius);
 		sphere->ambient() = ambient;
@@ -349,10 +344,6 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		sphere->invTransform() = inverse(sphere->transform());
 		sphere->invTransposeTrans() = mat3(transpose(sphere->invTransform()));
 
-		printMat4("Transform: ", sphere->transform());
-		printMat4("Inv Tr: ", sphere->invTransform());
-		printMat4("Mult: ", sphere->transform() * sphere->invTransform());
-
 		if (textureIsBound) {
 			sphere->setTexture(boundTexture);
 		}
@@ -360,10 +351,14 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 	}
 
 	else if (cmd == Commands.cylinder) {
-		readValues(s, 4, values);
-		vec3 center = glm::vec3(0, 0, 0);
-		GLfloat radius = 1;
-		Object *cylinder = new Cylinder(center, radius);
+		readValues(s, 5, values);
+		vec3 center = glm::vec3(0 ,0 , 0);
+		mat4 objectTranslation = glm::translate(mat4(1.0), vec3(values[0], values[1], values[2]));
+		transformsStack.top() = objectTranslation * transformsStack.top(); // yes - left multiplied! - see note at sphere
+
+		GLfloat height = values[3];
+		GLfloat radius = values[4];
+		Object *cylinder = new Cylinder(center, height, radius);
 		cylinder->ambient() = ambient;
 		cylinder->emission() = emission;
 		cylinder->diffuse() = diffuse;
