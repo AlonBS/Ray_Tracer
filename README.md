@@ -295,6 +295,12 @@ popTransform
 
 
 Version History:
+1.6:
+- Added cylinder intersection.
+- Fixes to rotation transformation on primitives (sphere and cylinder)
+- fixes on transformations stack to primitives. 
+- fixed scene parser buffered not cleanup bug. 
+
 1.5:
 - Major code refactor. Removed Render Info file, and change scene / camera hierarcies.
 - Code clean up
