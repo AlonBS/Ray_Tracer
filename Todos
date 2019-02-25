@@ -33,8 +33,7 @@ TODOs:
 - Check General texture from primitives and meshes not working. (Done)
 - Check valgrind Issues (Done - Problem with linking Freeimage (31 blocks) 
 - Check meshes textures memory allocation and free. (DONE)
-
-- Test all transformations on objects - Current
+- Test all transformations on objects - (Done)
 
 - Fix texture on triangles not from model
 - Comment code
