@@ -47,8 +47,6 @@ private:
 
 	FIBITMAP* bitmap;
 
-	glm::vec3 clamp (glm::vec3& v);
-
 public:
 
 

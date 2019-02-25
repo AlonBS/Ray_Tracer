@@ -21,18 +21,6 @@ using namespace std;
 #define RGBSIZE 24
 
 
-glm::vec3 Image::clamp (glm::vec3& v)
-{
-	glm::vec3 clampedV = v;
-
-	(clampedV.r > 1.0f) ? clampedV.r = 1.0f : (clampedV.r < 0.0f) ? clampedV.r = 0.0f : clampedV.r;
-	(clampedV.g > 1.0f) ? clampedV.g = 1.0f : (clampedV.g < 0.0f) ? clampedV.g = 0.0f : clampedV.g;
-	(clampedV.b > 1.0f) ? clampedV.b = 1.0f : (clampedV.b < 0.0f) ? clampedV.b = 0.0f : clampedV.b;
-
-	return clampedV;
-}
-
-
 Image::Image(int width, int height)
 :width(width), height(height)
 {
@@ -53,7 +41,9 @@ void Image::setPixel(int col, int row, glm::vec3& rgbColors)
 
 	RGBQUAD color;
 
-	glm::vec3 clampedValue = this->clamp(rgbColors);
+
+
+	glm::vec3 clampedValue = glm::clamp(rgbColors, 0.f, 1.f);
 	color.rgbRed = clampedValue.r * 255;
 	color.rgbGreen = clampedValue.g * 255;
 	color.rgbBlue = clampedValue.b * 255;
@@ -72,7 +62,7 @@ vec3 Image::getPixel(int col, int row)
 	color.g = pixel.rgbGreen / 255.0f;
 	color.b = pixel.rgbBlue / 255.0f;
 
-	return this->clamp(color);
+	return glm::clamp(color, 0.f, 1.f);
 }
 
 
