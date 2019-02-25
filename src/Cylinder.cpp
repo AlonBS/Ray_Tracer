@@ -14,13 +14,13 @@ using namespace glm;
 
 bool Cylinder::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties)
 {
-	// To find intersection between Ray and canonical cylinder, we need to solve the following equation:
-	// 	Cylinder: x^2 + y^2 = R^2
+	// To find intersection between Ray and canonical cylinder (aligned to the y-axis), we need to solve the following equation:
+	// 	Cylinder: x^2 + z^2 = R^2
 	// 	Ray:    (o + d*t)
 	// we must solve a quadratic equations the form of Ax^2 + Bx + C = 0, where:
-	// 	A: d.x^2 + d.y^2
-	//  B: 2*o.x*d.x + 2*o.y*d.y
-	// 	C: o.x^2 + o.y^2 - r^2
+	// 	A: d.x^2 + d.z^2
+	//  B: 2*o.x*d.x + 2*o.z*d.z
+	// 	C: o.x^2 + o.z^2 - r^2
 
 	Ray tr = this->invTransform() * r; // Transformed ray
 	GLfloat A, B, C;
@@ -30,9 +30,9 @@ bool Cylinder::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, O
 
 	bool single_intersection = false;
 
-	A = (tr.direction.x*tr.direction.x) + (tr.direction.y*tr.direction.y);
-	B = (2*tr.origin.x*tr.direction.x) + (2*tr.origin.y*tr.direction.y);
-	C = (tr.origin.x*tr.origin.x) + (tr.origin.y*tr.origin.y) - (radius * radius);
+	A = (tr.direction.x*tr.direction.x) + (tr.direction.z*tr.direction.z);
+	B = (2*tr.origin.x*tr.direction.x) + (2*tr.origin.z*tr.direction.z);
+	C = (tr.origin.x*tr.origin.x) + (tr.origin.z*tr.origin.z) - (radius * radius);
 
 	discriminant = (B*B) - 4*A*C;
 	if (discriminant < 0) {
@@ -72,7 +72,7 @@ bool Cylinder::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, O
 	if (single_intersection) {
 
 		ip = tr.origin + t * tr.direction;
-		if (ip.z > maxCap || ip.z < minCap){
+		if (ip.y > maxCap || ip.y < minCap){
 			return false;
 		}
 
@@ -86,16 +86,16 @@ bool Cylinder::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, O
 		ip  = tr.origin + t_min * tr.direction;
 		ip2 = tr.origin + t_max * tr.direction;
 
-		if ((ip.z > maxCap && ip2.z > maxCap) || (ip.z < minCap && ip2.z < minCap) ){ // both intersection are on infinite cylinder (behind min or beyond max caps)
+		if ((ip.y > maxCap && ip2.y > maxCap) || (ip.y < minCap && ip2.y < minCap) ){ // both intersection are on infinite cylinder (behind min or beyond max caps)
 			return false;
 		}
 
-		if ((ip.z < minCap && ip2.z > minCap) || (ip.z > minCap && ip2.z < minCap)) { // min cap intersection
-			t3 = (minCap - tr.origin.z) / tr.direction.z;
+		if ((ip.y < minCap && ip2.y > minCap) || (ip.y > minCap && ip2.y < minCap)) { // min cap intersection
+			t3 = (minCap - tr.origin.y) / tr.direction.y;
 		}
 
-		if ((ip.z < maxCap && ip2.z > maxCap) || (ip.z > maxCap && ip2.z < maxCap)) { // max cap intersection
-			t4 = (maxCap - tr.origin.z) / tr.direction.z;
+		if ((ip.y < maxCap && ip2.z > maxCap) || (ip.y > maxCap && ip2.y < maxCap)) { // max cap intersection
+			t4 = (maxCap - tr.origin.y) / tr.direction.y;
 		}
 
 		t_min = glm::min(t_min, glm::min(t3,t4));
@@ -103,11 +103,12 @@ bool Cylinder::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, O
 	}
 
 
-	// This is the normal at intersection point. (The Cylinder is aligned with the z-axis)
-	vec3 n = vec3(ip - vec3(0,0, ip.z));
+	// This is the normal at intersection point. (The Cylinder is aligned with the y-axis)
+	vec3 n = vec3(ip - vec3(0,ip.y, 0));
 	n = normalize(vec3(mat3(this->invTransposeTrans()) * n));
 
 	// M * p - to transform point back
+	ip2 = ip; // for texture - we need the non transformed position
 	ip = vec3(this->transform() * vec4(ip, 1.0f));
 	// The distance is the length of the original intersection point with the origin of the non transformed ray.
 	dist = length(ip - r.origin);
@@ -121,15 +122,9 @@ bool Cylinder::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, O
 	if (texColors) {
 
 		vec2 uv;
-		uv.x = acos(ip.x / radius) / (2*PI);
-		//uv.x = (atan2(ip.x, ip.y) + PI) / (2*PI);
-		//uv.y = 0.5 + 0.5 * n.z / (-minCap + maxCap);
-		uv.y = (ip.z) / (-minCap + maxCap);
-
-		uv = glm::clamp(uv,0.f, 1.f);
-
-
-		printVec2("UV", uv);
+		uv.x = (atan2(ip2.x, ip2.z) + PI) / (2*PI);
+		uv.y = 0.5 + (ip2.y) / (maxCap - minCap);
+//		uv = glm::clamp(uv,0.f, 1.f);
 
 		texColors->_ambientTexColor  = this->getAmbientTextureColor(uv);
 		texColors->_diffuseTexColor  = this->getDiffuseTextureColor(uv);
