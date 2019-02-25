@@ -295,6 +295,11 @@ popTransform
 
 
 Version History:
+
+1.7:
+- Added cylinder texture support with transormations
+- Added example scene with cylinder and texture. See ExampleCylinder (on rendered scenes)
+
 1.6:
 - Added cylinder intersection.
 - Fixes to rotation transformation on primitives (sphere and cylinder)
