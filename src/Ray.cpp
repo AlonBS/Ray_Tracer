@@ -11,7 +11,8 @@ using namespace glm;
 
 void Ray::_computeInverse()
 {
-	invDirection = 1 / direction;
+	invDirection = 1.f / direction;
+	normalize(invDirection);
 	sign[0] = (invDirection.x < 0);
 	sign[1] = (invDirection.y < 0);
 	sign[2] = (invDirection.z < 0);

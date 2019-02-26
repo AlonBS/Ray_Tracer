@@ -22,6 +22,10 @@ private:
 	vec3 bounds[2];
 
 
+	vec3 _normalAt(const vec3 &point);
+	vec2 _textureAt(vec3& point);
+
+
 public:
 
 	Box(vec3 & minBound, vec3& maxBound)

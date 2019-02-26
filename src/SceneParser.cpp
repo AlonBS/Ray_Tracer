@@ -18,6 +18,7 @@
 #include "Triangle.h"
 #include "Model.h"
 #include "Cylinder.h"
+#include "Box.h"
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -42,6 +43,7 @@ struct Commands {
 	// Geometry and objects
 	const string sphere        = "sphere";
 	const string cylinder      = "cylinder";
+	const string box		   = "box";
 	const string maxVerts      = "maxVerts";
 	const string maxVertNorms  = "maxVertNorms";
 	const string vertex        = "vertex";
@@ -81,7 +83,7 @@ struct Commands {
 
 set<string> SceneParser::general{Commands.size, Commands.maxdepth};
 string 	    SceneParser::camera = Commands.camera;
-set<string> SceneParser::geometry{Commands.sphere, Commands.cylinder, Commands.maxVerts, Commands.maxVertNorms,
+set<string> SceneParser::geometry{Commands.sphere, Commands.cylinder, Commands.box, Commands.maxVerts, Commands.maxVertNorms,
 								  Commands.vertex, Commands.vertexNormal, Commands.vertexTex, Commands.tri,
 								  Commands.triNormal, Commands.triTex, Commands.texture, Commands.bindTexture, Commands.unbindTexture,
 								  Commands.model};
@@ -374,6 +376,29 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		}
 		scene->addObject(cylinder);
 	}
+
+	else if (cmd == Commands.box) {
+			readValues(s, 6, values);
+			vec3 minBound = vec3(values[0], values[1], values[2]);
+			vec3 maxBound = vec3(values[3], values[4], values[5]);
+//			mat4 objectTranslation = glm::translate(mat4(1.0), vec3(values[0], values[1], values[2]));
+//			transformsStack.top() = objectTranslation * transformsStack.top(); // yes - left multiplied! - see note at sphere
+
+			Object *box = new Box(minBound, maxBound);
+			box->ambient() = ambient;
+			box->emission() = emission;
+			box->diffuse() = diffuse;
+			box->specular() = specular;
+			box->shininess() = shininess;
+			box->transform() = transformsStack.top();
+			box->invTransform() = inverse(box->transform());
+			box->invTransposeTrans() = mat3(transpose(box->invTransform()));
+
+			if (textureIsBound) {
+				box->setTexture(boundTexture);
+			}
+			scene->addObject(box);
+		}
 
 	else if (cmd == Commands.maxVerts) {
 		// New object is coming

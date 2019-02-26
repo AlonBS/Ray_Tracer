@@ -21,6 +21,7 @@ SRCS      = $(SRC_DIR)/main.cpp \
             $(SRC_DIR)/Mesh.cpp \
             $(SRC_DIR)/Model.cpp \
             $(SRC_DIR)/Cylinder.cpp \
+            $(SRC_DIR)/Box.cpp \
                         
 	    
 
