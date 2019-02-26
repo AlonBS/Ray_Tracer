@@ -17,13 +17,13 @@ bool Box::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Object
 
 	Ray tr = this->invTransform() * r; // Transformed ray
 	float tmin, tmax, tymin, tymax, tzmin, tzmax;
-	vec3 ip{};
+	vec3 ip{}, ip2{};
 	vec3 n;
 
 	tmin = (bounds[tr.sign[0]].x - tr.origin.x) * tr.invDirection.x;
 	tmax = (bounds[1-tr.sign[0]].x - tr.origin.x) * tr.invDirection.x;
-	tymin = (bounds[r.sign[1]].y - r.origin.y) * tr.invDirection.y;
-	tymax = (bounds[1-r.sign[1]].y - r.origin.y) * tr.invDirection.y;
+	tymin = (bounds[tr.sign[1]].y - tr.origin.y) * tr.invDirection.y;
+	tymax = (bounds[1-tr.sign[1]].y - tr.origin.y) * tr.invDirection.y;
 
 	if ((tmin > tymax) || (tymin > tmax))
 		return false;
@@ -34,8 +34,8 @@ bool Box::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Object
 		tmax = tymax;
 	}
 
-	tzmin = (bounds[r.sign[2]].z - r.origin.z) * r.invDirection.z;
-	tzmax = (bounds[1-r.sign[2]].z - r.origin.z) * r.invDirection.z;
+	tzmin = (bounds[tr.sign[2]].z - tr.origin.z) * tr.invDirection.z;
+	tzmax = (bounds[1-tr.sign[2]].z - tr.origin.z) * tr.invDirection.z;
 
 	if ((tmin > tzmax) || (tzmin > tmax))
 		return false;
@@ -47,21 +47,15 @@ bool Box::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Object
 	}
 
 	if (tmin < 0) {
-
 		tmin = tmax;
 		if (tmin < 0) {
-			// If dist is a negative values (accounting for floating point errors)
-			// then both solutions were negative. Meaning we have to go back from the origin of
-			// the ray (against its direction) to the intersection point - which means of course that
-			// there's no intersection.
+//			 If dist is a negative values (accounting for floating point errors)
+//			 then both solutions were negative. Meaning we have to go back from the origin of
+//			 the ray (against its direction) to the intersection point - which means of course that
+//			 there's no intersection.
 			return false;
 		}
 	}
-
-
-
-
-
 
 
 	ip  = tr.origin + tmin * tr.direction;
@@ -70,10 +64,8 @@ bool Box::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Object
 	n = normalize(vec3(mat3(this->invTransposeTrans()) * n));
 
 	// M * p - to transform point back
-	//ip2 = ip; // for texture - we need the non transformed position
-	printVec3("IP Before", ip);
+	ip2 = ip;
 	ip = vec3(this->transform() * vec4(ip, 1.0f));
-	printVec3("IP After", ip);
 	// The distance is the length of the original intersection point with the origin of the non transformed ray.
 	dist = length(ip - r.origin);
 
@@ -85,11 +77,7 @@ bool Box::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Object
 	}
 	if (texColors) {
 
-		vec2 uv;
-//		uv.x = (atan2(ip.x, ip.z) + PI) / (2*PI);
-//		uv.y = 0.5 + (ip.y) / (maxCap - minCap);
-////		uv = glm::clamp(uv,0.f, 1.f);
-
+		vec2 uv = _textureAt(ip2);
 		texColors->_ambientTexColor  = this->getAmbientTextureColor(uv);
 		texColors->_diffuseTexColor  = this->getDiffuseTextureColor(uv);
 		texColors->_specularTexColor = this->getSpecularTextureColor(uv);
@@ -146,23 +134,27 @@ vec2 Box::_textureAt(vec3& point)
 {
 	vec2 uv {};
 
-	if (abs(point.x - bounds[0].x) < EPSILON) { // on YZ plane
+	if (abs(point.x - bounds[0].x) < EPSILON ||
+	    abs(point.x - bounds[1].x) < EPSILON) { // on YZ plane
+
+		uv.x = (point.y - bounds[0].y) / (bounds[1].y - bounds[0].y);
+		uv.y = (point.z - bounds[0].z) / (bounds[1].z - bounds[0].z);
 
 	}
-	else if (abs(point.y - bounds[0].y) < EPSILON) { // on XZ plane
+	else if (abs(point.y - bounds[0].y) < EPSILON ||
+			 abs(point.y - bounds[1].y) < EPSILON) { // on XZ plane
 
+		uv.x = (point.x - bounds[0].x) / (bounds[1].x - bounds[0].x);
+		uv.y = (point.z - bounds[0].z) / (bounds[1].z - bounds[0].z);
 	}
 
 	else { // on XY plane
 
-		uv.x = point.x / (bounds[1].x - bounds[0].x);
-		uv.y = point.y; // / (bounds[1].y - bounds[0].y);
+		uv.x = (point.x - bounds[0].x) / (bounds[1].x - bounds[0].x);
+		uv.y = (point.y - bounds[0].y) / (bounds[1].y - bounds[0].y);
 	}
 
 	// Again - we don't care too much about edges
-
-
-
 	return uv;
 }
 
