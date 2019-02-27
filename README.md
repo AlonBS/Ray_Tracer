@@ -30,7 +30,7 @@ Installation (For Ubuntu and Debian Distros)
 Usage: 
 ======
 
-	basic: ./ray_tracer -i [input]
+	basic: ./ray_tracer -i <input>
 	or run ./ray_tracer -h to get full list of options and arguments:
 
 	  -h [ --help ]           show this message
@@ -53,8 +53,9 @@ Usage:
 
 
 Scene Keywords and Syntax:
-==========================
-	The general syntax is \<Command>\ [Argument_1] [Argument_n] - each argument is separated by a single white space.
+============================
+
+	The general syntax is <Command> [Argument_1] [Argument_n] - each argument is separated by a single white space.
 	Arguments can have various types, each one will be added a suffix, indicating the exact type, where:
 		'_i' - integer
 		'_f' - float
