@@ -30,39 +30,38 @@ Installation (For Ubuntu and Debian Distros)
 Usage: 
 ======
 
-basic: ./ray_tracer -i <input>
-or run ./ray_tracer -h to get full list of options and arguments:
+	basic: ./ray_tracer -i [input]
+	or run ./ray_tracer -h to get full list of options and arguments:
 
-  -h [ --help ]           show this message
-  -v [ --version ]        Current Version of the program
-  -i [ --input ] arg      The path to a scene file, or scenes directory 
-                          following the syntax specific within README file.
-			  Applies only to direct directory. No recursive 
-                          sub-directories search is performed.
-  -o [ --output ] arg     Optional - The directory where to save the results. 
-                          If not specified, results will be saved in the same 
-                          directory of input files.
-  --format arg (=.png)    Optional - The file format in which scenes result 
-                          will be saved. Currently supported types are: png, 
-                          jpeg, jpg, bmp, tiff.
-  -s [ --single-thread ]  Flag to force single thread rendering. Default 
-                          behavior is multi-threaded.
+	  -h [ --help ]           show this message
+	  -v [ --version ]        Current Version of the program
+	  -i [ --input ] arg      The path to a scene file, or scenes directory 
+		                  following the syntax specific within README file.
+				  Applies only to direct directory. No recursive 
+		                  sub-directories search is performed.
+	  -o [ --output ] arg     Optional - The directory where to save the results. 
+		                  If not specified, results will be saved in the same 
+		                  directory of input files.
+	  --format arg (=.png)    Optional - The file format in which scenes result 
+		                  will be saved. Currently supported types are: png, 
+		                  jpeg, jpg, bmp, tiff.
+	  -s [ --single-thread ]  Flag to force single thread rendering. Default 
+		                  behavior is multi-threaded.
 
-
-Other values are specified within each scene separately. 
+	Other values are specified within each scene separately. 
 
 
 
 Scene Keywords and Syntax:
 ==========================
-The general syntax is <Command> [Argument_1] [Argument_n] - each argument is separated by a single white space.
-Arguments can have various types, each one will be added a suffix, indicating the exact type, where:
-	'_i' - integer
-	'_f' - float
-	'_v3' - vector3 (that is, 3 float numbers)
-	'_v2' - vector2
-	'_s' - string.
-Note the <Command> keywords are case sensitive, and are written in C-naming conventions. 
+	The general syntax is \<Command>\ [Argument_1] [Argument_n] - each argument is separated by a single white space.
+	Arguments can have various types, each one will be added a suffix, indicating the exact type, where:
+		'_i' - integer
+		'_f' - float
+		'_v3' - vector3 (that is, 3 float numbers)
+		'_v2' - vector2
+		'_s' - string.
+	Note the <Command> keywords are case sensitive, and are written in C-naming conventions. 
 
 Scene General:
 --------------
@@ -152,24 +151,23 @@ be 1 unit down and right to this sphere, and another smaller sphere that will be
 (regardless of where the original sphere will be transformed to). This is done the following 
 way (note the indentation for better readability):
 
-pushTransform
-translate 0 5 0 # we want the big sphere to be a 5 y-value
-sphere 0 0 0 1
 	pushTransform
-	translate 1 -1 0 # this is down right by one unit from the big sphere
-	sphere 0 0 0 0.5
-	popTransform # we remove the last transform (translate)
+	translate 0 5 0 # we want the big sphere to be a 5 y-value
+	sphere 0 0 0 1
+		pushTransform
+		translate 1 -1 0 # this is down right by one unit from the big sphere
+		sphere 0 0 0 0.5
+		popTransform # we remove the last transform (translate)
 
-	pushTransform # we start a new one, based on the top transform - which is of the big sphere
-	translate -1 1 0 # this is up left by one unit from the big(!) sphere
-	sphere 0 0 0 0.5
+		pushTransform # we start a new one, based on the top transform - which is of the big sphere
+		translate -1 1 0 # this is up left by one unit from the big(!) sphere
+		sphere 0 0 0 0.5
+		popTransform
 	popTransform
-popTransform
 
 Important Note: Matrices are 'Right-Multiplies'. So counter to intuition, the last command written, is the first to
-happen. That is, if we want to achieve the usual matrices order: Scale the Rotate then Translate: T*R*S, we would right
+happen. That is, if we want to achieve the usual matrices order: Scale the Rotate then Translate: T*R*S, we would write
 Translate followed by rotate, followed by scale command. 
-
 
 	translate <by_v3> - Applies translation matrix to the top of the transformation matrices. 
 	rotate <axis_v3> <degrees_f> - Rotate by angles (in degrees) around the given axis.
@@ -219,9 +217,8 @@ Scene Example:
 --------------
 With this repository, I've included examples of many scenes and their rendered result. For simplicity sake,
 let's look at a simple scene.
-The result image can be found in "./Rendered_Scenes/ExampleScene.png
-{
-	""""""""""""
+The result image can be found in "./Rendered_Scenes/ExampleSphere_result.png
+
 	# HELLO Scene - An example scene to show the syntax and usage 
 
 	size 640 480 # The result image will be 640 by 480 pixels.
@@ -286,15 +283,14 @@ The result image can be found in "./Rendered_Scenes/ExampleScene.png
 		unbindTexture
 
 	popTransform
-}
 
-"""""""""""" (End Scene)
-
+	# End scene
 
 
 
 
 Version History:
+=================
 
 1.8:
 - Added box primitive with full texture support
