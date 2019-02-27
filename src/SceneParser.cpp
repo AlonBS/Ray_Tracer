@@ -19,6 +19,7 @@
 #include "Model.h"
 #include "Cylinder.h"
 #include "Box.h"
+#include "Cone.h"
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -44,6 +45,7 @@ struct Commands {
 	const string sphere        = "sphere";
 	const string cylinder      = "cylinder";
 	const string box		   = "box";
+	const string cone		   = "cone";
 	const string maxVerts      = "maxVerts";
 	const string maxVertNorms  = "maxVertNorms";
 	const string vertex        = "vertex";
@@ -83,7 +85,7 @@ struct Commands {
 
 set<string> SceneParser::general{Commands.size, Commands.maxdepth};
 string 	    SceneParser::camera = Commands.camera;
-set<string> SceneParser::geometry{Commands.sphere, Commands.cylinder, Commands.box, Commands.maxVerts, Commands.maxVertNorms,
+set<string> SceneParser::geometry{Commands.sphere, Commands.cylinder, Commands.box, Commands.cone, Commands.maxVerts, Commands.maxVertNorms,
 								  Commands.vertex, Commands.vertexNormal, Commands.vertexTex, Commands.tri,
 								  Commands.triNormal, Commands.triTex, Commands.texture, Commands.bindTexture, Commands.unbindTexture,
 								  Commands.model};
@@ -379,27 +381,51 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 	}
 
 	else if (cmd == Commands.box) {
-			readValues(s, 6, values);
-			vec3 minBound = vec3(values[0], values[1], values[2]);
-			vec3 maxBound = vec3(values[3], values[4], values[5]);
-//			mat4 objectTranslation = glm::translate(mat4(1.0), vec3(values[0], values[1], values[2]));
-//			transformsStack.top() = objectTranslation * transformsStack.top(); // yes - left multiplied! - see note at sphere
+		readValues(s, 6, values);
+		vec3 minBound = vec3(values[0], values[1], values[2]);
+		vec3 maxBound = vec3(values[3], values[4], values[5]);
 
-			Object *box = new Box(minBound, maxBound);
-			box->ambient() = ambient;
-			box->emission() = emission;
-			box->diffuse() = diffuse;
-			box->specular() = specular;
-			box->shininess() = shininess;
-			box->transform() = transformsStack.top();
-			box->invTransform() = inverse(box->transform());
-			box->invTransposeTrans() = mat3(transpose(box->invTransform()));
+		Object *box = new Box(minBound, maxBound);
+		box->ambient() = ambient;
+		box->emission() = emission;
+		box->diffuse() = diffuse;
+		box->specular() = specular;
+		box->shininess() = shininess;
+		box->transform() = transformsStack.top();
+		box->invTransform() = inverse(box->transform());
+		box->invTransposeTrans() = mat3(transpose(box->invTransform()));
 
-			if (textureIsBound) {
-				box->setTexture(boundTexture);
-			}
-			scene->addObject(box);
+		if (textureIsBound) {
+			box->setTexture(boundTexture);
 		}
+		scene->addObject(box);
+	}
+
+
+	else if (cmd == Commands.cone) {
+		readValues(s, 5, values);
+		vec3 center = glm::vec3(0, 0, 0);
+		mat4 objectTranslation = glm::translate(mat4(1.0), vec3(values[0], values[1], values[2]));
+		transformsStack.top() = objectTranslation * transformsStack.top(); // yes - left multiplied! - see note at sphere
+
+		GLfloat height = values[3];
+		GLfloat radius = values[4];
+		Object *cone = new Cone(center, height, radius);
+		cone->ambient() = ambient;
+		cone->emission() = emission;
+		cone->diffuse() = diffuse;
+		cone->specular() = specular;
+		cone->shininess() = shininess;
+		cone->transform() = transformsStack.top();
+		cone->invTransform() = inverse(cone->transform());
+		cone->invTransposeTrans() = mat3(transpose(cone->invTransform()));
+
+
+		if (textureIsBound) {
+			cone->setTexture(boundTexture);
+		}
+		scene->addObject(cone);
+	}
 
 	else if (cmd == Commands.maxVerts) {
 		// New object is coming

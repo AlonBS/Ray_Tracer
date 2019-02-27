@@ -22,6 +22,7 @@ SRCS      = $(SRC_DIR)/main.cpp \
             $(SRC_DIR)/Model.cpp \
             $(SRC_DIR)/Cylinder.cpp \
             $(SRC_DIR)/Box.cpp \
+	    $(SRC_DIR)/Cone.cpp \
                         
 	    
 
