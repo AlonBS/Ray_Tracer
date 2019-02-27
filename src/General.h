@@ -15,7 +15,8 @@
 
 using namespace glm;
 
-const GLfloat EPSILON  = 0.0000001f;
+//const GLfloat EPSILON  = 0.00000000001f;
+const GLfloat EPSILON  = 0.0001f;
 //const GLfloat INFINITY = FLT_MAX;
 const GLfloat PI = 3.1415926f;
 const vec3 COLOR_WHITE = vec3(1.0f, 1.0f, 1.0f);
@@ -64,3 +65,4 @@ epsilonCompareVec3(const vec3& v1, const vec3& v2)
 
 
 #endif /* GENERAL_H_ */
+
