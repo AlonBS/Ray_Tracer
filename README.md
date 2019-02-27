@@ -4,7 +4,7 @@ Computer Graphics Ray Tracer (CPU) based on Edx CG-course.
 
 Current list of features supported:
 ====================================
-- Intersections with primitives: Triangles, Spheres, ..., 
+- Intersections with primitives: Triangles, Spheres, Cylinders, Boxs, ..., 
 - Transformations: Scale, Rotation and translate. Also support transformations stacks (for transforms hierarchy) 
 - Blinn-Phong illumination module - including normals interpolation and attenuation.
 - Rendering of models comprised of multiple meshes with (partial) material properties. 
@@ -86,6 +86,8 @@ Primitives and Models:
 		might cause it to render in another location. This is true for all primitives and models.
 	cylinder <position_v3> <height> <radius_f>: Creates a finite cylinder centered at position, with the given height and radius.
 		This means that the height define the caps of the cylinder. 
+	box <min_bound_v3> <max_bound_v3> - Define an axis aligned box with minimum vertex at min_bound and max vertex at max_bound.
+		transformed just like any other object. Also supports textures. 
 	vertex <pos-v3> - Creates a single vertex, we can later be used to create a triangle.
 	vertexNormal <pos-v3> <norm-v3> - Defined a vertex as before, but also defined the surface normal.
 		Note the vertecies defined in this way are completely indepetnted of vertecies defined using the
@@ -218,72 +220,73 @@ Scene Example:
 With this repository, I've included examples of many scenes and their rendered result. For simplicity sake,
 let's look at a simple scene.
 The result image can be found in "./Rendered_Scenes/ExampleScene.png
+{
+	""""""""""""
+	# HELLO Scene - An example scene to show the syntax and usage 
 
-""""""""""""
-# HELLO Scene - An example scene to show the syntax and usage 
+	size 640 480 # The result image will be 640 by 480 pixels.
+	camera 0 4 13 0 0 0 0 1 0 45 # create a camera
 
-size 640 480 # The result image will be 640 by 480 pixels.
-camera 0 4 13 0 0 0 0 1 0 45 # create a camera
+	attenuation 1 0.0 0.0 # define attenuation factor 
 
-attenuation 1 0.0 0.0 # define attenuation factor 
+	texture ./scenes/a/wood2.jpeg # declare a texture - this texture is automatically indexed to 0
+	texture ./scenes/a/earth.png # indexed to 1
 
-texture ./scenes/a/wood2.jpeg # declare a texture - this texture is automatically indexed to 0
-texture ./scenes/a/earth.png # indexed to 1
-
-#directional 1 -1 0 1 0 0 
-# at the point lights
-point 1 7 5 1 1 1
-point -1 7 5 1 1 1
-# defined material properties for the first object to be created. Notice that this is overwritten next, so it has no affect.
-diffuse 0.3 0.3 0.3 
-specular 0.3 0.3 0.3
-shininess 32
-
-maxVerts 4 #legacy command - not mandatory
-
-# Define 4 verticies (with texture mapping coordinates) to later simulate a wooden floor
-vertexTex +8 0 +8 1 1 # index is 0
-vertexTex +8 0 -8 0 1 # index is 1
-vertexTex -8 0 +8 1 0 # index is 2
-vertexTex -8 0 -8 0 0 # index is 3
-
-#vertex +8 0 +8
-#vertex +8 0 -8
-#vertex -8 0 +8
-#vertex -8 0 -8 
-
-# create the floor
-pushTransform
-
-	bindTexture 0 # we bind the wood2.jpeg texture. every object created from now on, will have
-		      # this texture applied (globally)
-	ambient 0.1 0.1 0.1 # the object material properties
-	diffuse 0.1 0.1 0.1
-	specular .8 0.8 0.8
-	shininess 16
-	triTex 0 1 2 # actually create a triangle with texture. The newly created triangle will have
-		     # the bound texture and the last specified materials properties (and transformations)
-		     # the verticies to used are by index, which was assigen when those were created (vertexTex cmd)
-	triTex 1 3 2
-
-	unbindTexture
-
-
-popTransform # no transformations were applied to the floor, but if there were any, this would make sure that the 
-             # following objects won't be affected by this
-pushTransform
-	# The indentation is for better readability 
-	bindTexture 1 # bind earth.png texture
+	#directional 1 -1 0 1 0 0 
+	# at the point lights
+	point 1 7 5 1 1 1
+	point -1 7 5 1 1 1
+	# defined material properties for the first object to be created. Notice that this is overwritten next, so it has no affect.
 	diffuse 0.3 0.3 0.3 
-	specular 0.0 0.0 0.0
-#	translate 0 1 -2
-	sphere -0.5 2.8 -.65 1.5
-	scale 3 3 3 # this will have no affect, since the object was already created. If we we're to create the model below,
-	            # then it will be scaled by the given factors. 
-#	model ./3ds/cube/cube.obj
-	unbindTexture
+	specular 0.3 0.3 0.3
+	shininess 32
 
-popTransform
+	maxVerts 4 #legacy command - not mandatory
+
+	# Define 4 verticies (with texture mapping coordinates) to later simulate a wooden floor
+	vertexTex +8 0 +8 1 1 # index is 0
+	vertexTex +8 0 -8 0 1 # index is 1
+	vertexTex -8 0 +8 1 0 # index is 2
+	vertexTex -8 0 -8 0 0 # index is 3
+
+	#vertex +8 0 +8
+	#vertex +8 0 -8
+	#vertex -8 0 +8
+	#vertex -8 0 -8 
+
+	# create the floor
+	pushTransform
+
+		bindTexture 0 # we bind the wood2.jpeg texture. every object created from now on, will have
+			      # this texture applied (globally)
+		ambient 0.1 0.1 0.1 # the object material properties
+		diffuse 0.1 0.1 0.1
+		specular .8 0.8 0.8
+		shininess 16
+		triTex 0 1 2 # actually create a triangle with texture. The newly created triangle will have
+			     # the bound texture and the last specified materials properties (and transformations)
+			     # the verticies to used are by index, which was assigen when those were created (vertexTex cmd)
+		triTex 1 3 2
+
+		unbindTexture
+
+
+	popTransform # no transformations were applied to the floor, but if there were any, this would make sure that the 
+		     # following objects won't be affected by this
+	pushTransform
+		# The indentation is for better readability 
+		bindTexture 1 # bind earth.png texture
+		diffuse 0.3 0.3 0.3 
+		specular 0.0 0.0 0.0
+	#	translate 0 1 -2
+		sphere -0.5 2.8 -.65 1.5
+		scale 3 3 3 # this will have no affect, since the object was already created. If we we're to create the model below,
+			    # then it will be scaled by the given factors. 
+	#	model ./3ds/cube/cube.obj
+		unbindTexture
+
+	popTransform
+}
 
 """""""""""" (End Scene)
 
@@ -291,10 +294,13 @@ popTransform
 
 
 
-
-
-
 Version History:
+
+1.8:
+- Added box primitive with full texture support
+- Added example scene for box
+- Bug fix on scene parser
+- Bounding box is still not support. That is, still not used as AABB.
 
 1.7:
 - Added cylinder texture support with transormations

@@ -207,6 +207,7 @@ SceneParser::readFile(const char* fileName)
 {
 	string str, cmd;
 	ifstream in;
+	uint32_t lineNumber = 0;
 
 
 
@@ -229,6 +230,7 @@ SceneParser::readFile(const char* fileName)
 
 		getline(in, str);
 		boost::algorithm::trim(str);
+		++lineNumber;
 
 		// Ignore comments and white spaces of any kind
 		if ( !((str.find_first_not_of(" \t\r\n") != string::npos) && (str[0] != '#') ))  {
@@ -267,10 +269,9 @@ SceneParser::readFile(const char* fileName)
 		case UNKNOWN_COMMAND:
 		default:
 
-			cout << "\tUnknown command: " << cmd << ". Skipped. " << endl;
+			cout << "\t[E]\tLine: " << lineNumber << " - Unknown command: \"" << cmd << "\". Skipped. " << endl;
 			break;
 		}
-
 	}
 
 	in.close();

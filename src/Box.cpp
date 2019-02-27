@@ -130,7 +130,7 @@ vec3 Box::_normalAt(const vec3 &point)
 	return vec3(0,0,0);
 }
 
-vec2 Box::_textureAt(vec3& point)
+vec2 Box::_textureAt(const vec3& point)
 {
 	vec2 uv {};
 

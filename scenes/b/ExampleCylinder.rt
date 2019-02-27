@@ -1,8 +1,8 @@
 
-# HELLO Scene - An example scene to show the syntax and usage 
+# Cylinder Scene - An example scene to show the syntax and usage 
 
-size 640 480 
-camera 0 4 12 0 0 0 0 1 0 45
+size 1280 720 
+camera 0 2 13 0 0 0 0 1 0 45
 
 maxDepth 3
 
@@ -18,35 +18,24 @@ texture ./scenes/a/cola.jpg
 #directional 1 -1 0 1 0 0 
 point 1 7 5 1 1 1
 point -1 7 5 1 1 1
-#point 0 5 -13 0 0 1
-diffuse 0.3 0.3 0.3 
-specular 0.3 0.3 0.3
-shininess 32
 
-maxVerts 4 
 
 vertexTex +8 0 +8 1 1
 vertexTex +8 0 -8 0 1
 vertexTex -8 0 +8 1 0
 vertexTex -8 0 -8 0 0 
 
-#vertex +8 0 +8
-#vertex +8 0 -8
-#vertex -8 0 +8
-#vertex -8 0 -8 
-
 pushTransform
 
-bindTexture 0
-ambient 0.1 0.1 0.1
-diffuse 0.1 0.1 0.1
-specular .8 0.8 0.8
-shininess 16
-#translate 0 -4 0
-triTex 0 1 2
-triTex 1 3 2
-
-unbindTexture
+	bindTexture 0
+	ambient 0.1 0.1 0.1
+	diffuse 0.1 0.1 0.1
+	specular .8 0.8 0.8
+	shininess 16
+	#translate 0 -4 0
+	triTex 0 1 2
+	triTex 1 3 2
+	unbindTexture
 
 popTransform
 pushTransform
@@ -59,41 +48,33 @@ pushTransform
 	shininess 32
 
 	pushTransform
-		
 		translate 3 1 2
 		scale 0.5 2 0.5
-		#cylinder 0 0 0 1 1
+		cylinder 0 0 0 1 1
 	popTransform
 
 	pushTransform
 		translate -3 1 2
 		scale 0.5 2 0.5
-		#cylinder 0 0 0 1 1
+		cylinder 0 0 0 1 1
 	popTransform
-
 
 	pushTransform
 		translate 0 1 2
 		scale 0.5 2 0.5
-		#cylinder 0 0 0 1 1
+		cylinder 0 0 0 1 1
 	popTransform
+	
 	unbindTexture
 
 popTransform
+
 pushTransform
 	
-	bindTexture 0
-	#translate 1 3 -1
-	ambient 0.1 0.1 0.1	
-	diffuse 0.3 0.3 0.3
-	specular 0.3 0.3 0.3
-#	translate 2 2 2
-	rotate 0 1 0 45
-	scale 3 1 1
-	shininess 32
-	box -1 2 -1 1 3 1
-
-	#sphere -4 0 0 1
+	bindTexture 1
+	translate 1 3 -1
+	specular 1.0 1.0 1.0
+	sphere 0 0 0 1.5
 	unbindTexture
 
 popTransform

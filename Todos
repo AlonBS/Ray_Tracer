@@ -36,6 +36,7 @@ TODOs:
 - Check meshes textures memory allocation and free. (DONE)
 - Test all transformations on objects - (Done)
 
+- Fix stupid readme at github.
 - Fix texture on triangles not from model
 - Comment code
 - Fix mesh properties multiply operator when value is not given (default) 
