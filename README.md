@@ -299,9 +299,9 @@ Version History:
 1.9:
 - Added (Double, possibily infinite) cone with texture support. The cone can be transformed as usual, and caps can be set to determine its size etc.
 - Added Example scene for cone.
-- Fixed a bug were non valid ray was produced by normal reflections.
+- Fixed a bug where non valid ray were produced by normal reflections.
 - more minor bugs fixes.
-- Fixed a bug were objects cast shadows on themselves (even though ray was moved by some distance)  
+- Fixed a bug where objects cast shadows on themselves (even though ray was moved by some distance)  
 
 1.8:
 - Added box primitive with full texture support
