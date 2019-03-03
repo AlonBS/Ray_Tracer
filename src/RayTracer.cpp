@@ -115,6 +115,9 @@ vec3 RayTracer::recursiveRayTrace(Scene& scene, Ray & ray, GLuint depth)
 	if (depth == 0) {
 		return COLOR_BLACK;
 	}
+	if (!rayIsValid(ray)) {
+		return COLOR_BLACK;
+	}
 
 	Intersection hit = intersectScene(scene, ray);
 	if (!hit.isValid) {
@@ -129,6 +132,22 @@ vec3 RayTracer::recursiveRayTrace(Scene& scene, Ray & ray, GLuint depth)
 	Ray reflectedRay(reflectedRayOrigin , reflectedRayDir);
 
 	return color + hit.properties._specular * recursiveRayTrace(scene, reflectedRay, --depth);
+
+}
+
+
+bool RayTracer::rayIsValid(const Ray& ray)
+{
+	// If any of the components of the ray is invalid - we declare the whole ray as invalid
+
+	if (isnan(ray.origin.x) || isnan(ray.origin.y) || isnan(ray.origin.z)  ||
+	    isnan(ray.direction.x) || isnan(ray.direction.y) || isnan(ray.direction.z) )
+	{
+		return false;
+	}
+
+
+	return true;
 
 }
 
@@ -189,7 +208,7 @@ vec3 RayTracer::computeLight(Scene& scene, Ray& r, Intersection& hit)
 	for (PointLight* p : scene.getPointLights()) {
 
 		srDir = normalize(p->_position - hit.point);
-		srOrigin = hit.point + EPSILON * srDir; // Move a little to avoid floating point errors
+		srOrigin = hit.point + 10 * EPSILON * srDir; // Move a little to avoid floating point errors
 		shadowRay = Ray(srOrigin, srDir);
 		maxDist = length(p->_position - hit.point);
 
@@ -209,7 +228,7 @@ vec3 RayTracer::computeLight(Scene& scene, Ray& r, Intersection& hit)
 	for (DirectionalLight* p : scene.getDirectionalLights()) {
 
 		srDir = normalize(p->_direction);
-		srOrigin = hit.point + EPSILON * srDir; // Move a little to avoid floating point errors
+		srOrigin = hit.point + 10 * EPSILON * srDir; // Move a little to avoid floating point errors
 		shadowRay = Ray(srOrigin, srDir);
 		maxDist = INFINITY;
 

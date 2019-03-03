@@ -126,7 +126,7 @@ vec3 Box::_normalAt(const vec3 &point)
 	}
 
 	/* We should never get here */
-	assert(true);
+	assert(false);
 	return vec3(0,0,0);
 }
 

@@ -35,9 +35,10 @@ TODOs:
 - Check valgrind Issues (Done - Problem with linking Freeimage (31 blocks) 
 - Check meshes textures memory allocation and free. (DONE)
 - Test all transformations on objects - (Done)
+- Fix stupid readme at github (Done)
+- Fix texture on triangles not from model (Done)
 
-- Fix stupid readme at github.
-- Fix texture on triangles not from model
+- Fix texture on a cone shorter than double. 
 - Comment code
 - Fix mesh properties multiply operator when value is not given (default) 
 - Stop recursion of light contribution is minor. 

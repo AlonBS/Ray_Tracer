@@ -4,7 +4,7 @@ Computer Graphics Ray Tracer (CPU) based on Edx CG-course.
 
 Current list of features supported:
 ====================================
-- Intersections with primitives: Triangles, Spheres, Cylinders, Boxs, ..., 
+- Intersections with primitives: Triangles, Spheres, Cylinders, Boxs, Cones, ..., 
 - Transformations: Scale, Rotation and translate. Also support transformations stacks (for transforms hierarchy) 
 - Blinn-Phong illumination module - including normals interpolation and attenuation.
 - Rendering of models comprised of multiple meshes with (partial) material properties. 
@@ -87,7 +87,10 @@ Primitives and Models:
 	cylinder <position_v3> <height> <radius_f>: Creates a finite cylinder centered at position, with the given height and radius.
 		This means that the height define the caps of the cylinder. 
 	box <min_bound_v3> <max_bound_v3> - Define an axis aligned box with minimum vertex at min_bound and max vertex at max_bound.
-		transformed just like any other object. Also supports textures. 
+		transformed just like any other object. Also supports textures.
+	cone <center_v3> <minCap_f> <maxCap_f> - Defines a cone centered around the center point, where maxCap and minCap define top and button caps of the cone. This means
+		that its fairly easy to decide wheather its a single cone (where maxCap or minCap == 0) or double cone, or inifinite etc.). It is assumed that maxCap > minCap.
+		transformed just like any other object. Also supports textures.  
 	vertex <pos-v3> - Creates a single vertex, we can later be used to create a triangle.
 	vertexNormal <pos-v3> <norm-v3> - Defined a vertex as before, but also defined the surface normal.
 		Note the vertecies defined in this way are completely indepetnted of vertecies defined using the
@@ -292,6 +295,12 @@ The result image can be found in "./Rendered_Scenes/ExampleSphere_result.png
 
 Version History:
 =================
+
+1.9:
+- Added (Double, possibily infinite) cone with texture support. The cone can be transformed as usual, and caps can be set to determine its size etc.
+- Added Example scene for cone.
+- Fixed a bug were non valid ray was produced by normal reflections.
+- more minor bugs fixes. 
 
 1.8:
 - Added box primitive with full texture support

@@ -408,9 +408,9 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		mat4 objectTranslation = glm::translate(mat4(1.0), vec3(values[0], values[1], values[2]));
 		transformsStack.top() = objectTranslation * transformsStack.top(); // yes - left multiplied! - see note at sphere
 
-		GLfloat height = values[3];
-		GLfloat radius = values[4];
-		Object *cone = new Cone(center, height, radius);
+		GLfloat minCap = values[3];
+		GLfloat maxCap = values[4];
+		Object *cone = new Cone(center, minCap, maxCap);
 		cone->ambient() = ambient;
 		cone->emission() = emission;
 		cone->diffuse() = diffuse;

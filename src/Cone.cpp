@@ -8,6 +8,7 @@
 #include "Cone.h"
 
 
+
 bool Cone::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties)
 {
 	// To find intersection between Ray and canonical Cone (aligned to the y-axis), we need to solve the following equation:
@@ -31,12 +32,10 @@ bool Cone::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Objec
 	C = (tr.origin.x*tr.origin.x) + (tr.origin.z*tr.origin.z) - (tr.origin.y*tr.origin.y);
 
 	discriminant = (B*B) - 4*A*C;
-	if (abs(discriminant) < EPSILON) {
+	if (discriminant < EPSILON) {
 		// No intersection
 		return false;
 	}
-
-//	maxCap = -0.6;
 
 
 	disc_root = glm::sqrt(discriminant);
@@ -59,7 +58,7 @@ bool Cone::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Objec
 		t = glm::max(t1, t2);
 	}
 
-	if (abs(t) < EPSILON) {
+	if (t < EPSILON) {
 		// If dist is a negative values (accounting for floating point errors)
 		// then both solutions were negative. Meaning we have to go back from the origin of
 		// the ray (against its direction) to the intersection point - which means of course that
@@ -68,7 +67,6 @@ bool Cone::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Objec
 	}
 
 	if (single_intersection) {
-
 		ip = tr.origin + t * tr.direction;
 		if (ip.y > maxCap || ip.y < minCap){
 			return false;
@@ -100,9 +98,8 @@ bool Cone::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Objec
 		ip  = tr.origin + t_min * tr.direction;
 	}
 
-
-	// This is the normal at intersection point. (The Cylinder is aligned with the y-axis)
-	vec3 n = vec3(ip - vec3(0,ip.y, 0));
+	// This is the normal at intersection point. (The Cone is aligned with the y-axis)
+	vec3 n = _normalAt(ip);
 	n = normalize(vec3(mat3(this->invTransposeTrans()) * n));
 
 	// M * p - to transform point back
@@ -121,7 +118,8 @@ bool Cone::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Objec
 
 		vec2 uv;
 		uv.x = (atan2(ip2.x, ip2.z) + PI) / (2*PI);
-		uv.y = 0.5 + (ip2.y) / (maxCap - minCap);
+		uv.y = 0.5 + (ip2.y) / (height);
+		uv = glm::clamp(uv, 0.f, 1.f);
 
 		texColors->_ambientTexColor  = this->getAmbientTextureColor(uv);
 		texColors->_diffuseTexColor  = this->getDiffuseTextureColor(uv);
@@ -136,9 +134,22 @@ bool Cone::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Objec
 }
 
 
+vec3 Cone::_normalAt(const vec3& p)
+{
+	vec3 n;
+	vec3 v = normalize(vec3(p.x - 0, 0, p.z-0));
+	n.x = v.x * height / radius;
+	n.y = radius / height;
+	n.z = v.z * height / radius;
+
+	return normalize(n);
+}
+
+
 void Cone::print() const
 {
 	std::cout << "Cone Center: (" << center.x << "," << center.y << "," << center.z << ") | Radius: " << radius << " | minCap: " << minCap << " | Max Cap: " << maxCap << std::endl;
 	Object::print();
 }
+
 
