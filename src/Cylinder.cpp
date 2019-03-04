@@ -27,6 +27,7 @@ bool Cylinder::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, O
 	vec3    ip, ip2; // Intersection points
 
 	bool single_intersection = false;
+	bool minCapIntersection = false, maxCapIntersection = false;
 
 	A = (tr.direction.x*tr.direction.x) + (tr.direction.z*tr.direction.z);
 	B = (2*tr.origin.x*tr.direction.x) + (2*tr.origin.z*tr.direction.z);
@@ -95,20 +96,35 @@ bool Cylinder::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, O
 		if ((ip.y < maxCap && ip2.z > maxCap) || (ip.y > maxCap && ip2.y < maxCap)) { // max cap intersection
 			t4 = (maxCap - tr.origin.y) / tr.direction.y;
 		}
-
+		GLfloat old_t_min = t_min;
 		t_min = glm::min(t_min, glm::min(t3,t4));
 		if (ip.y < minCap) {
-					t_min = t3;
-				}
+			t_min = t3;
+			minCapIntersection = true;
+		}
 		if (ip.y > maxCap) {
-			t_min = t4;
+			t_min = old_t_min;
+			maxCapIntersection = true;
 		}
 		ip  = tr.origin + t_min * tr.direction;
 	}
 
 
 	// This is the normal at intersection point. (The Cylinder is aligned with the y-axis)
-	vec3 n = vec3(ip - vec3(0,ip.y, 0));
+	vec3 n;
+	if (minCapIntersection) {
+
+		n = vec3 (0, -1, 0);
+
+
+	} else if (maxCapIntersection) {
+
+		n = vec3 (0, 1, 0);
+	}
+	else {
+		n = vec3(ip - vec3(0,ip.y, 0));
+	}
+
 	n = normalize(vec3(mat3(this->invTransposeTrans()) * n));
 
 	// M * p - to transform point back
