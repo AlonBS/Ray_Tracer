@@ -10,8 +10,6 @@
 
 using namespace glm;
 
-
-
 bool Cylinder::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties)
 {
 	// To find intersection between Ray and canonical cylinder (aligned to the y-axis), we need to solve the following equation:
@@ -99,6 +97,12 @@ bool Cylinder::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, O
 		}
 
 		t_min = glm::min(t_min, glm::min(t3,t4));
+		if (ip.y < minCap) {
+					t_min = t3;
+				}
+		if (ip.y > maxCap) {
+			t_min = t4;
+		}
 		ip  = tr.origin + t_min * tr.direction;
 	}
 
@@ -120,12 +124,9 @@ bool Cylinder::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, O
 		*normal = n;
 	}
 	if (texColors) {
-
 		vec2 uv;
-		uv.x = (atan2(ip2.x, ip2.z) + PI) / (2*PI);
-		uv.y = 0.5 + (ip2.y) / (maxCap - minCap);
-//		uv = glm::clamp(uv,0.f, 1.f);
-
+		uv.x = 0.5 + atan2(ip2.x, ip2.z) / (2*PI); // == (atan2(ip2.x, ip2.z) + PI) / (2*PI);
+		uv.y = (ip2.y - minCap) / (maxCap - minCap); // ==  0.5 + ip2.y / (maxCap - minCap) - because maxCap = -minCap;
 		texColors->_ambientTexColor  = this->getAmbientTextureColor(uv);
 		texColors->_diffuseTexColor  = this->getDiffuseTextureColor(uv);
 		texColors->_specularTexColor = this->getSpecularTextureColor(uv);

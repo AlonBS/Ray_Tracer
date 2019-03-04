@@ -13,6 +13,7 @@ texture ./scenes/a/road1.png
 texture ./scenes/a/marble_1.jpg
 texture ./scenes/a/lines.jpg
 texture ./scenes/a/cone3.jpg
+texture ./scenes/a/cone1.jpg
 
 directional 1 10 7 0 0 1 
 point 1 7 5 1 1 1
@@ -110,10 +111,26 @@ pushTransform
 	
 	# MIDDLE
 	pushTransform
-		bindTexture 4
+		bindTexture 5
 		#translate -4 3 4
 		scale 1 2 1
-		cone -2 2 7 -1 1
+		cone -3 1 4 0 2
+		unbindTexture
+	popTransform
+
+	# MIDDLE 2 - Road Cone Like
+	pushTransform
+		bindTexture 3
+		translate 0 -0.4 2
+		rotate 1 0 0 0
+		scale 1 2.5 1
+		#cone 0 3 7 -1 0
+		pushTransform
+			translate 0 -1 0
+			#box -1.2 -0.05 -1.2 1.2 0 1.2 
+		popTransform
+
+		cylinder -2 0 3 2 1
 		unbindTexture
 	popTransform
 
@@ -132,4 +149,20 @@ pushTransform
 
 	
 popTransform
+
+
+#--------------------------
+#IP  (-0.423629, -3.121445, 3.092565)
+#IP2 (-2.434760, -2.441213, 0.177376)
+#--------------------------
+#IP: 0.878555
+#IP2: -3.121445
+#(0.478333, -0.040482)
+#t1: 8.263927
+#t2: 4.657586
+#t3: 5.301443
+#t4: 21.206341
+#tmin: 4.657586
+#tmax: 8.263927
+#disc: 11.220673
 

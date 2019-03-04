@@ -16,7 +16,7 @@ bool Box::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Object
 {
 
 	Ray tr = this->invTransform() * r; // Transformed ray
-	float tmin, tmax, tymin, tymax, tzmin, tzmax;
+	GLfloat tmin, tmax, tymin, tymax, tzmin, tzmax;
 	vec3 ip{}, ip2{};
 	vec3 n;
 
@@ -46,9 +46,9 @@ bool Box::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Object
 		tmax = tzmax;
 	}
 
-	if (tmin < 0) {
+	if (tmin < 0 || isnan(tmin)) {
 		tmin = tmax;
-		if (tmin < 0) {
+		if (tmin < 0 || isnan(tmin)) {
 //			 If dist is a negative values (accounting for floating point errors)
 //			 then both solutions were negative. Meaning we have to go back from the origin of
 //			 the ray (against its direction) to the intersection point - which means of course that

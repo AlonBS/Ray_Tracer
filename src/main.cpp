@@ -204,7 +204,7 @@ int main(int argc, char *argv[])
 		gettimeofday(&end, NULL);
 
 		time = ((end.tv_sec  - start.tv_sec) * 1000000u + end.tv_usec - start.tv_usec) / 1.e6;
-		cout << "\tTime took: " << setprecision(1) << time  <<  " seconds. \n" << endl;
+		cout << "\tTime took: " << setprecision(2) << time  <<  " seconds. \n" << endl;
 		totalTime += time;
 
 	}

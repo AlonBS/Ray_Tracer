@@ -8,7 +8,6 @@
 #include "Cone.h"
 
 
-
 bool Cone::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties)
 {
 	// To find intersection between Ray and canonical Cone (aligned to the y-axis), we need to solve the following equation:
@@ -22,10 +21,14 @@ bool Cone::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Objec
 	Ray tr = this->invTransform() * r; // Transformed ray
 	GLfloat A, B, C;
 	GLfloat discriminant, disc_root;
-	GLfloat t1 = INFINITY, t2 = INFINITY, t3 = INFINITY, t4 = INFINITY, t = INFINITY;
+	GLfloat t1 = INFINITY, t2 = INFINITY, t3 = INFINITY, t4 = INFINITY;
 	vec3    ip, ip2; // Intersection points
 
 	bool single_intersection = false;
+
+
+
+	GLfloat t_min = INFINITY, t_max = INFINITY;
 
 	A = (tr.direction.x*tr.direction.x) + (tr.direction.z*tr.direction.z) - (tr.direction.y*tr.direction.y);
 	B = (2*tr.origin.x*tr.direction.x) + (2*tr.origin.z*tr.direction.z) - (2*tr.origin.y*tr.direction.y);
@@ -45,7 +48,7 @@ bool Cone::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Objec
 	if (abs(t1 - t2) < EPSILON) {
 		// same solution
 		single_intersection = true;
-		t = t1;
+		t_min = t1;
 	}
 	else if (t1 > EPSILON && t2 > EPSILON) {
 		// Both positive
@@ -55,10 +58,10 @@ bool Cone::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Objec
 		// One positive, one negative
 		// or 2 negatives
 		single_intersection = true;
-		t = glm::max(t1, t2);
+		t_min = glm::max(t1, t2);
 	}
 
-	if (t < EPSILON) {
+	if (t_min < EPSILON) {
 		// If dist is a negative values (accounting for floating point errors)
 		// then both solutions were negative. Meaning we have to go back from the origin of
 		// the ray (against its direction) to the intersection point - which means of course that
@@ -66,8 +69,10 @@ bool Cone::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Objec
 		return false;
 	}
 
+
+
 	if (single_intersection) {
-		ip = tr.origin + t * tr.direction;
+		ip = tr.origin + t_min * tr.direction;
 		if (ip.y > maxCap || ip.y < minCap){
 			return false;
 		}
@@ -75,16 +80,21 @@ bool Cone::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Objec
 	}
 	else { // 2 intersections
 
-		GLfloat t_min, t_max;
+//		GLfloat /*t_min, t_max;
 		t_min = glm::min(t1,t2);
 		t_max = glm::max(t1,t2);
 
 		ip  = tr.origin + t_min * tr.direction;
 		ip2 = tr.origin + t_max * tr.direction;
 
+
+
 		if ((ip.y > maxCap && ip2.y > maxCap) || (ip.y < minCap && ip2.y < minCap) ){ // both intersection are on infinite cone (behind min or beyond max caps)
 			return false;
 		}
+
+//		printf("IP  (%f, %f, %f)\n", ip.x, ip.y, ip.z);
+//		printf("IP2 (%f, %f, %f)\n", ip2.x, ip2.y, ip2.z);
 
 		if ((ip.y < minCap && ip2.y > minCap) || (ip.y > minCap && ip2.y < minCap)) { // min cap intersection
 			t3 = (minCap - tr.origin.y) / tr.direction.y;
@@ -95,6 +105,9 @@ bool Cone::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Objec
 		}
 
 		t_min = glm::min(t_min, glm::min(t3,t4));
+//		if (ip.y < minCap) {
+//			t_min = t3;
+//		}
 		ip  = tr.origin + t_min * tr.direction;
 	}
 
@@ -117,9 +130,37 @@ bool Cone::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Objec
 	if (texColors) {
 
 		vec2 uv;
-		uv.x = (atan2(ip2.x, ip2.z) + PI) / (2*PI);
-		uv.y = 0.5 + (ip2.y) / (height);
-		uv = glm::clamp(uv, 0.f, 1.f);
+		uv.x = 0.5 + atan2(ip2.x, ip2.z) / (2*PI); // == (atan2(ip2.x, ip2.z) + PI) / (2*PI)
+		uv.y = (ip2.y - minCap) / (height);
+
+		if (uv.y < 0 || uv.y > 1 || uv.x < 0 || uv.x > 1) {
+//			printf("--------------------------\n");
+//			printf("IP: %f\n", ip.y);
+//			printf("IP2: %f\n", ip2.y);
+//			printf("(%f, %f)\n", uv.x, uv.y);
+//			printf("t1: %f\n", t1);
+//			printf("t2: %f\n", t2);
+//			printf("t3: %f\n", t3);
+//			printf("t4: %f\n", t4);
+//			printf("tmin: %f\n", t_min);
+//			printf("tmax: %f\n", t_max);
+//			printf("disc: %f\n", discriminant);
+//			printf("--------------------------\n");
+		}
+		if (ip2.y == minCap) {
+//			printf("*******************\n");
+//			printf("IP: %f\n", ip.y);
+//			printf("IP2: %f\n", ip2.y);
+//			printf("(%f, %f)\n", uv.x, uv.y);
+//			printf("t1: %f\n", t1);
+//			printf("t2: %f\n", t2);
+//			printf("t3: %f\n", t3);
+//			printf("t4: %f\n", t4);
+//			printf("tmin: %f\n", t_min);
+//			printf("tmax: %f\n", t_max);
+//			printf("disc: %f\n", discriminant);
+//			printf("*******************\n");
+		}
 
 		texColors->_ambientTexColor  = this->getAmbientTextureColor(uv);
 		texColors->_diffuseTexColor  = this->getDiffuseTextureColor(uv);
@@ -132,6 +173,7 @@ bool Cone::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Objec
 
 	return true;
 }
+
 
 
 vec3 Cone::_normalAt(const vec3& p)
@@ -151,5 +193,6 @@ void Cone::print() const
 	std::cout << "Cone Center: (" << center.x << "," << center.y << "," << center.z << ") | Radius: " << radius << " | minCap: " << minCap << " | Max Cap: " << maxCap << std::endl;
 	Object::print();
 }
+
 
 

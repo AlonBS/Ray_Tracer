@@ -86,7 +86,7 @@ bool Sphere::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Obj
 	if (texColors) {
 
 		vec2 uv;
-		uv.x = 0.5 + atan2(n.x, n.z) / (2 * PI);
+		uv.x = 0.5 + atan2(n.x, n.z) / (2*PI);
 		uv.y = 0.5 + 0.5 * n.y;
 		//uv.y = 0.5 - asin(n.y) / PI;
 		texColors->_ambientTexColor  = this->getAmbientTextureColor(uv);
