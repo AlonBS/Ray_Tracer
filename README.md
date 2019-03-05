@@ -4,7 +4,7 @@ Computer Graphics Ray Tracer (CPU) based on Edx CG-course.
 
 Current list of features supported:
 ====================================
-- Intersections with primitives: Triangles, Spheres, Cylinders, Boxs, Cones, ..., 
+- Intersections with primitives: Triangles, Spheres, Cylinders, Boxs, Cones, Planes, ..., 
 - Transformations: Scale, Rotation and translate. Also support transformations stacks (for transforms hierarchy) 
 - Blinn-Phong illumination module - including normals interpolation and attenuation.
 - Rendering of models comprised of multiple meshes with (partial) material properties. 

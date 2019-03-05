@@ -20,6 +20,7 @@
 #include "Cylinder.h"
 #include "Box.h"
 #include "Cone.h"
+#include "Plane.h"
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
@@ -46,6 +47,7 @@ struct Commands {
 	const string cylinder      = "cylinder";
 	const string box		   = "box";
 	const string cone		   = "cone";
+	const string plane		   = "plane";
 	const string maxVerts      = "maxVerts";
 	const string maxVertNorms  = "maxVertNorms";
 	const string vertex        = "vertex";
@@ -85,7 +87,8 @@ struct Commands {
 
 set<string> SceneParser::general{Commands.size, Commands.maxdepth};
 string 	    SceneParser::camera = Commands.camera;
-set<string> SceneParser::geometry{Commands.sphere, Commands.cylinder, Commands.box, Commands.cone, Commands.maxVerts, Commands.maxVertNorms,
+set<string> SceneParser::geometry{Commands.sphere, Commands.cylinder, Commands.box, Commands.cone,
+								  Commands.plane, Commands.maxVerts, Commands.maxVertNorms,
 								  Commands.vertex, Commands.vertexNormal, Commands.vertexTex, Commands.tri,
 								  Commands.triNormal, Commands.triTex, Commands.texture, Commands.bindTexture, Commands.unbindTexture,
 								  Commands.model};
@@ -397,6 +400,16 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		Object *cone = new Cone(center, minCap, maxCap);
 		applyPropsToObject(cone);
 	}
+
+	else if (cmd == Commands.plane) {
+		readValues(s, 6, values);
+		vec3 point = vec3(values[0], values[1], values[2]);
+		vec3 normal = vec3(values[3], values[4], values[5]);
+		Object *plane = new Plane(point, normal);
+		applyPropsToObject(plane);
+		plane->print();
+	}
+
 
 	else if (cmd == Commands.maxVerts) {
 		// New object is coming

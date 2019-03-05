@@ -1,10 +1,3 @@
-/*
- * Cylinder.cpp
- *
- *  Created on: Feb 22, 2019
- *      Author: alonbs
- */
-
 #include "Box.h"
 
 

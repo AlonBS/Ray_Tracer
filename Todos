@@ -42,6 +42,7 @@ TODOs:
 - Fix general texture on object (Done)
 
 - Comment code
+- Add the option to insert colors in RGB values instread of 0-1 in scenes.
 - Fix mesh properties multiply operator when value is not given (default) 
 - Stop recursion of light contribution is minor. 
 - Fix textures when applying transformations. 

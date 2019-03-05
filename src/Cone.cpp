@@ -1,10 +1,3 @@
-/*
- * Cone.cpp
- *
- *  Created on: Feb 27, 2019
- *      Author: alonbs
- */
-
 #include "Cone.h"
 
 
