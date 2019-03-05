@@ -204,6 +204,27 @@ SceneParser::readValues(stringstream &s, const int numOfVals, GLfloat* values)
 }
 
 
+void SceneParser::applyPropsToObject(Object* object, bool isTriangle)
+{
+	object->ambient() = ambient;
+	object->emission() = emission;
+	object->diffuse() = diffuse;
+	object->specular() = specular;
+	object->shininess() = shininess;
+	if (!isTriangle) { // Triangles are applied with the transformation matrix, so these aren't needed */
+		object->transform() = transformsStack.top();
+		object->invTransform() = inverse(object->transform());
+		object->invTransposeTrans() = mat3(transpose(object->invTransform()));
+	}
+
+	if (textureIsBound) {
+		object->setTexture(boundTexture);
+	}
+	scene->addObject(object);
+}
+
+
+
 Scene*
 SceneParser::readFile(const char* fileName)
 {
@@ -325,6 +346,7 @@ SceneParser::handleCameraCommand(stringstream& s, string& cmd)
 }
 
 
+
 void
 SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 {
@@ -340,19 +362,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		transformsStack.top() = objectTranslation * transformsStack.top(); // yes - left multiplied!
 		GLfloat radius = values[3];
 		Object *sphere = new Sphere(center, radius);
-		sphere->ambient() = ambient;
-		sphere->emission() = emission;
-		sphere->diffuse() = diffuse;
-		sphere->specular() = specular;
-		sphere->shininess() = shininess;
-		sphere->transform() = transformsStack.top();
-		sphere->invTransform() = inverse(sphere->transform());
-		sphere->invTransposeTrans() = mat3(transpose(sphere->invTransform()));
-
-		if (textureIsBound) {
-			sphere->setTexture(boundTexture);
-		}
-		scene->addObject(sphere);
+		applyPropsToObject(sphere);
 	}
 
 	else if (cmd == Commands.cylinder) {
@@ -364,41 +374,15 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		GLfloat height = values[3];
 		GLfloat radius = values[4];
 		Object *cylinder = new Cylinder(center, height, radius);
-		cylinder->ambient() = ambient;
-		cylinder->emission() = emission;
-		cylinder->diffuse() = diffuse;
-		cylinder->specular() = specular;
-		cylinder->shininess() = shininess;
-		cylinder->transform() = transformsStack.top();
-		cylinder->invTransform() = inverse(cylinder->transform());
-		cylinder->invTransposeTrans() = mat3(transpose(cylinder->invTransform()));
-
-
-		if (textureIsBound) {
-			cylinder->setTexture(boundTexture);
-		}
-		scene->addObject(cylinder);
+		applyPropsToObject(cylinder);
 	}
 
 	else if (cmd == Commands.box) {
 		readValues(s, 6, values);
 		vec3 minBound = vec3(values[0], values[1], values[2]);
 		vec3 maxBound = vec3(values[3], values[4], values[5]);
-
 		Object *box = new Box(minBound, maxBound);
-		box->ambient() = ambient;
-		box->emission() = emission;
-		box->diffuse() = diffuse;
-		box->specular() = specular;
-		box->shininess() = shininess;
-		box->transform() = transformsStack.top();
-		box->invTransform() = inverse(box->transform());
-		box->invTransposeTrans() = mat3(transpose(box->invTransform()));
-
-		if (textureIsBound) {
-			box->setTexture(boundTexture);
-		}
-		scene->addObject(box);
+		applyPropsToObject(box);
 	}
 
 
@@ -411,20 +395,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		GLfloat minCap = values[3];
 		GLfloat maxCap = values[4];
 		Object *cone = new Cone(center, minCap, maxCap);
-		cone->ambient() = ambient;
-		cone->emission() = emission;
-		cone->diffuse() = diffuse;
-		cone->specular() = specular;
-		cone->shininess() = shininess;
-		cone->transform() = transformsStack.top();
-		cone->invTransform() = inverse(cone->transform());
-		cone->invTransposeTrans() = mat3(transpose(cone->invTransform()));
-
-
-		if (textureIsBound) {
-			cone->setTexture(boundTexture);
-		}
-		scene->addObject(cone);
+		applyPropsToObject(cone);
 	}
 
 	else if (cmd == Commands.maxVerts) {
@@ -461,23 +432,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		vec3 B = vec3 (transformsStack.top() * vec4(vertices[values[1]], 1.0f));
 		vec3 C = vec3 (transformsStack.top() * vec4(vertices[values[2]], 1.0f));
 		Object *triangle = new Triangle(A, B, C);
-
-//		Object *triangle = new Triangle(renderInfo.vertcies[values[0]],
-//												renderInfo.vertcies[values[1]],
-//												renderInfo.vertcies[values[2]]);
-		triangle->ambient() = ambient;
-		triangle->emission() = emission;
-		triangle->diffuse() = diffuse;
-		triangle->specular() = specular;
-		triangle->shininess() = shininess;
-
-//		triangle->transform() = transformsStack.top();
-//		triangle->invTransform() = inverse(triangle->transformMat);
-//		triangle->invTransposeTrans() = transpose(triangle->invTransformMat);
-		if (textureIsBound) {
-			triangle->setTexture(boundTexture);
-		}
-		scene->addObject(triangle);
+		applyPropsToObject(triangle, true);
 	}
 
 	else if (cmd == Commands.triNormal) {
@@ -507,23 +462,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		vec2 Cuv = vec2(verticesTexT[values[2]]);
 
 		Object *triangle = new Triangle(A, B, C, Auv, Buv, Cuv);
-
-		//		Object *triangle = new Triangle(renderInfo.vertcies[values[0]],git di
-		//												renderInfo.vertcies[values[1]],
-		//												renderInfo.vertcies[values[2]]);
-		triangle->ambient() = ambient;
-		triangle->emission() = emission;
-		triangle->diffuse() = diffuse;
-		triangle->specular() = specular;
-		triangle->shininess() = shininess;
-
-		//		triangle->transform() = transformsStack.top();
-		//		triangle->invTransform() = inverse(triangle->transformMat);
-		//		triangle->invTransposeTrans() = transpose(triangle->invTransformMat);
-		if (textureIsBound) {
-			triangle->setTexture(boundTexture);
-		}
-		scene->addObject(triangle);
+		applyPropsToObject(triangle, true);
 	}
 
 	else if (cmd == Commands.texture) {

@@ -62,9 +62,11 @@ private:
 
 	static CommandType identifyCommand(string &);
 
-	static void rightMultiply(const mat4 & M, stack<mat4> &transfstack);
-	static bool readValues(std::stringstream &s, const int numValues, GLfloat *values);
 
+
+	static void rightMultiply(const mat4 & M, stack<mat4> &transfstack);
+	static void applyPropsToObject(Object* object, bool isTriangle = false);
+	static bool readValues(std::stringstream &s, const int numValues, GLfloat *values);
 
 	static void handleGeneralCommand(stringstream&, string&);
 	static void handleCameraCommand(stringstream&, string&);
@@ -72,6 +74,8 @@ private:
 	static void handleTransformationsCommand(stringstream&, string&);
 	static void handleLightsCommand(stringstream&, string&);
 	static void handleMaterialsCommand(stringstream&, string&);
+
+
 
 
 
