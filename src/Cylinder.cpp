@@ -23,7 +23,8 @@ bool Cylinder::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, O
 	Ray tr = this->invTransform() * r; // Transformed ray
 	GLfloat A, B, C;
 	GLfloat discriminant, disc_root;
-	GLfloat t1 = INFINITY, t2 = INFINITY, t3 = INFINITY, t4 = INFINITY, t = INFINITY;
+	GLfloat t_min, t_max;
+	GLfloat t1 = INFINITY, t2 = INFINITY, t3 = INFINITY, t4 = INFINITY;
 	vec3    ip, ip2; // Intersection points
 
 	bool single_intersection = false;
@@ -43,11 +44,10 @@ bool Cylinder::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, O
 	disc_root = glm::sqrt(discriminant);
 	t1 = (-B + disc_root) / (2*A);
 	t2 = (-B - disc_root) / (2*A);
-
 	if (abs(t1 - t2) < EPSILON) {
 		// same solution
 		single_intersection = true;
-		t = t1;
+		t_min = t1;
 	}
 	else if (t1 > EPSILON && t2 > EPSILON) {
 		// Both positive
@@ -57,10 +57,10 @@ bool Cylinder::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, O
 		// One positive, one negative
 		// or 2 negatives
 		single_intersection = true;
-		t = glm::max(t1, t2);
+		t_min = glm::max(t1, t2);
 	}
 
-	if (t < 0) {
+	if (t_min < 0) {
 		// If dist is a negative values (accounting for floating point errors)
 		// then both solutions were negative. Meaning we have to go back from the origin of
 		// the ray (against its direction) to the intersection point - which means of course that
@@ -70,15 +70,14 @@ bool Cylinder::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, O
 
 	if (single_intersection) {
 
-		ip = tr.origin + t * tr.direction;
+		ip = tr.origin + t_min * tr.direction;
 		if (ip.y > maxCap || ip.y < minCap){
 			return false;
 		}
-
 	}
+
 	else { // 2 intersections
 
-		GLfloat t_min, t_max;
 		t_min = glm::min(t1,t2);
 		t_max = glm::max(t1,t2);
 
@@ -88,7 +87,6 @@ bool Cylinder::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, O
 		if ((ip.y > maxCap && ip2.y > maxCap) || (ip.y < minCap && ip2.y < minCap) ){ // both intersection are on infinite cylinder (behind min or beyond max caps)
 			return false;
 		}
-
 		if ((ip.y < minCap && ip2.y > minCap) || (ip.y > minCap && ip2.y < minCap)) { // min cap intersection
 			t3 = (minCap - tr.origin.y) / tr.direction.y;
 		}
@@ -96,35 +94,24 @@ bool Cylinder::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, O
 		if ((ip.y < maxCap && ip2.z > maxCap) || (ip.y > maxCap && ip2.y < maxCap)) { // max cap intersection
 			t4 = (maxCap - tr.origin.y) / tr.direction.y;
 		}
-		GLfloat old_t_min = t_min;
 		t_min = glm::min(t_min, glm::min(t3,t4));
+
+		/* This is so we can properly display the object at the caps, as the minimum no longer applies here */
 		if (ip.y < minCap) {
 			t_min = t3;
 			minCapIntersection = true;
 		}
-		if (ip.y > maxCap) {
-			t_min = old_t_min;
+		else if (ip.y > maxCap) {
+			t_min = t4;
 			maxCapIntersection = true;
 		}
+		// TODO - fix issue when rendering cylinder parallel to the camera view
 		ip  = tr.origin + t_min * tr.direction;
 	}
 
 
 	// This is the normal at intersection point. (The Cylinder is aligned with the y-axis)
-	vec3 n;
-	if (minCapIntersection) {
-
-		n = vec3 (0, -1, 0);
-
-
-	} else if (maxCapIntersection) {
-
-		n = vec3 (0, 1, 0);
-	}
-	else {
-		n = vec3(ip - vec3(0,ip.y, 0));
-	}
-
+	vec3 n = _normalAt(ip, minCapIntersection, maxCapIntersection);
 	n = normalize(vec3(mat3(this->invTransposeTrans()) * n));
 
 	// M * p - to transform point back
@@ -143,6 +130,7 @@ bool Cylinder::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, O
 		vec2 uv;
 		uv.x = 0.5 + atan2(ip2.x, ip2.z) / (2*PI); // == (atan2(ip2.x, ip2.z) + PI) / (2*PI);
 		uv.y = (ip2.y - minCap) / (maxCap - minCap); // ==  0.5 + ip2.y / (maxCap - minCap) - because maxCap = -minCap;
+
 		texColors->_ambientTexColor  = this->getAmbientTextureColor(uv);
 		texColors->_diffuseTexColor  = this->getDiffuseTextureColor(uv);
 		texColors->_specularTexColor = this->getSpecularTextureColor(uv);
@@ -152,6 +140,17 @@ bool Cylinder::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, O
 	}
 	return true;
 
+}
+
+
+vec3 Cylinder::_normalAt(const vec3& point, bool minCapIntersect, bool maxCapIntersect)
+{
+	if (minCapIntersect)
+		return vec3 (0, -1, 0);
+	else if (maxCapIntersect)
+		return vec3 (0, 1, 0);
+	else
+		return vec3(point - vec3(0,point.y, 0));
 }
 
 
