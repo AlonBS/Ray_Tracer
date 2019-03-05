@@ -15,20 +15,29 @@ bool Plane::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Obje
 	vec3 ip, ip2;
 	vec3 n;
 
+	cout << "***\nA" << endl ;
+	tr.print();
+
 	GLfloat nDotD = glm::dot(N, tr.direction);
-	if (abs(nDotD) < 0.0000001f) { /* Ray and plane are parallel - no intersection */
+	if (abs(nDotD) < 0.001f) { /* Ray and plane are parallel - no intersection */
 		return false;
 	}
+
+	cout << "B" << endl ;
 	t = glm::dot(N, P-tr.origin) / nDotD;
 
 	if (t < 0) { /* Intersection is behind the eye point */
 		return false;
 	}
 
+	cout << "C\n***" << endl ;
+
 	ip  = tr.origin + t*tr.direction;
+	printVec3("IP", ip);
 	n = N;
 	// Normal transformation
 	n = normalize(vec3(mat3(this->invTransposeTrans()) * n));
+	printVec3("n", n);
 
 	// M * p - to transform point back
 	ip2 = ip;
