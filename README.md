@@ -296,6 +296,11 @@ The result image can be found in "./Rendered_Scenes/ExampleSphere_result.png
 Version History:
 =================
 
+2.0:
+- Fixed bugs with intersection at caps for cone and cylinder that were calculated wrong.
+- Fixed bug with texture for those primitives, also applied at cone.
+- Fixed a bug with edge values of texture (0 or 1) tend not to show properly. 
+
 1.9:
 - Added (Double, possibily infinite) cone with texture support. The cone can be transformed as usual, and caps can be set to determine its size etc.
 - Added Example scene for cone.

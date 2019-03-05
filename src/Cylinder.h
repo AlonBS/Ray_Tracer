@@ -24,6 +24,9 @@ private:
 	GLfloat radius;
 
 
+	vec3 _normalAt(const vec3& point, bool minCapIntersect, bool maxCapIntersect);
+
+
 public:
 
 	Cylinder(const glm::vec3 & center, GLfloat& height, GLfloat &radius)

@@ -122,6 +122,8 @@ vec3 Mesh::__getTextureColor(Image* texture, vec2& uv)
 		return COLOR_WHITE;
 	}
 
+	uv = glm::clamp(uv, 0.f + EPSILON, 1.f - EPSILON); // Textures at the edges tend to be not accurate
+
 	int w = texture->getWidth();
 	int h = texture->getHeight();
 

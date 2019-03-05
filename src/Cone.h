@@ -26,7 +26,7 @@ private:
 	GLfloat radius;
 
 
-	vec3 _normalAt(const vec3& point);
+	vec3 _normalAt(const vec3& point, bool minCapIntersect, bool maxCapIntersect);
 
 
 public:

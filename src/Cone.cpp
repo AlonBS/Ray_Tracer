@@ -25,9 +25,7 @@ bool Cone::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Objec
 	vec3    ip, ip2; // Intersection points
 
 	bool single_intersection = false;
-
-
-
+	bool minCapIntersection = false, maxCapIntersection = false;
 	GLfloat t_min = INFINITY, t_max = INFINITY;
 
 	A = (tr.direction.x*tr.direction.x) + (tr.direction.z*tr.direction.z) - (tr.direction.y*tr.direction.y);
@@ -69,8 +67,6 @@ bool Cone::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Objec
 		return false;
 	}
 
-
-
 	if (single_intersection) {
 		ip = tr.origin + t_min * tr.direction;
 		if (ip.y > maxCap || ip.y < minCap){
@@ -80,22 +76,15 @@ bool Cone::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Objec
 	}
 	else { // 2 intersections
 
-//		GLfloat /*t_min, t_max;
 		t_min = glm::min(t1,t2);
 		t_max = glm::max(t1,t2);
 
 		ip  = tr.origin + t_min * tr.direction;
 		ip2 = tr.origin + t_max * tr.direction;
 
-
-
 		if ((ip.y > maxCap && ip2.y > maxCap) || (ip.y < minCap && ip2.y < minCap) ){ // both intersection are on infinite cone (behind min or beyond max caps)
 			return false;
 		}
-
-//		printf("IP  (%f, %f, %f)\n", ip.x, ip.y, ip.z);
-//		printf("IP2 (%f, %f, %f)\n", ip2.x, ip2.y, ip2.z);
-
 		if ((ip.y < minCap && ip2.y > minCap) || (ip.y > minCap && ip2.y < minCap)) { // min cap intersection
 			t3 = (minCap - tr.origin.y) / tr.direction.y;
 		}
@@ -105,14 +94,21 @@ bool Cone::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Objec
 		}
 
 		t_min = glm::min(t_min, glm::min(t3,t4));
-//		if (ip.y < minCap) {
-//			t_min = t3;
-//		}
+		/* This is so we can properly display the object at the caps, as the minimum no longer applies here */
+		if (ip.y < minCap) {
+			t_min = t3;
+			minCapIntersection = true;
+		}
+		else if (ip.y > maxCap) {
+			t_min = t4;
+			maxCapIntersection = true;
+		}
+		// TODO - fix issue when rendering cylinder parallel to the camera view
 		ip  = tr.origin + t_min * tr.direction;
 	}
 
 	// This is the normal at intersection point. (The Cone is aligned with the y-axis)
-	vec3 n = _normalAt(ip);
+	vec3 n = _normalAt(ip, minCapIntersection, maxCapIntersection);
 	n = normalize(vec3(mat3(this->invTransposeTrans()) * n));
 
 	// M * p - to transform point back
@@ -133,35 +129,6 @@ bool Cone::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Objec
 		uv.x = 0.5 + atan2(ip2.x, ip2.z) / (2*PI); // == (atan2(ip2.x, ip2.z) + PI) / (2*PI)
 		uv.y = (ip2.y - minCap) / (height);
 
-		if (uv.y < 0 || uv.y > 1 || uv.x < 0 || uv.x > 1) {
-//			printf("--------------------------\n");
-//			printf("IP: %f\n", ip.y);
-//			printf("IP2: %f\n", ip2.y);
-//			printf("(%f, %f)\n", uv.x, uv.y);
-//			printf("t1: %f\n", t1);
-//			printf("t2: %f\n", t2);
-//			printf("t3: %f\n", t3);
-//			printf("t4: %f\n", t4);
-//			printf("tmin: %f\n", t_min);
-//			printf("tmax: %f\n", t_max);
-//			printf("disc: %f\n", discriminant);
-//			printf("--------------------------\n");
-		}
-		if (ip2.y == minCap) {
-//			printf("*******************\n");
-//			printf("IP: %f\n", ip.y);
-//			printf("IP2: %f\n", ip2.y);
-//			printf("(%f, %f)\n", uv.x, uv.y);
-//			printf("t1: %f\n", t1);
-//			printf("t2: %f\n", t2);
-//			printf("t3: %f\n", t3);
-//			printf("t4: %f\n", t4);
-//			printf("tmin: %f\n", t_min);
-//			printf("tmax: %f\n", t_max);
-//			printf("disc: %f\n", discriminant);
-//			printf("*******************\n");
-		}
-
 		texColors->_ambientTexColor  = this->getAmbientTextureColor(uv);
 		texColors->_diffuseTexColor  = this->getDiffuseTextureColor(uv);
 		texColors->_specularTexColor = this->getSpecularTextureColor(uv);
@@ -176,15 +143,20 @@ bool Cone::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Objec
 
 
 
-vec3 Cone::_normalAt(const vec3& p)
+vec3 Cone::_normalAt(const vec3& p, bool minCapIntersect, bool maxCapIntersect)
 {
-	vec3 n;
-	vec3 v = normalize(vec3(p.x - 0, 0, p.z-0));
-	n.x = v.x * height / radius;
-	n.y = radius / height;
-	n.z = v.z * height / radius;
-
-	return normalize(n);
+	if (minCapIntersect)
+		return vec3(0, -1, 0);
+	else if (maxCapIntersect)
+		return vec3(0, 1, 0);
+	else {
+		vec3 n;
+		vec3 v = normalize(vec3(p.x - 0, 0, p.z-0));
+		n.x = v.x * height / radius;
+		n.y = radius / height;
+		n.z = v.z * height / radius;
+		return normalize(n);
+	}
 }
 
 
