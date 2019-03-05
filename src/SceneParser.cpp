@@ -502,6 +502,9 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		model->diffuse() = diffuse;
 		model->specular() = specular;
 		model->shininess() = shininess;
+		if (textureIsBound) {
+			model->setTexture(boundTexture);
+		}
 		scene->addObject(model);
 	}
 }

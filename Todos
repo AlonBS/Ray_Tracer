@@ -39,7 +39,7 @@ TODOs:
 - Fix texture on triangles not from model (Done)
 
 - Fix texture on a cone shorter than double (DONE)
-- Fix general texture on object
+- Fix general texture on object (Done)
 
 - Comment code
 - Fix mesh properties multiply operator when value is not given (default) 
