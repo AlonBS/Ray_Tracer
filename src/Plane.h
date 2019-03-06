@@ -25,13 +25,9 @@ private:
 	vec3 P;
 	vec3 N;
 
-	vec3 U,V;
-
 
 	vec3 _normalAt(const vec3 &point);
 	vec2 _textureAt(const vec3& point);
-
-	void _computePrimaryTexDir();
 
 
 public:
@@ -39,7 +35,6 @@ public:
 	Plane(vec3& point, vec3& normal)
 	: Object(), P(point), N(normal)
 	{
-		_computePrimaryTexDir();
 	}
 
 	virtual ~Plane() {}

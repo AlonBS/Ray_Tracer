@@ -402,9 +402,10 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 	}
 
 	else if (cmd == Commands.plane) {
-		readValues(s, 6, values);
-		vec3 point = vec3(values[0], values[1], values[2]);
-		vec3 normal = vec3(values[3], values[4], values[5]);
+
+		/* To achieve other planes - user tranformations on this object */
+		vec3 point = vec3(0, 0, 0);
+		vec3 normal = vec3(0, 1 , 0);
 		Object *plane = new Plane(point, normal);
 		applyPropsToObject(plane);
 	}
