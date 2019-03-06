@@ -28,15 +28,13 @@ using namespace std;
 inline void
 printVec2(const string& name, const vec2& vec)
 {
-	cout << name << ": " << vec.x << "," << vec.y << endl;
+	printf("%s: (%04f,%04f)\n", name.c_str(), vec.x, vec.y);
 }
 
 inline void
 printVec3(const string& name, const vec3& vec)
 {
-	cout << name << ": " << vec.x << "," << vec.y << "," << vec.z << endl;
-
-//	cout << name << " " << vec.x << " " << vec.y << " " << vec.z << endl;
+	printf("%s: (%04f,%04f, %04f)\n", name.c_str(), vec.x, vec.y, vec.z);
 }
 
 

@@ -220,6 +220,35 @@ int main(int argc, char *argv[])
 }
 
 
+#include "Plane.h"
+#include "Ray.h"
+int main2()
+{
+	vec3 Q = vec3(0,0,0); vec3 N = vec3(0,1,0);
+	Plane p{Q, N};
+
+	vec3 O = vec3(0,1,0);
+	vec3 D = vec3(1,-0.1,1);
+	Ray r1{O, D};
+
+	GLfloat dist;
+	vec3 point, normal;
+	bool sect;
+	sect = p.intersectsRay(r1, dist, &point, &normal, nullptr, nullptr);
+	if (sect) {
+		cout << "Dist: " << dist << endl;
+		printVec3("Point", point);
+		printVec3("Norm", normal);
+	}
+	else {
+		cout << "NO INTERSECT" << endl;
+	}
+
+
+}
+
+
+
 
 
 

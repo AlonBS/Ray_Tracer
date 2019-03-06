@@ -5,6 +5,28 @@
 using namespace glm;
 
 
+void Plane::_computePrimaryTexDir()
+{
+    vec3 a = cross(N, vec3(1, 0, 0));
+    vec3 b = cross(N, vec3(0, 1, 0));
+    vec3 c = cross(N, vec3(0, 0, 1));
+
+    printVec3("A", a);
+    printVec3("B", b);
+    printVec3("C", c);
+
+    vec3 max_ab = length(a) > length(b) ? a : b;
+    vec3 maxDir = length(max_ab) > length(c) ? max_ab : c;
+
+    printVec3("max_ab", max_ab);
+    printVec3("maxDir", maxDir);
+    U = normalize(maxDir);
+    V = cross(N, maxDir);
+
+    printVec3("U", U);
+    printVec3("V", V);
+}
+
 
 bool Plane::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties)
 {
@@ -15,29 +37,20 @@ bool Plane::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Obje
 	vec3 ip, ip2;
 	vec3 n;
 
-	cout << "***\nA" << endl ;
-	tr.print();
-
 	GLfloat nDotD = glm::dot(N, tr.direction);
 	if (abs(nDotD) < 0.001f) { /* Ray and plane are parallel - no intersection */
 		return false;
 	}
 
-	cout << "B" << endl ;
 	t = glm::dot(N, P-tr.origin) / nDotD;
-
 	if (t < 0) { /* Intersection is behind the eye point */
 		return false;
 	}
 
-	cout << "C\n***" << endl ;
-
 	ip  = tr.origin + t*tr.direction;
-	printVec3("IP", ip);
 	n = N;
 	// Normal transformation
 	n = normalize(vec3(mat3(this->invTransposeTrans()) * n));
-	printVec3("n", n);
 
 	// M * p - to transform point back
 	ip2 = ip;
@@ -53,10 +66,30 @@ bool Plane::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Obje
 	}
 	if (texColors) {
 
-//		vec2 uv = _textureAt(ip2);
-//		texColors->_ambientTexColor  = this->getAmbientTextureColor(uv);
-//		texColors->_diffuseTexColor  = this->getDiffuseTextureColor(uv);
-//		texColors->_specularTexColor = this->getSpecularTextureColor(uv);
+//		[0-1]
+//
+//		[2]
+//		[0-2][2-4][4-6]]
+
+		printVec3("IP", ip);
+//		GLfloat dd = length(ip);
+
+		vec2 uv;
+		GLfloat intPart;
+//		uv.x = modf (ip.x , &intPart);
+		uv.x = abs(ip.x - (long)ip.x);
+//		uv.y = modf (ip.z, &intPart);
+		uv.y = abs(ip.z -(long)ip.z);
+
+//		uv.x = dot(U, ip);
+//		uv.y = dot(V, ip);
+//		uv.x = dd*U;
+//		uv.x = (ip.x) / 640;
+//		uv.y = (ip.z-480) / 480;
+		printVec2("UV", uv);
+		texColors->_ambientTexColor  = this->getAmbientTextureColor(uv);
+		texColors->_diffuseTexColor  = this->getDiffuseTextureColor(uv);
+		texColors->_specularTexColor = this->getSpecularTextureColor(uv);
 	}
 	if (properties) {
 		*properties = this->properties();

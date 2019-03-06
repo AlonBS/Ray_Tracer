@@ -407,7 +407,6 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		vec3 normal = vec3(values[3], values[4], values[5]);
 		Object *plane = new Plane(point, normal);
 		applyPropsToObject(plane);
-		plane->print();
 	}
 
 
