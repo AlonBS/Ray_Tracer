@@ -1,18 +1,15 @@
 
-# Sphere Scene - An example scene to show the syntax and usage 
+# Plane Scene - An example scene to show the syntax and usage 
 
 size 1280 720 
-camera 0 4 13 0 0 0 0 1 0 45
+camera 0 1 13 0 0 0 0 1 0 45
 
 attenuation 1 0.0 0.0
 
-maxDepth 2
+maxDepth 3
 
 texture ./scenes/a/wood.jpg
 texture ./scenes/a/earth.png
-texture ./scenes/a/checkers.png
-texture ./scenes/a/stripes.png
-texture ./scenes/a/lines.jpg
 texture ./scenes/a/marble_1.jpg
 
 
@@ -31,45 +28,39 @@ pushTransform
 	bindTexture 2
 	ambient 0.1 0.1 0.1
 	diffuse 0.3 0.3 0.3
-	specular 0.8 0.8 0.8
+	specular 0.2 0.2 0.2
 	shininess 16
+	scale 3 3 3
 	#rotate 0 1 0 90
-	plane
-
-	pushTransform
-		ambient 0.2 0.2 0.2
-		rotate 1 0 0 90
-		#plane
-	popTransform
-
-	pushTransform
-		ambient 0.2 0.2 0.2
-		translate 2 0 0
-		rotate 0 0 1 90
-		#plane
-	popTransform
-
-	pushTransform
-		ambient 0.2 0.2 0.2
-		rotate 0 0 1 -90
-		translate -2 0 0
-		#plane
-	popTransform
-
-
+	plane MR
 	unbindTexture
+
+	pushTransform
+		bindTexture 0
+		ambient 0.2 0.2 0.2
+		specular 0 0 0 
+		translate 0 0 -10
+		rotate 1 0 1 90
+		plane R
+		unbindTexture
+	popTransform
+
+	
+
+
+	
 popTransform
 
 pushTransform
 	# The indentation is for better readability 
-#	bindTexture 2
+	bindTexture 1
 #	diffuse 0.3 0.3 0.3 
 #	specular 0.0 0.0 0.0
 	translate 0 1 -2
-	sphere -0.5 2.8 -.65 1.5
+	sphere -0.5 1 -.65 1.5
 #	scale 3 3 3
 #	model ./3ds/cube/cube.obj
-#	unbindTexture
+	unbindTexture
 #
 popTransform
 

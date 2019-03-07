@@ -116,6 +116,7 @@ vector<glm::vec3> SceneParser::verticesNormals;
 vector<glm::vec3> SceneParser::verticesTexV{};
 vector<glm::vec2> SceneParser::verticesTexT{};
 
+GLint SceneParser::lineNumber = 0;
 Image* SceneParser::boundTexture = nullptr;
 bool SceneParser::textureIsBound = false;
 Scene* SceneParser::scene = nullptr;
@@ -233,7 +234,7 @@ SceneParser::readFile(const char* fileName)
 {
 	string str, cmd;
 	ifstream in;
-	uint32_t lineNumber = 0;
+
 
 
 
@@ -303,12 +304,14 @@ SceneParser::readFile(const char* fileName)
 	in.close();
 
 	/* BUffers clean up */
+	lineNumber = 0;
 	vertices.clear();
 	verticesNormals.clear();
 	verticesTexV.clear();
 	verticesTexT.clear();
 	boundTexture = nullptr;
 	textureIsBound = false;
+
 
 	return scene;
 }
@@ -403,10 +406,27 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 
 	else if (cmd == Commands.plane) {
 
-		/* To achieve other planes - user tranformations on this object */
-		vec3 point = vec3(0, 0, 0);
-		vec3 normal = vec3(0, 1 , 0);
-		Object *plane = new Plane(point, normal);
+		/* To achieve other planes - use transformations on this object */
+
+		enum TexturePattern tp = MIRRORED_REPEAT;
+		if (boundTexture) {
+			string texturePattern;
+			s >> texturePattern;
+
+			if (texturePattern == "R")
+				tp = REPEAT;
+			else if (texturePattern == "MR")
+				tp = MIRRORED_REPEAT;
+
+			else if (texturePattern == "CE")
+				tp = CLAMP_TO_EDGE;
+			else {
+				cout << "\t[W]\tLine: " << lineNumber << ". No, or invalid texture pattern was given for textured plane. Mirrored-Repeat was chosen. " << endl;
+				tp = MIRRORED_REPEAT;
+			}
+		}
+
+		Object *plane = new Plane(tp);
 		applyPropsToObject(plane);
 	}
 

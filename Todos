@@ -42,8 +42,9 @@ TODOs:
 - Fix general texture on object (Done)
 
 - Comment code
-- Add the option to insert colors in RGB values instread of 0-1 in scenes.
+- Add the option to insert colors in RGB values instead of 0-1 in scenes.
 - Fix mesh properties multiply operator when value is not given (default) 
+- Fix folder structure and fix dependecy within scene to textures and models
 - Stop recursion of light contribution is minor. 
 - Fix textures when applying transformations. 
 - Consider Normal transformation when adding normals to meshes. (Model.cpp)

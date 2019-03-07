@@ -14,6 +14,16 @@
 
 #include "Object.h"
 
+enum TexturePattern {
+
+	// Same as open-gl mapping
+	REPEAT,
+	MIRRORED_REPEAT,
+	CLAMP_TO_EDGE,
+	/* CLAMP_TO_BORDER  - currently this is not supported */
+
+};
+
 /**
  * The plane is represented using a point P on the plane, and a Normal N to the plane.
  */
@@ -25,15 +35,16 @@ private:
 	vec3 P;
 	vec3 N;
 
+	enum TexturePattern texturePattern;
 
-	vec3 _normalAt(const vec3 &point);
+
 	vec2 _textureAt(const vec3& point);
 
 
 public:
 
-	Plane(vec3& point, vec3& normal)
-	: Object(), P(point), N(normal)
+	Plane(enum TexturePattern pattern)
+	: Object(), P(vec3(0,0,0)), N(vec3(0,1,0)), texturePattern(pattern)
 	{
 	}
 

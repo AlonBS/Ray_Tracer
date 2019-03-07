@@ -88,9 +88,16 @@ Primitives and Models:
 		This means that the height define the caps of the cylinder. 
 	box <min_bound_v3> <max_bound_v3> - Define an axis aligned box with minimum vertex at min_bound and max vertex at max_bound.
 		transformed just like any other object. Also supports textures.
-	cone <center_v3> <minCap_f> <maxCap_f> - Defines a cone centered around the center point, where maxCap and minCap define top and button caps of the cone. This means
-		that its fairly easy to decide wheather its a single cone (where maxCap or minCap == 0) or double cone, or inifinite etc.). It is assumed that maxCap > minCap.
-		transformed just like any other object. Also supports textures.  
+	cone <center_v3> <minCap_f> <maxCap_f> - Defines a cone centered around the center point, 
+		where maxCap and minCap define top and button caps of the cone. This means
+		that its fairly easy to decide wheather its a single cone (where maxCap or minCap == 0) or double cone, or inifinite etc.). It is 			assumed that maxCap > minCap.
+	plane <texture-pattern_e> - Creates a plane passing through the origin(0,0,0) and allinged as XZ plane (that is, with normal (0,1,0).
+		Ofcourse this can be tranformed like anyother object to achieve various types. Notice that this plane is infinite. 
+		texture-pattern will define how a texture should be applied to this plane, if indeed this is a textured plane. Options are:
+		"R" - Repeated pattern. (Only the fraction part of the intersection point will be taken)
+		"MR" (Default) - Mirrored repeated pattern. Same as before, but will be mirrored when integer part it odd.
+		"CE" - Clamp to edge. For values greater than 1 or smaller than 0, the value will be clamp to [0,1].
+		Note that scale for this object can be used to strech the texture, as it won't have any other effect "physically"
 	vertex <pos-v3> - Creates a single vertex, we can later be used to create a triangle.
 	vertexNormal <pos-v3> <norm-v3> - Defined a vertex as before, but also defined the surface normal.
 		Note the vertecies defined in this way are completely indepetnted of vertecies defined using the
@@ -295,6 +302,11 @@ The result image can be found in "./Rendered_Scenes/ExampleSphere_result.png
 
 Version History:
 =================
+2.1:
+- Added primitive - (infinite plane). Also supports all transformations, to achieve general plane. 
+- Added 3 textures patterns to infinite plane - Repeated, Mirrored-Repeated and Clamp-To-Edge. 
+- Added example scene with plane. 
+- Small refactor to scene parser when creating new objects. 
 
 2.0:
 - Fixed bugs with intersection at caps for cone and cylinder that were calculated wrong.

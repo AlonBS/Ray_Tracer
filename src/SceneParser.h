@@ -42,6 +42,8 @@ public:
 
 private:
 
+	static GLint lineNumber;
+
 
 	static set<string> general;
 	static string 	   camera;

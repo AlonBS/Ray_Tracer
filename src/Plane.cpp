@@ -45,14 +45,8 @@ bool Plane::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Obje
 
 
 		// Mirror Textures
-		vec2 uv;
-		GLint64 xInt = abs((GLint64)ip2.x);
-		GLfloat xFract = abs(ip2.x) - xInt;
-		uv.x = xInt % 2 ? xFract : 1 - xFract;
+		vec2 uv = _textureAt(ip2);
 
-		GLint64 yInt = abs((GLint64)ip2.z);
-		GLfloat yFract = abs(ip2.z) - yInt;
-		uv.y = yInt % 2 ? yFract : 1 - yFract;
 
 		texColors->_ambientTexColor  = this->getAmbientTextureColor(uv);
 		texColors->_diffuseTexColor  = this->getDiffuseTextureColor(uv);
@@ -66,35 +60,45 @@ bool Plane::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Obje
 
 }
 
-//
-//
-//vec2 Box::_textureAt(const vec3& point)
-//{
-//	vec2 uv {};
-//
-//	if (abs(point.x - bounds[0].x) < EPSILON ||
-//	    abs(point.x - bounds[1].x) < EPSILON) { // on YZ plane
-//
-//		uv.x = (point.y - bounds[0].y) / (bounds[1].y - bounds[0].y);
-//		uv.y = (point.z - bounds[0].z) / (bounds[1].z - bounds[0].z);
-//
-//	}
-//	else if (abs(point.y - bounds[0].y) < EPSILON ||
-//			 abs(point.y - bounds[1].y) < EPSILON) { // on XZ plane
-//
-//		uv.x = (point.x - bounds[0].x) / (bounds[1].x - bounds[0].x);
-//		uv.y = (point.z - bounds[0].z) / (bounds[1].z - bounds[0].z);
-//	}
-//
-//	else { // on XY plane
-//
-//		uv.x = (point.x - bounds[0].x) / (bounds[1].x - bounds[0].x);
-//		uv.y = (point.y - bounds[0].y) / (bounds[1].y - bounds[0].y);
-//	}
-//
-//	// Again - we don't care too much about edges
-//	return uv;
-//}
+vec2 Plane::_textureAt(const vec3& point)
+{
+	vec2 uv {};
+
+	GLint64 xInt = abs((GLint64)point.x);
+	GLfloat xFract = abs(point.x) - xInt;
+
+	GLint64 yInt = abs((GLint64)point.z);
+	GLfloat yFract = abs(point.z) - yInt;
+
+
+	switch (texturePattern) {
+
+	case REPEAT:
+		uv.x = xFract;
+		if (point.x < 0) {
+			uv.x = 1 - xFract;
+		}
+
+		uv.y = yFract;
+		if (point.z < 0) {
+			uv.y = 1 - yFract;
+		}
+
+		break;
+
+	case MIRRORED_REPEAT:
+		uv.x = xInt % 2 ? xFract : 1 - xFract;
+		uv.y = yInt % 2 ? yFract : 1 - yFract;
+		break;
+
+	case CLAMP_TO_EDGE:
+		uv.x = clamp(point.x, 0.0f, 1.0f);
+		uv.y = clamp(point.z, 0.0f, 1.0f);
+		break;
+	}
+
+	return uv;
+}
 
 
 void Plane::print() const

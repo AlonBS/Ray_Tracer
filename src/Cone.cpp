@@ -120,20 +120,7 @@ bool Cone::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Objec
 
 		vec2 uv;
 		uv.x = 0.5 + atan2(ip2.x, ip2.z) / (2*PI); // == (atan2(ip2.x, ip2.z) + PI) / (2*PI)
-//		uv.x = (uv.x - (GLuint64)uv.x);
-		GLint64 xInt = abs((GLint64)ip2.x);
-		GLfloat xFract = abs(ip2.x) - xInt;
-		uv.x = xInt % 2 ? xFract : 1 - xFract;
-
 		uv.y = (ip2.y - minCap) / (height);
-		GLint64 yInt = abs((GLint64)ip2.z);
-		GLfloat yFract = abs(ip2.z) - yInt;
-		uv.y = yInt % 2 ? yFract : 1 - yFract;
-
-
-
-
-
 		texColors->_ambientTexColor  = this->getAmbientTextureColor(uv);
 		texColors->_diffuseTexColor  = this->getDiffuseTextureColor(uv);
 		texColors->_specularTexColor = this->getSpecularTextureColor(uv);
