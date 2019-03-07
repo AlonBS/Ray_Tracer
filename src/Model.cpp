@@ -147,7 +147,7 @@ Model::processMesh(aiMesh *mesh, const aiScene *scene)
 		vector.z = mesh->mVertices[i].z;
 		vertex.Position = vec3 (_transform * vec4(vector, 1.0f));;
 		// normals
-		if (mesh->mNormals) {
+		if (mesh->HasNormals()) {
 			vector.x = mesh->mNormals[i].x;
 			vector.y = mesh->mNormals[i].y;
 			vector.z = mesh->mNormals[i].z;
@@ -159,7 +159,7 @@ Model::processMesh(aiMesh *mesh, const aiScene *scene)
 		}
 
 		// texture coordinates
-		if(mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
+		if(mesh->HasTextureCoords(0)) // does the mesh contain texture coordinates?
 		{
 			glm::vec2 vec;
 			// a vertex can contain up to 8 different texture coordinates. We thus make the assumption that we won't
@@ -183,11 +183,11 @@ Model::processMesh(aiMesh *mesh, const aiScene *scene)
 	}
 
 	// Process materials
+
 //	if(mesh->mMaterialIndex >= 0)
 	{
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 		aiColor3D c (0.0f, 0.0f, 0.0f);
-
 		material->Get(AI_MATKEY_COLOR_AMBIENT, c);
 		properties._ambient = vec3(c.r, c.g, c.b);
 		if (epsilonCompareVec3(properties._ambient, COLOR_BLACK))

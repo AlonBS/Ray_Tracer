@@ -228,6 +228,21 @@ void SceneParser::applyPropsToObject(Object* object, bool isTriangle)
 }
 
 
+vec3 SceneParser::normColor(vec3 c)
+{
+	if (c.x > 1) {
+		c.x /= 255.0f;
+	}
+	if (c.y > 1) {
+		c.y /= 255.0f;
+	}
+	if (c.z > 1) {
+		c.z /= 255.0;
+	}
+	return c;
+}
+
+
 
 Scene*
 SceneParser::readFile(const char* fileName)
@@ -581,7 +596,7 @@ SceneParser::handleLightsCommand(stringstream& s, string& cmd)
 	if (cmd == Commands.directional) {
 		readValues(s, 6, values);
 		vec3 dir = vec3(transformsStack.top() * vec4(values[0], values[1], values[2], 0.0f));
-		vec3 color = vec3(values[3], values[4], values[5]);
+		vec3 color = normColor(vec3(values[3], values[4], values[5]));
 		DirectionalLight *dirLight = new DirectionalLight(color, dir);
 
 		scene->addDirectionalLight(dirLight);
@@ -591,7 +606,7 @@ SceneParser::handleLightsCommand(stringstream& s, string& cmd)
 		readValues(s, 6, values);
 		//TODO CHECK
 		vec3 pos = vec3(transformsStack.top() * vec4(values[0], values[1], values[2], 1.0f));
-		vec3 color = vec3(values[3], values[4], values[5]);
+		vec3 color = normColor(vec3(values[3], values[4], values[5]));
 		PointLight *pointLight = new PointLight(color, pos);
 		scene->addPointLight(pointLight);
 	}
@@ -615,23 +630,23 @@ SceneParser::handleMaterialsCommand(stringstream& s, string& cmd)
 {
 	if (cmd == Commands.ambient) {
 		readValues(s, 3, values);
-		ambient = vec3(values[0], values[1], values[2]);
+		ambient = normColor(vec3(values[0], values[1], values[2]));
 	}
 
 	else if (cmd == Commands.diffuse) {
 		readValues(s, 3, values);
-		diffuse = vec3(values[0], values[1], values[2]);
+		diffuse = normColor(vec3(values[0], values[1], values[2]));
 
 	}
 
 	else if (cmd == Commands.specular) {
 		readValues(s, 3, values);
-		specular = vec3(values[0], values[1], values[2]);
+		specular = normColor(vec3(values[0], values[1], values[2]));
 	}
 
 	else if (cmd == Commands.emission) {
 		readValues(s, 3, values);
-		emission = vec3(values[0], values[1], values[2]);
+		emission = normColor(vec3(values[0], values[1], values[2]));
 	}
 
 	else if (cmd == Commands.shininess) {

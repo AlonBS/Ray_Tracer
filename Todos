@@ -6,15 +6,15 @@ Major Topics:
 1b) Add command line parsing. (Done)
 2) Add examples of scenes with keywords. (This is based on EDX, but includes new keywords for added features). (Done)
 2b) Change to singleton patterns for scenemanager, sceneparser and raytracer - (Aborted)
-2c) Add better error handling (within file parser, as well as program itself)
+2c) Add better error handling (within file parser, as well as program itself) (Postponed)
 2d) Add option to usage non multi-threaded rendering - for debug purposes mainly. (Done)
-3) Add more primitive objects - Cyllinder etc. Add scenes dipicting those images.
-3b) Space partitioning for better performecnce more advances technices. 
+3) Add more primitive objects - Cyllinder etc. Add scenes dipicting those images. (Done)
+3b) Add bounding box for better performecnce more advances technices. 
 4) Shadows - support soft shadows
 5) Support reflections and refractions. 
 6) Support meshes
 7) Space partitioning for better performecnce more advances technices. 
-8) Add textures to all objects and primitives.
+8) Add textures to all objects and primitives. (Almost Done)
 9) Support anti-aliasing
 10) Depth of field
 11) More shading - more on softshadow, glossy effects, subsurface scattering
@@ -37,12 +37,10 @@ TODOs:
 - Test all transformations on objects - (Done)
 - Fix stupid readme at github (Done)
 - Fix texture on triangles not from model (Done)
-
 - Fix texture on a cone shorter than double (DONE)
 - Fix general texture on object (Done)
+- Add the option to insert colors in RGB values instead of 0-1 in scenes. (DONE)
 
-- Comment code
-- Add the option to insert colors in RGB values instead of 0-1 in scenes.
 - Fix mesh properties multiply operator when value is not given (default) 
 - Fix folder structure and fix dependecy within scene to textures and models
 - Stop recursion of light contribution is minor. 
@@ -52,4 +50,5 @@ TODOs:
 - Make sure specular and diffuse lighting also work on transformed object
 - Transform normals for mesh objects
 - Insert bounding-box intersection op.
+- Consider adding more primitives : Torus, disc and more. 
 

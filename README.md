@@ -190,6 +190,7 @@ Translate followed by rotate, followed by scale command.
 Lights:
 --------
 Lights are also subjected to the current transform on top of the transformation stack. 
+Colors can also be expressed in [0-225] RGB format. For value 1, it is assumed the the color component should be maximized. 
 
 	directional <dir_v3> <color_v3> - Creates a directional light with direction <dir> and with color <color>. 
 		Color valus should range between 0 to 1.
@@ -215,6 +216,7 @@ They way these are used is first to define the material properties, then any obj
 properties until they are overwritten. It's not mandatory to specify each value - default values will be used otherwise. 
 Note: If complex object is created (using "model" command) - it can have it's own material properties, per part, in which
 case, the properties listed here will be multiplied with them. Making these values 'global' in that manner. 
+Colors can also be expressed in [0-225] RGB format. For value 1, it is assumed the the color component should be maximized. 
 
 	ambient <color_v3> - The ambient factor. Default vec3(0.2f, 0.2f, 0.2f)
 	diffuse  <color_v3> - The diffusive factor. Default vec3(0.0f, 0.0f, 0.0f)
