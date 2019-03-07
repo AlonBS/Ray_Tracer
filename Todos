@@ -9,12 +9,13 @@ Major Topics:
 2c) Add better error handling (within file parser, as well as program itself) (Postponed)
 2d) Add option to usage non multi-threaded rendering - for debug purposes mainly. (Done)
 3) Add more primitive objects - Cyllinder etc. Add scenes dipicting those images. (Done)
-3b) Add bounding box for better performecnce more advances technices. 
+3b) Add bounding box for better performecnce
 4) Shadows - support soft shadows
 5) Support reflections and refractions. 
 6) Support meshes
 7) Space partitioning for better performecnce more advances technices. 
 8) Add textures to all objects and primitives. (Almost Done)
+8b) add textures generation
 9) Support anti-aliasing
 10) Depth of field
 11) More shading - more on softshadow, glossy effects, subsurface scattering
@@ -40,6 +41,7 @@ TODOs:
 - Fix texture on a cone shorter than double (DONE)
 - Fix general texture on object (Done)
 - Add the option to insert colors in RGB values instead of 0-1 in scenes. (DONE)
+- Add textures generation
 
 - Fix mesh properties multiply operator when value is not given (default) 
 - Fix folder structure and fix dependecy within scene to textures and models
