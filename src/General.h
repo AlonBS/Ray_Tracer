@@ -12,8 +12,24 @@
 #include <glm/glm.hpp>
 #include <GL/glew.h>
 #include <iostream>
+#include <future>
 
 using namespace glm;
+using namespace std;
+
+
+typedef struct RayTracerStats {
+
+	atomic<GLuint64> numOfRays;
+	atomic<GLuint64> numOfIntersectTests;
+	atomic<GLuint64> numOfHits;
+
+}RayTracerStats;
+
+extern RayTracerStats rayTracerStats;
+
+void clearStats();
+
 
 //const GLfloat EPSILON  = 0.00000000001f;
 const GLfloat EPSILON  = 0.0001f;
@@ -22,8 +38,6 @@ const GLfloat PI = 3.1415926f;
 const vec3 COLOR_WHITE = vec3(1.0f, 1.0f, 1.0f);
 const vec3 COLOR_BLACK = vec3(0.0f, 0.0f, 0.0f);
 
-using namespace glm;
-using namespace std;
 
 inline void
 printVec2(const string& name, const vec2& vec)

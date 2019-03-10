@@ -28,6 +28,8 @@ bool Sphere::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Obj
 	GLfloat t1, t2, t = INFINITY;
 	vec3    intersection_point;
 
+	++rayTracerStats.numOfIntersectTests;
+
 
 	A = glm::dot(tr.direction, tr.direction);
 	B = 2 * glm::dot(tr.direction, (tr.origin - center));
@@ -96,6 +98,8 @@ bool Sphere::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Obj
 	if (properties) {
 		*properties = this->properties();
 	}
+
+	++rayTracerStats.numOfHits;
 	return true;
 }
 

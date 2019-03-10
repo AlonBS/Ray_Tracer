@@ -21,6 +21,8 @@ bool Cone::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Objec
 	bool minCapIntersection = false, maxCapIntersection = false;
 	GLfloat t_min = INFINITY, t_max = INFINITY;
 
+	++rayTracerStats.numOfIntersectTests;
+
 	A = (tr.direction.x*tr.direction.x) + (tr.direction.z*tr.direction.z) - (tr.direction.y*tr.direction.y);
 	B = (2*tr.origin.x*tr.direction.x) + (2*tr.origin.z*tr.direction.z) - (2*tr.origin.y*tr.direction.y);
 	C = (tr.origin.x*tr.origin.x) + (tr.origin.z*tr.origin.z) - (tr.origin.y*tr.origin.y);
@@ -129,7 +131,7 @@ bool Cone::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Objec
 		*properties = this->properties();
 	}
 
-
+	++rayTracerStats.numOfHits;
 	return true;
 }
 

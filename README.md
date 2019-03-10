@@ -380,3 +380,9 @@ Version History:
 - Parse commands
 
 
+Known Issues:
+==============
+Under old version of gcc (7 or less), compilation sometime causes internal compiler error due to usage of BOOST lib, when using
+parrallel compilation. This problem seemed to be fixed on later version of gcc (8 or later).
+
+

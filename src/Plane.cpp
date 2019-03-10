@@ -8,11 +8,12 @@ using namespace glm;
 bool Plane::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties)
 {
 
-	Ray tr = this->invTransform() * r; // Transformed ray
-
 	GLfloat t = INFINITY;
 	vec3 ip, ip2;
 	vec3 n;
+	Ray tr = this->invTransform() * r; // Transformed ray
+
+	++rayTracerStats.numOfIntersectTests;
 
 	GLfloat nDotD = glm::dot(N, tr.direction);
 	if (abs(nDotD) < 0.001f) { /* Ray and plane are parallel - no intersection */
@@ -56,6 +57,8 @@ bool Plane::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Obje
 		*properties = this->properties();
 	}
 
+
+	++rayTracerStats.numOfHits;
 	return true;
 
 }

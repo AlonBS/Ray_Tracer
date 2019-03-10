@@ -277,8 +277,8 @@ Triangle::__iRay2(Ray &r,
 				  ObjectProperties* properties,
 				  vec2* texCoords)
 {
-	// Another close computation - to check validity of the other
 
+	// Another close computation - to check validity of the other
 	GLfloat a_dot_n;
 	GLfloat o_dot_n;
 	GLfloat d_dot_n;
@@ -288,6 +288,8 @@ Triangle::__iRay2(Ray &r,
 	vec3 APn, BPn, CPn;
 	GLfloat APw, BPw, CPw;
 	GLfloat alpha, beta, gamma;
+
+	++rayTracerStats.numOfIntersectTests;
 
 	// First - find intersection point
 	d_dot_n = dot(r.direction, N);
@@ -344,6 +346,8 @@ Triangle::__iRay2(Ray &r,
 		if (properties) {
 			*properties = _properties;
 		}
+
+		++rayTracerStats.numOfHits;
 		return true;
 	}
 

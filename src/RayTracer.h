@@ -8,13 +8,15 @@
 #ifndef RAYTRACER_H_
 #define RAYTRACER_H_
 
+#include <vector>
+#include <future>
+
 #include "GL/glew.h"
 #include "Image.h"
 #include "Scene.h"
 #include "Ray.h"
-
-#include <vector>
 #include "Camera.hpp"
+
 
 
 typedef struct Intersection {
@@ -30,6 +32,7 @@ typedef struct Intersection {
 }Intersection;
 
 
+
 class RayTracer {
 public:
 
@@ -41,7 +44,10 @@ public:
 	Image* rayTraceST(Scene& scene);
 
 
+
+
 private:
+
 
 	vec3 recursiveRayTrace(Scene& scene, Ray& ray, GLuint depth);
 

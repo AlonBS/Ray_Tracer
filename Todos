@@ -41,8 +41,10 @@ TODOs:
 - Fix texture on a cone shorter than double (DONE)
 - Fix general texture on object (Done)
 - Add the option to insert colors in RGB values instead of 0-1 in scenes. (DONE)
-- Add textures generation
 
+
+- Test normal transformation when creating meshes of object 
+- Add textures generation
 - Fix mesh properties multiply operator when value is not given (default) 
 - Fix folder structure and fix dependecy within scene to textures and models
 - Stop recursion of light contribution is minor. 

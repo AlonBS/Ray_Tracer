@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "Triangle.h"
+#include "Box.h"
 
 
 using namespace std;
@@ -40,13 +41,14 @@ private:
 	MeshProperties _properties;
 	vector<Triangle*> triangles;
 
+	Box* boundingBox;
+
 	glm::vec3 ambient;
 	glm::vec3 emmision;
 	glm::vec3 diffuse;
 	glm::vec3 specular;
 	GLfloat shininess;
 
-	//TODO - check memory free here.
 	Image *_ambientTexture;
 	Image *_diffuseTexture;
 	Image *_specularTexture;
@@ -69,7 +71,7 @@ public:
 	virtual ~Mesh();
 
 
-	bool intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, vec2* texCoords, MeshProperties* properties) ;
+	bool intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, vec2* texCoords, MeshProperties* properties);
 
 
 	vec3 getAmbientTextureColor(vec2& uv);
@@ -81,6 +83,8 @@ private:
 
 
     void __triangulate(vector<Vertex> vertices, vector<unsigned int> indices);
+
+    void __computeBoundingBox(vector<Vertex>& vertices);
 
 };
 #endif

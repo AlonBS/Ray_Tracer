@@ -37,6 +37,7 @@ Mesh::Mesh(vector<Vertex>& vertices,
  _specularTexture(specularTexture)
 {
 	__triangulate(vertices, indices);
+	__computeBoundingBox(vertices);
 }
 
 
@@ -48,6 +49,11 @@ Mesh::~Mesh()
 	}
 
 	triangles.clear();
+
+	if (boundingBox) {
+		delete(boundingBox);
+		boundingBox = nullptr;
+	}
 }
 
 
@@ -78,6 +84,38 @@ Mesh::__triangulate(vector<Vertex> vertices, vector<unsigned int> indices)
 
 	}
 
+
+
+}
+
+void
+Mesh::__computeBoundingBox(vector<Vertex>& vertices)
+{
+	vec3 minBound = vec3(INFINITY, INFINITY, INFINITY);
+	vec3 maxBound = vec3(-INFINITY, -INFINITY, -INFINITY);
+
+	for (Vertex v : vertices) {
+
+		// Min Bound Calc
+		if (v.Position.x < minBound.x)
+			minBound.x = v.Position.x;
+		if (v.Position.y < minBound.y)
+			minBound.y = v.Position.y;
+		if (v.Position.z < minBound.z)
+			minBound.z = v.Position.z;
+
+		// Max Bound Calc
+		if (v.Position.x > maxBound.x)
+			maxBound.x = v.Position.x;
+		if (v.Position.y > maxBound.y)
+			maxBound.y = v.Position.y;
+		if (v.Position.z > maxBound.z)
+			maxBound.z = v.Position.z;
+
+	}
+
+	boundingBox = new Box(minBound, maxBound);
+	boundingBox->print();
 }
 
 
@@ -89,6 +127,11 @@ Mesh::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, vec2* texC
 	GLfloat tDist;
 	vec3 tP, tN;
 	vec2 ttC;
+
+	// If we don't pass the bounding box test - we don't test each triangle of this mesh
+	if (!boundingBox->intersectsRay(r, tDist, nullptr, nullptr, nullptr, nullptr)) {
+		return false;
+	}
 
 	for (Triangle *t : triangles) {
 

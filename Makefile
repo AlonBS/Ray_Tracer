@@ -9,6 +9,7 @@ CFLAGS    = -Wall -Wextra -g -std=c++17 -pthread #-fopenmp
 CC        = g++
 SRC_DIR   = ./src
 SRCS      = $(SRC_DIR)/main.cpp \
+	    $(SRC_DIR)/General.cpp \
 	    $(SRC_DIR)/Image.cpp \
 	    $(SRC_DIR)/Ray.cpp \
 	    $(SRC_DIR)/RayTracer.cpp \
@@ -24,6 +25,7 @@ SRCS      = $(SRC_DIR)/main.cpp \
             $(SRC_DIR)/Box.cpp \
 	    $(SRC_DIR)/Cone.cpp \
 	    $(SRC_DIR)/Plane.cpp \
+	    
                         
 	    
 

@@ -5,27 +5,25 @@
  *      Author: alonbs
  */
 
-#include "RayTracer.h"
-#include <future>
 #include <thread>
 #include <mutex>
 #include <chrono>
 #include <iostream>
 #include <iomanip>
 #include <vector>
+
+#include "RayTracer.h"
 #include "General.h"
 
-using namespace std;
+//using namespace std;
 
 
 
-RayTracer::RayTracer() {
-	// TODO Auto-generated constructor stub
-
+RayTracer::RayTracer()
+{
 }
 
 RayTracer::~RayTracer() {
-	// TODO Auto-generated destructor stub
 }
 
 
@@ -36,7 +34,7 @@ Image* RayTracer::rayTraceMT(Scene& scene)
 
 	size_t max = scene.width() * scene.height();
 	size_t cores = std::thread::hardware_concurrency();
-	volatile atomic<size_t> count(0);
+	/*volatile*/ atomic<GLuint64> count(0);
 	vector<future<void>> future_vector;
 
 	while (cores--)
@@ -111,6 +109,8 @@ Image* RayTracer::rayTraceST(Scene& scene)
 vec3 RayTracer::recursiveRayTrace(Scene& scene, Ray & ray, GLuint depth)
 {
 	vec3 color = COLOR_BLACK;
+
+	++rayTracerStats.numOfRays;
 
 	if (depth == 0) {
 		return COLOR_BLACK;
@@ -288,3 +288,4 @@ vec3 RayTracer::__blinn_phong(const ObjectProperties& objProps,
 
 	return (diffuse + specular) * lightColor;
 }
+

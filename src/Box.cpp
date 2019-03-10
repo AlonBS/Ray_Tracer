@@ -13,6 +13,8 @@ bool Box::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Object
 	vec3 ip{}, ip2{};
 	vec3 n;
 
+	++rayTracerStats.numOfIntersectTests;
+
 	tmin = (bounds[tr.sign[0]].x - tr.origin.x) * tr.invDirection.x;
 	tmax = (bounds[1-tr.sign[0]].x - tr.origin.x) * tr.invDirection.x;
 	tymin = (bounds[tr.sign[1]].y - tr.origin.y) * tr.invDirection.y;
@@ -79,8 +81,8 @@ bool Box::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Object
 		*properties = this->properties();
 	}
 
+	++rayTracerStats.numOfHits;
 	return true;
-
 }
 
 

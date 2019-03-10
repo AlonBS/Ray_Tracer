@@ -30,6 +30,8 @@ bool Cylinder::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, O
 	bool single_intersection = false;
 	bool minCapIntersection = false, maxCapIntersection = false;
 
+	++rayTracerStats.numOfIntersectTests;
+
 	A = (tr.direction.x*tr.direction.x) + (tr.direction.z*tr.direction.z);
 	B = (2*tr.origin.x*tr.direction.x) + (2*tr.origin.z*tr.direction.z);
 	C = (tr.origin.x*tr.origin.x) + (tr.origin.z*tr.origin.z) - (radius * radius);
@@ -138,6 +140,9 @@ bool Cylinder::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, O
 	if (properties) {
 		*properties = this->properties();
 	}
+
+
+	++rayTracerStats.numOfHits;
 	return true;
 
 }
