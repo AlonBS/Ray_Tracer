@@ -38,6 +38,7 @@ Mesh::Mesh(vector<Vertex>& vertices,
 {
 	__triangulate(vertices, indices);
 	__computeBoundingBox(vertices);
+	__computeBoundingVolume(vertices);
 }
 
 
@@ -53,6 +54,11 @@ Mesh::~Mesh()
 	if (boundingBox) {
 		delete(boundingBox);
 		boundingBox = nullptr;
+	}
+
+	if (boundingVolume) {
+		delete(boundingVolume);
+		boundingVolume = nullptr;
 	}
 }
 
@@ -116,6 +122,15 @@ Mesh::__computeBoundingBox(vector<Vertex>& vertices)
 
 	boundingBox = new Box(minBound, maxBound);
 	boundingBox->print();
+}
+
+
+void
+Mesh::__computeBoundingVolume(vector<Vertex>& vertices)
+{
+	boundingVolume = new BoundingVolume();
+
+	boundingVolume->computeBounds(vertices);
 }
 
 

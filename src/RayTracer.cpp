@@ -33,7 +33,8 @@ Image* RayTracer::rayTraceMT(Scene& scene)
 	Image *image = new Image(scene.width(), scene.height());
 
 	size_t max = scene.width() * scene.height();
-	size_t cores = std::thread::hardware_concurrency();
+	size_t cores = std::thread::hardware_concurrency() / 2; // to not burn cpu.
+	cout << cores << endl;
 	/*volatile*/ atomic<GLuint64> count(0);
 	vector<future<void>> future_vector;
 

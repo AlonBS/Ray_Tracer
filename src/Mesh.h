@@ -7,22 +7,10 @@
 
 #include "Triangle.h"
 #include "Box.h"
+#include "BoundingVolume.h"
 
 
 using namespace std;
-
-struct Vertex {
-    // position
-    glm::vec3 Position;
-    // normal
-    glm::vec3 Normal;
-    // texCoords
-    glm::vec2 TexCoords;
-//    // tangent
-//    glm::vec3 Tangent;
-//    // bitangent
-//    glm::vec3 Bitangent;
-};
 
 
 typedef struct MeshProperties : ObjectProperties {
@@ -42,6 +30,7 @@ private:
 	vector<Triangle*> triangles;
 
 	Box* boundingBox;
+	BoundingVolume* boundingVolume;
 
 	glm::vec3 ambient;
 	glm::vec3 emmision;
@@ -85,6 +74,7 @@ private:
     void __triangulate(vector<Vertex> vertices, vector<unsigned int> indices);
 
     void __computeBoundingBox(vector<Vertex>& vertices);
+    void __computeBoundingVolume(vector<Vertex>& vertices);
 
 };
 #endif

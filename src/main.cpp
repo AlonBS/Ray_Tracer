@@ -182,6 +182,7 @@ static void render_scene(string fileName)
 		cout << "\t - Number of rays generated:               " << rayTracerStats.numOfRays << endl;
 		cout << "\t - Number of intersection tests performed: " << rayTracerStats.numOfIntersectTests << endl;
 		cout << "\t - Number of hits:                         " << rayTracerStats.numOfHits << endl;
+		cout << "\t - Hits to tests ratio:                    " << setprecision(2) << rayTracerStats.numOfHits / (GLfloat)rayTracerStats.numOfIntersectTests * 100.0 << "%" << endl;
 
 		cout << endl;
 	}
