@@ -34,7 +34,6 @@ Image* RayTracer::rayTraceMT(Scene& scene)
 
 	size_t max = scene.width() * scene.height();
 	size_t cores = std::thread::hardware_concurrency() / 2; // to not burn cpu.
-	cout << cores << endl;
 	/*volatile*/ atomic<GLuint64> count(0);
 	vector<future<void>> future_vector;
 
@@ -166,6 +165,17 @@ Intersection RayTracer::intersectScene(Scene & scene, Ray& ray)
 
 	for (Object *object : scene.getObjects()) {
 
+//		BV = object->GetBoundinGVolume();
+//		if (BV) {
+//			/* Not all object have bounding volumes */
+//			BV->intersect(ray, BV_dist);
+//		}
+//
+//		if (minDist < BV_dist) {
+//			// not point in testing intersection - the object(s) contained within the volume cannot be the winning object
+//			continue;
+//		}
+
 		if (object->intersectsRay(ray, &dist, &point, &normal, &texColors, &objProps)) {
 
 			if (dist < minDist) {
@@ -181,7 +191,7 @@ Intersection RayTracer::intersectScene(Scene & scene, Ray& ray)
 		}
 	}
 
-	if (minDist == FLT_MAX) {
+	if (minDist == INFINITY) {
 		hit.isValid = false;
 	}
 
