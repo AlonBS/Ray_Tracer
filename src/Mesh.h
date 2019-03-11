@@ -60,7 +60,7 @@ public:
 	virtual ~Mesh();
 
 
-	bool intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, vec2* texCoords, MeshProperties* properties);
+	bool intersectsRay(const Ray& r, GLfloat* dist, vec3* point, vec3* normal, vec2* texCoords, MeshProperties* properties);
 
 
 	vec3 getAmbientTextureColor(vec2& uv);

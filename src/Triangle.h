@@ -22,8 +22,8 @@ private:
 		vec2 Auv, Buv, Cuv; // Vertices texture uv-mapping
 		vec3 N;     		// Face normal to the triangle
 
-		bool __iRay (Ray &r, GLfloat &dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties, vec2* texCoords=nullptr);
-		bool __iRay2(Ray &r, GLfloat &dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties, vec2* texCoords=nullptr);
+		bool __iRay (const Ray& r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties, vec2* texCoords=nullptr);
+		bool __iRay2(const Ray& r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties, vec2* texCoords=nullptr);
 
 public:
 
@@ -37,9 +37,9 @@ public:
 
 	virtual ~Triangle();
 
-	virtual bool intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties);
+	virtual bool intersectsRay(const Ray& r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties);
 
-	bool intersectsRayM(Ray &r, GLfloat &dist, vec3* point, vec3* normal, vec2* texCoords);
+	bool intersectsRayM(const Ray& r, GLfloat* dist, vec3* point, vec3* normal, vec2* texCoords);
 
 	virtual void print() const;
 };

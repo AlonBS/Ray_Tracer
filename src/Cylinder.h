@@ -36,7 +36,7 @@ public:
 	}
 	virtual ~Cylinder() {}
 
-	virtual bool intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties);
+	virtual bool intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties);
 
 	virtual void print() const;
 };

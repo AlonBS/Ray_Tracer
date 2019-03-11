@@ -5,7 +5,7 @@
 using namespace glm;
 
 
-bool Plane::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties)
+bool Plane::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties)
 {
 
 	GLfloat t = INFINITY;
@@ -34,7 +34,7 @@ bool Plane::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Obje
 	ip2 = ip;
 	ip = vec3(this->transform() * vec4(ip, 1.0f));
 	// The distance is the length of the original intersection point with the origin of the non transformed ray.
-	dist = length(ip - r.origin);
+	*dist = length(ip - r.origin);
 
 	if (point) {
 		*point = ip;

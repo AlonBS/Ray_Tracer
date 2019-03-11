@@ -32,7 +32,7 @@ private:
 	static const int NUM_OF_SET_NORMALS = 7;
 	static const vec3 planeSetNormals[NUM_OF_SET_NORMALS];
 
-	SlabDist dists[7];
+	SlabDist dists[NUM_OF_SET_NORMALS];
 
 
 public:
@@ -40,6 +40,8 @@ public:
 	BoundingVolume();
 
 	void computeBounds(vector<Vertex>& vertices);
+
+	bool intersectRay(const Ray &r);
 
 
 	void print() const;

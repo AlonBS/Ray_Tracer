@@ -14,6 +14,8 @@ Current list of features supported:
 - Multi-core rendering and Single-Core rendering. 
 - Command line argument parse
 - Saved image formats supported: .png, .jpeg, .jpg, .bmp, .tiff
+- Ray tracing accelerations using bounding box and bounding volume (Kay and Kajiya 1986)
+- Statistics about rendering
 
 
 
@@ -47,6 +49,8 @@ Usage:
 		                  jpeg, jpg, bmp, tiff.
 	  -s [ --single-thread ]  Flag to force single thread rendering. Default 
 		                  behavior is multi-threaded.
+	    --stats               Generate and print statistics about each scene 
+                    		  rendered.
 
 	Other values are specified within each scene separately. 
 
@@ -304,6 +308,15 @@ The result image can be found in "./Rendered_Scenes/ExampleSphere_result.png
 
 Version History:
 =================
+
+2.2:
+- Added bounding box as a (simple) acceleration structure.
+- Added bounding volume as suggested by Kay and Kajiya (1986) 
+- Both optimizations currently only apply to complex objects (i.e. - non primitives) 
+- Added stats when rendering each scene.
+- Change ray-intersection routine 
+- Fixed bugs regarding meshes and model loading. 
+
 2.1:
 - Added primitive - (infinite plane). Also supports all transformations, to achieve general plane. 
 - Added 3 textures patterns to infinite plane - Repeated, Mirrored-Repeated and Clamp-To-Edge. 

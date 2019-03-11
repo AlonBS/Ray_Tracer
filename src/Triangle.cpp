@@ -55,7 +55,7 @@ Triangle::~Triangle()
 }
 
 
-bool Triangle::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties)
+bool Triangle::intersectsRay(const Ray& r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties)
 {
 	GLfloat 		 /*dist1,*/ dist2;
 	vec3    		 /*point1,*/ point2;
@@ -67,7 +67,7 @@ bool Triangle::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, O
 	// This is used for implementation stages - we use the other intersection as back up -
 	// will be removed later on
 //	res1 = __iRay(r, dist1, point1, norm1, &texColor1, &properties1);
-	res2 = __iRay2(r, dist2, &point2, &norm2, &texColors2, &properties2);
+	res2 = __iRay2(r, &dist2, &point2, &norm2, &texColors2, &properties2);
 //
 //	assert(res1 == res2);
 //
@@ -98,7 +98,7 @@ bool Triangle::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, O
 //	}
 
 
-	dist = dist2;
+	*dist = dist2;
 	if (point)
 		*point = point2;
 	if (normal)
@@ -114,7 +114,7 @@ bool Triangle::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, O
 
 
 bool
-Triangle::intersectsRayM(Ray &r, GLfloat &dist, vec3* point, vec3* normal, vec2* texCoords)
+Triangle::intersectsRayM(const Ray& r, GLfloat* dist, vec3* point, vec3* normal, vec2* texCoords)
 {
 	GLfloat 		 /*dist1,*/ dist2;
 	vec3    		 /*point1,*/ point2;
@@ -125,7 +125,7 @@ Triangle::intersectsRayM(Ray &r, GLfloat &dist, vec3* point, vec3* normal, vec2*
 	// This is used for implementation stages - we use the other intersection as back up -
 	// will be removed later on
 	//	res1 = __iRay(r, dist1, point1, norm1, &texColor1, &properties1);
-	res2 = __iRay2(r, dist2, &point2, &norm2, nullptr, nullptr, &texCoords2);
+	res2 = __iRay2(r, &dist2, &point2, &norm2, nullptr, nullptr, &texCoords2);
 	//
 	//	assert(res1 == res2);
 	//
@@ -156,7 +156,7 @@ Triangle::intersectsRayM(Ray &r, GLfloat &dist, vec3* point, vec3* normal, vec2*
 	//	}
 
 
-	dist = dist2;
+	*dist = dist2;
 	if (point)
 		*point = point2;
 	if (normal)
@@ -172,8 +172,8 @@ Triangle::intersectsRayM(Ray &r, GLfloat &dist, vec3* point, vec3* normal, vec2*
 
 
 bool
-Triangle::__iRay(Ray &r,
-				 GLfloat &dist,
+Triangle::__iRay(const Ray& r,
+				 GLfloat* dist,
 				 vec3* point,
 				 vec3* normal, ObjectTexColors* texColors,
 				 ObjectProperties* properties,
@@ -245,7 +245,7 @@ Triangle::__iRay(Ray &r,
 
 	// Check if point is in triangle
 	if ( (beta >= 0) && (gamma >= 0) && (beta + gamma < 1) ){
-		dist = t;
+		*dist = t;
 		if (point)
 			*point = P;
 		if (normal)
@@ -269,8 +269,8 @@ Triangle::__iRay(Ray &r,
 
 
 bool
-Triangle::__iRay2(Ray &r,
-				  GLfloat &dist,
+Triangle::__iRay2(const Ray& r,
+				  GLfloat* dist,
 				  vec3* point,
 				  vec3* normal,
 				  ObjectTexColors* texColors,
@@ -327,7 +327,7 @@ Triangle::__iRay2(Ray &r,
 	gamma = dot(CPn, P) + CPw;
 
 	if (alpha >= 0 && alpha <= 1 && beta >= 0 && beta <= 1 && gamma >= 0 && gamma <= 1) {
-		dist = t;
+		*dist = t;
 		if (point)
 			*point = P;
 		if (normal)

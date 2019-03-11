@@ -1,7 +1,7 @@
 #include "Cone.h"
 
 
-bool Cone::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties)
+bool Cone::intersectsRay(const Ray& r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties)
 {
 	// To find intersection between Ray and canonical Cone (aligned to the y-axis), we need to solve the following equation:
 	// 	Cylinder: x^2 + z^2 = y^2
@@ -110,7 +110,7 @@ bool Cone::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Objec
 	ip2 = ip; // for texture - we need the non transformed position
 	ip = vec3(this->transform() * vec4(ip, 1.0f));
 	// The distance is the length of the original intersection point with the origin of the non transformed ray.
-	dist = length(ip - r.origin);
+	*dist = length(ip - r.origin);
 
 	if (point) {
 		*point = ip;

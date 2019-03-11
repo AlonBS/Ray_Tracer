@@ -135,7 +135,7 @@ Mesh::__computeBoundingVolume(vector<Vertex>& vertices)
 
 
 bool
-Mesh::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, vec2* texCoords, MeshProperties* properties)
+Mesh::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, vec2* texCoords, MeshProperties* properties)
 {
 	GLfloat minDist = INFINITY;
 
@@ -144,7 +144,11 @@ Mesh::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, vec2* texC
 	vec2 ttC;
 
 	// If we don't pass the bounding box test - we don't test each triangle of this mesh
-	if (!boundingBox->intersectsRay(r, tDist, nullptr, nullptr, nullptr, nullptr)) {
+//	if (!boundingBox->intersectsRay(r, &tDist, nullptr, nullptr, nullptr, nullptr)) {
+//		return false;
+//	}
+
+	if (!boundingVolume->intersectRay(r)) {
 		return false;
 	}
 
@@ -153,11 +157,11 @@ Mesh::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, vec2* texC
 		/* When we iterate over triangles as part of mesh - we take the properties of the mesh
 		 * and not the triangle. In fact, this triangle doesn't have other but default properties
 		 */
-		if (t->intersectsRayM(r, tDist, &tP, &tN, &ttC)) {
+		if (t->intersectsRayM(r, &tDist, &tP, &tN, &ttC)) {
 
 			if (tDist < minDist) {
 
-				dist = minDist = tDist;
+				*dist = minDist = tDist;
 				if (point) *point = tP;
 				if (normal) *normal = tN;
 				if (texCoords) *texCoords = ttC;

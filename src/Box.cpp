@@ -5,7 +5,7 @@ using namespace glm;
 
 
 
-bool Box::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties)
+bool Box::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties)
 {
 
 	Ray tr = this->invTransform() * r; // Transformed ray
@@ -62,7 +62,7 @@ bool Box::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, Object
 	ip2 = ip;
 	ip = vec3(this->transform() * vec4(ip, 1.0f));
 	// The distance is the length of the original intersection point with the origin of the non transformed ray.
-	dist = length(ip - r.origin);
+	*dist = length(ip - r.origin);
 
 	if (point) {
 		*point = ip;

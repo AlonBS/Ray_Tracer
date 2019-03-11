@@ -166,7 +166,7 @@ Intersection RayTracer::intersectScene(Scene & scene, Ray& ray)
 
 	for (Object *object : scene.getObjects()) {
 
-		if (object->intersectsRay(ray, dist, &point, &normal, &texColors, &objProps)) {
+		if (object->intersectsRay(ray, &dist, &point, &normal, &texColors, &objProps)) {
 
 			if (dist < minDist) {
 
@@ -257,7 +257,7 @@ bool RayTracer::isVisibleToLight(vector<Object*>& objects, Ray& shadowRay, GLflo
 	vec3 point, normal;
 	for (Object * o : objects) {
 
-		if (o->intersectsRay(shadowRay, dist, nullptr, nullptr, nullptr, nullptr)) {
+		if (o->intersectsRay(shadowRay, &dist, nullptr, nullptr, nullptr, nullptr)) {
 
 			// If there's a intersection to a object which is within limit (no 'after' the light)
 			// then there's no visibility

@@ -43,7 +43,7 @@ Model::~Model()
 
 
 bool
-Model::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties)
+Model::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties)
 {
 	GLfloat minDist = INFINITY;
 
@@ -54,11 +54,11 @@ Model::intersectsRay(Ray &r, GLfloat &dist, vec3* point, vec3* normal, ObjectTex
 
 	for (Mesh *m : meshes) {
 
-		if (m->intersectsRay(r, tDist, &tP, &tN, &ttC, &meshProps)) {
+		if (m->intersectsRay(r, &tDist, &tP, &tN, &ttC, &meshProps)) {
 
 			if (tDist < minDist) {
 
-				dist = minDist = tDist;
+				*dist = minDist = tDist;
 				if (point)  *point = tP;
 				if (normal) *normal = tN;
 
