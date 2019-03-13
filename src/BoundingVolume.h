@@ -24,20 +24,6 @@ typedef struct SlabDist {
 }SlabDist;
 
 
-// TODO - CHANGE
-typedef struct Intersection {
-
-	bool isValid;
-
-	GLfloat dist;
-
-	vec3 point;
-	vec3 normal;
-	ObjectTexColors texColors;
-
-	ObjectProperties properties; // The object's properties at intersection
-
-}Intersection;
 
 
 
@@ -57,11 +43,11 @@ private:
 
 		Extent(Mesh* mesh);
 		void __computeBounds(vector<Vertex>& vertices);
-		bool intersectRay(const Ray &r);
+		bool intersectRay(const Ray &r, GLfloat* dist);
 		void print() const;
 
 
-		const Mesh* mesh;
+		Mesh* mesh;
 		SlabDist dists[NUM_OF_SET_NORMALS];
 	};
 
@@ -75,7 +61,18 @@ public:
 	BoundingVolume(Object* obj);
 	~BoundingVolume();
 
-	bool intersectRay(IN const Ray& r, IN const GLfloat& minDist, OUT Intersection* HIT);
+	//bool intersectRay(IN const Ray& r, IN const GLfloat& minDist, OUT Intersection* HIT);
+
+
+	bool intersectRay(const Ray &r,
+					  GLfloat &minDist,
+					  GLfloat* dist,
+					  vec3* point,
+					  vec3* normal,
+					  ObjectTexColors* texColors,
+					  ObjectProperties* properties);
+
+
 
 	void print() const;
 

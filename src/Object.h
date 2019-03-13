@@ -35,6 +35,22 @@ typedef struct ObjectTexColors {
 
 }ObjectTexColors;
 
+
+// TODO - CHANGE
+typedef struct Intersection {
+
+	bool isValid;
+
+	GLfloat dist;
+	vec3 point;
+	vec3 normal;
+	ObjectTexColors texColors;
+
+	ObjectProperties properties; // The object's properties at intersection
+
+}Intersection;
+
+
 class Object {
 
 private:
@@ -67,13 +83,13 @@ protected:
 
 	//bool _textured;
 
+public:
 
 	vec3 getAmbientTextureColor(vec2& uv);
 	vec3 getDiffuseTextureColor(vec2& uv);
 	vec3 getSpecularTextureColor(vec2& uv);
 
 
-public:
 
 
 	Object(bool isPrimitive=true);

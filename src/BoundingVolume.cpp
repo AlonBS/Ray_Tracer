@@ -43,18 +43,64 @@ BoundingVolume::~BoundingVolume()
 }
 
 
-bool BoundingVolume::intersectRay(IN const Ray& r, IN const GLfloat& minDist, OUT Intersection* hit)
+bool BoundingVolume::intersectRay(const Ray &r,
+		  	  	  	  	  	  	  GLfloat &minDist,
+								  GLfloat* dist,
+								  vec3* point,
+								  vec3* normal,
+								  ObjectTexColors* texColors,
+								  ObjectProperties* properties)
 {
 
+	bool intersect = false;
+	GLfloat tNear;
+	GLfloat closestDist = minDist; // We iterate over the extents of the object - if we intersect some
+								   // extent which is more far than the current closest object, we
+	 	 	 	 	 	 	 	   // don't bother do test with mesh it bounds.
+	vec3 tP, tN;
+	vec2 ttC;
+	MeshProperties meshProps;
+
 	if (boundObject->isPrimitive()) {
-		return boundObject->intersectsRay(r, &hit->dist, &hit->point, &hit->normal, &hit->texColors, &hit->properties);
+		intersect = boundObject->intersectsRay(r, dist, point, normal, texColors, properties);
+		if (intersect && *dist < minDist) {
+			return true;
+		}
+		return false;
 	}
 
+
+
 	// TODO - need to sort them
-	for (Extent)
+	for (Extent* e : extents) {
 
+		e->intersectRay(r,  &tNear);
 
-	return false;
+		if (tNear < closestDist) {
+
+			if (e->mesh->intersectsRay(r, &closestDist, &tP, &tN, &ttC, &meshProps))
+			{
+				if (point)  *point = tP;
+				if (normal) *normal = tN;
+
+				if (texColors) {
+					texColors->_ambientTexColor  = e->mesh->getAmbientTextureColor(ttC) * this->boundObject->getAmbientTextureColor(ttC);
+					texColors->_diffuseTexColor  = e->mesh->getDiffuseTextureColor(ttC) * this->boundObject->getDiffuseTextureColor(ttC);
+					texColors->_specularTexColor = e->mesh->getSpecularTextureColor(ttC) * this->boundObject->getSpecularTextureColor(ttC);
+				}
+
+				if (properties) *properties = meshProps * boundObject->properties();
+
+			}
+		}
+	}
+
+	// If it is still the case - then no new closer intersection was found
+	if (closestDist == minDist) {
+		return false;
+	}
+
+	return true;
 }
 
 
@@ -108,7 +154,7 @@ void BoundingVolume::Extent::__computeBounds(vector<Vertex>& vertices)
 
 
 
-bool BoundingVolume::Extent::intersectRay(const Ray &r)
+bool BoundingVolume::Extent::intersectRay(const Ray &r, GLfloat* dist)
 {
 
 	GLfloat t_far_final = INFINITY, t_near_final = -INFINITY;
@@ -135,6 +181,7 @@ bool BoundingVolume::Extent::intersectRay(const Ray &r)
 	}
 
 	if (t_far_final > t_near_final) {
+		*dist = t_near_final;
 		return true;
 	}
 

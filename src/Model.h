@@ -32,6 +32,7 @@ public:
 
     virtual ~Model();
 
+    // TODO - currently this won't be in use - refactor code
     virtual bool intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties);
 
 

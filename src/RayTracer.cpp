@@ -161,23 +161,36 @@ Intersection RayTracer::intersectScene(Scene & scene, Ray& ray)
 	ObjectTexColors texColors;
 	ObjectProperties objProps;
 
-	Intersection hit;
+	Intersection hit =
+	{
+			.isValid = false
+	};
 
 
 	for (BoundingVolume* bv : scene.getBoundingVolumes() ) {
 
-		if (bv->intersect(ray, minDist, &hit)) {
+		if (bv->intersectRay(ray, minDist, &dist, &point, &normal, &texColors, &objProps)) {
 
+			minDist = hit.dist;
+			minDist = dist;
+			hit.point = point;
+			hit.normal = normal;
+			hit.texColors = texColors;
+
+			hit.properties = objProps;
+			hit.isValid = true;
 		}
 	}
 
-		bool = bv.intersect([IN]ray, [IN]minDist, [OUT]OBJECT ETC) {
+	return hit;
 
-		if (intersect ) {
-
-			HIT;
-		}
-	}
+//		bool = bv.intersect([IN]ray, [IN]minDist, [OUT]OBJECT ETC) {
+//
+//		if (intersect ) {
+//
+//			HIT;
+//		}
+//	}
 
 
 

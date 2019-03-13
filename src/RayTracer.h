@@ -19,19 +19,6 @@
 
 
 
-typedef struct Intersection {
-
-	bool isValid;
-
-	vec3 point;
-	vec3 normal;
-	ObjectTexColors texColors;
-
-	ObjectProperties properties; // The object's properties at intersection
-
-}Intersection;
-
-
 
 class RayTracer {
 public:
