@@ -41,7 +41,6 @@ typedef struct Intersection {
 
 	bool isValid;
 
-	GLfloat dist;
 	vec3 point;
 	vec3 normal;
 	ObjectTexColors texColors;
