@@ -163,18 +163,26 @@ Intersection RayTracer::intersectScene(Scene & scene, Ray& ray)
 
 	Intersection hit;
 
-	for (Object *object : scene.getObjects()) {
 
-//		BV = object->GetBoundinGVolume();
-//		if (BV) {
-//			/* Not all object have bounding volumes */
-//			BV->intersect(ray, BV_dist);
-//		}
-//
-//		if (minDist < BV_dist) {
-//			// not point in testing intersection - the object(s) contained within the volume cannot be the winning object
-//			continue;
-//		}
+	for (BoundingVolume* bv : scene.getBoundingVolumes() ) {
+
+		if (bv->intersect(ray, minDist, &hit)) {
+
+		}
+	}
+
+		bool = bv.intersect([IN]ray, [IN]minDist, [OUT]OBJECT ETC) {
+
+		if (intersect ) {
+
+			HIT;
+		}
+	}
+
+
+
+
+	for (Object *object : scene.getObjects()) {
 
 		if (object->intersectsRay(ray, &dist, &point, &normal, &texColors, &objProps)) {
 

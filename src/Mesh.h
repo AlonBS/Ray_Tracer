@@ -7,7 +7,6 @@
 
 #include "Triangle.h"
 #include "Box.h"
-#include "BoundingVolume.h"
 
 
 using namespace std;
@@ -29,8 +28,10 @@ private:
 	MeshProperties _properties;
 	vector<Triangle*> triangles;
 
-	Box* boundingBox;
-	BoundingVolume* boundingVolume;
+	vector<Vertex> _vertices;
+
+	//	Box* boundingBox; TODO - remove
+	//	BoundingVolume* boundingVolume; TODO - remove
 
 	glm::vec3 ambient;
 	glm::vec3 emmision;
@@ -50,11 +51,11 @@ public:
 
 
 	Mesh(vector<Vertex>& vertices,
-		 vector<unsigned int>& indices,
-		 MeshProperties& properties,
-		 Image *ambientTexture,
-		 Image *diffuseTexture,
-		 Image *specualrTexture);
+			vector<unsigned int>& indices,
+			MeshProperties& properties,
+			Image *ambientTexture,
+			Image *diffuseTexture,
+			Image *specualrTexture);
 
 
 	virtual ~Mesh();
@@ -67,14 +68,16 @@ public:
 	vec3 getDiffuseTextureColor(vec2& uv);
 	vec3 getSpecularTextureColor(vec2& uv);
 
+	vector<Vertex>& getVertices() { return _vertices; }
+
 
 private:
 
 
-    void __triangulate(vector<Vertex> vertices, vector<unsigned int> indices);
+	void __triangulate(vector<Vertex> vertices, vector<unsigned int> indices);
 
-    void __computeBoundingBox(vector<Vertex>& vertices);
-    void __computeBoundingVolume(vector<Vertex>& vertices);
+	//    void __computeBoundingBox(vector<Vertex>& vertices);
+	//    void __computeBoundingVolume(vector<Vertex>& vertices);
 
 };
 #endif

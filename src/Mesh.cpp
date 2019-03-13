@@ -36,9 +36,10 @@ Mesh::Mesh(vector<Vertex>& vertices,
  _diffuseTexture(diffuseTexture),
  _specularTexture(specularTexture)
 {
+	_vertices = vertices; // Yes - this is shit, but a must for now
 	__triangulate(vertices, indices);
-	__computeBoundingBox(vertices);
-	__computeBoundingVolume(vertices);
+//	__computeBoundingBox(vertices);
+//	__computeBoundingVolume(vertices);
 }
 
 
@@ -51,15 +52,15 @@ Mesh::~Mesh()
 
 	triangles.clear();
 
-	if (boundingBox) {
-		delete(boundingBox);
-		boundingBox = nullptr;
-	}
-
-	if (boundingVolume) {
-		delete(boundingVolume);
-		boundingVolume = nullptr;
-	}
+//	if (boundingBox) {
+//		delete(boundingBox);
+//		boundingBox = nullptr;
+//	}
+//
+//	if (boundingVolume) {
+//		delete(boundingVolume);
+//		boundingVolume = nullptr;
+//	}
 }
 
 
@@ -93,45 +94,46 @@ Mesh::__triangulate(vector<Vertex> vertices, vector<unsigned int> indices)
 
 
 }
+//
+//void
+//Mesh::__computeBoundingBox(vector<Vertex>& vertices)
+//{
+//	vec3 minBound = vec3(INFINITY, INFINITY, INFINITY);
+//	vec3 maxBound = vec3(-INFINITY, -INFINITY, -INFINITY);
+//
+//	for (Vertex v : vertices) {
+//
+//		// Min Bound Calc
+//		if (v.Position.x < minBound.x)
+//			minBound.x = v.Position.x;
+//		if (v.Position.y < minBound.y)
+//			minBound.y = v.Position.y;
+//		if (v.Position.z < minBound.z)
+//			minBound.z = v.Position.z;
+//
+//		// Max Bound Calc
+//		if (v.Position.x > maxBound.x)
+//			maxBound.x = v.Position.x;
+//		if (v.Position.y > maxBound.y)
+//			maxBound.y = v.Position.y;
+//		if (v.Position.z > maxBound.z)
+//			maxBound.z = v.Position.z;
+//
+//	}
+//
+//	//TODO - REMOVE
+////	boundingBox = new Box(minBound, maxBound);
+////	boundingBox->print();
+//}
 
-void
-Mesh::__computeBoundingBox(vector<Vertex>& vertices)
-{
-	vec3 minBound = vec3(INFINITY, INFINITY, INFINITY);
-	vec3 maxBound = vec3(-INFINITY, -INFINITY, -INFINITY);
 
-	for (Vertex v : vertices) {
-
-		// Min Bound Calc
-		if (v.Position.x < minBound.x)
-			minBound.x = v.Position.x;
-		if (v.Position.y < minBound.y)
-			minBound.y = v.Position.y;
-		if (v.Position.z < minBound.z)
-			minBound.z = v.Position.z;
-
-		// Max Bound Calc
-		if (v.Position.x > maxBound.x)
-			maxBound.x = v.Position.x;
-		if (v.Position.y > maxBound.y)
-			maxBound.y = v.Position.y;
-		if (v.Position.z > maxBound.z)
-			maxBound.z = v.Position.z;
-
-	}
-
-	boundingBox = new Box(minBound, maxBound);
-	boundingBox->print();
-}
-
-
-void
-Mesh::__computeBoundingVolume(vector<Vertex>& vertices)
-{
-	boundingVolume = new BoundingVolume();
-
-	boundingVolume->computeBounds(vertices);
-}
+//void
+//Mesh::__computeBoundingVolume(vector<Vertex>& vertices)
+//{
+//	boundingVolume = new BoundingVolume();
+//
+//	boundingVolume->computeBounds(vertices);
+//}
 
 
 bool
@@ -148,9 +150,9 @@ Mesh::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, vec2
 //		return false;
 //	}
 
-	if (!boundingVolume->intersectRay(r)) {
-		return false;
-	}
+//	if (!boundingVolume->intersectRay(r)) {
+//		return false;
+//	}
 
 	for (Triangle *t : triangles) {
 

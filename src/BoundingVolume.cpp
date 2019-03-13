@@ -1,4 +1,5 @@
 #include "BoundingVolume.h"
+#include "Model.h"
 
 
 using namespace glm;
@@ -16,17 +17,81 @@ const vec3 BoundingVolume::planeSetNormals[7] =
 };
 
 
-BoundingVolume::BoundingVolume()
+BoundingVolume::BoundingVolume(Object* obj)
+: boundObject(obj)
+{
+
+	if (obj->isPrimitive()) {
+		extents.clear();
+	}
+	else {
+		Model* model = static_cast<Model*>(obj);
+		for (Mesh* mesh : model->meshes) {
+			extents.push_back(new Extent(mesh));
+		}
+
+	}
+}
+
+
+BoundingVolume::~BoundingVolume()
+{
+	for (Extent* e : extents) {
+		delete(e);
+	}
+	extents.clear();
+}
+
+
+bool BoundingVolume::intersectRay(IN const Ray& r, IN const GLfloat& minDist, OUT Intersection* hit)
+{
+
+	if (boundObject->isPrimitive()) {
+		return boundObject->intersectsRay(r, &hit->dist, &hit->point, &hit->normal, &hit->texColors, &hit->properties);
+	}
+
+	// TODO - need to sort them
+	for (Extent)
+
+
+	return false;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+BoundingVolume::Extent::Extent(Mesh* m)
+: mesh(m)
 {
 	for (int i = 0 ; i < NUM_OF_SET_NORMALS ; ++i)
 	{
 		this->dists[i].dNear = INFINITY;
 		this->dists[i].dFar = -INFINITY;
 	}
+
+	__computeBounds(m->getVertices());
+
 }
 
 
-void BoundingVolume::computeBounds(vector<Vertex>& vertices)
+void BoundingVolume::Extent::__computeBounds(vector<Vertex>& vertices)
 {
 	GLfloat d;
 
@@ -41,7 +106,9 @@ void BoundingVolume::computeBounds(vector<Vertex>& vertices)
 	}
 }
 
-bool BoundingVolume::intersectRay(const Ray &r)
+
+
+bool BoundingVolume::Extent::intersectRay(const Ray &r)
 {
 
 	GLfloat t_far_final = INFINITY, t_near_final = -INFINITY;
@@ -76,7 +143,7 @@ bool BoundingVolume::intersectRay(const Ray &r)
 
 
 
-void BoundingVolume::print() const
+void BoundingVolume::Extent::print() const
 {
 	for (int i = 0 ; i < NUM_OF_SET_NORMALS ; ++i) {
 		printVec3("Norm", planeSetNormals[i]);

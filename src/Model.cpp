@@ -17,7 +17,7 @@ using namespace std;
 unsigned int TextureFromFile(const char *path, const string &directory, bool gamma = false);
 
 Model::Model(string const &path, mat4& transform, mat3& invTransposeTrans)
-:Object()
+:Object(false)
 {
 	this->transform() = transform;
 	this->invTransposeTrans() = invTransposeTrans;

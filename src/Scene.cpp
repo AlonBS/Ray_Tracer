@@ -36,3 +36,16 @@ Scene::~Scene() {
 	_directionalLights.clear();
 }
 
+
+void Scene::constructAccelerationStructures()
+{
+	// TODO - this will be update with Oct-tree on next stages
+
+	for (Object* obj : _objects)
+	{
+
+		_boundingVolumes.push_back(new BoundingVolume(obj));
+
+	}
+}
+

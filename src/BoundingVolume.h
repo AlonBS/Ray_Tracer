@@ -13,13 +13,33 @@
 #include <vector>
 
 #include "Object.h"
+#include "Model.h"
 
 typedef struct SlabDist {
 
 	GLfloat dNear;
 	GLfloat dFar;
 
+
 }SlabDist;
+
+
+// TODO - CHANGE
+typedef struct Intersection {
+
+	bool isValid;
+
+	GLfloat dist;
+
+	vec3 point;
+	vec3 normal;
+	ObjectTexColors texColors;
+
+	ObjectProperties properties; // The object's properties at intersection
+
+}Intersection;
+
+
 
 
 /**
@@ -32,17 +52,30 @@ private:
 	static const int NUM_OF_SET_NORMALS = 7;
 	static const vec3 planeSetNormals[NUM_OF_SET_NORMALS];
 
-	SlabDist dists[NUM_OF_SET_NORMALS];
+	/* Only for models - i.e. for complex objects */
+	struct Extent {
 
+		Extent(Mesh* mesh);
+		void __computeBounds(vector<Vertex>& vertices);
+		bool intersectRay(const Ray &r);
+		void print() const;
+
+
+		const Mesh* mesh;
+		SlabDist dists[NUM_OF_SET_NORMALS];
+	};
+
+	Object* boundObject; /* Currently -we only support one object per bounding volume */
+	vector<Extent*> extents;
 
 public:
 
-	BoundingVolume();
 
-	void computeBounds(vector<Vertex>& vertices);
 
-	bool intersectRay(const Ray &r);
+	BoundingVolume(Object* obj);
+	~BoundingVolume();
 
+	bool intersectRay(IN const Ray& r, IN const GLfloat& minDist, OUT Intersection* HIT);
 
 	void print() const;
 

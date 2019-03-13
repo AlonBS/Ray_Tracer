@@ -12,6 +12,7 @@
 #include "Object.h"
 #include "Lights.h"
 #include "Camera.hpp"
+#include "BoundingVolume.h"
 
 
 class Scene {
@@ -30,6 +31,10 @@ private:
 	std::vector<DirectionalLight*>  _directionalLights;
 
 	Attenuation_t _attenuation;
+
+
+
+	std::vector<BoundingVolume*>	_boundingVolumes;
 
 
 public:
@@ -61,6 +66,11 @@ public:
 	std::vector<DirectionalLight*>& getDirectionalLights() { return _directionalLights; }
 
 	Attenuation_t& attenuation() { return _attenuation; }
+
+
+	std::vector<BoundingVolume*>& getBoundingVolumes() { return _boundingVolumes; }
+	void constructAccelerationStructures();
+
 
 };
 

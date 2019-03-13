@@ -14,6 +14,8 @@
 #include <iostream>
 #include <future>
 
+
+
 using namespace glm;
 using namespace std;
 
@@ -42,6 +44,9 @@ typedef struct RayTracerStats {
 extern RayTracerStats rayTracerStats;
 
 void clearStats();
+
+#define IN
+#define OUT
 
 
 //const GLfloat EPSILON  = 0.00000000001f;

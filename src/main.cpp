@@ -162,6 +162,8 @@ static void render_scene(string fileName)
 	RayTracer rayTracer;
 	Image *img = nullptr;
 
+	scene->constructAccelerationStructures();
+
 	if (singleThreaded) {
 		img = rayTracer.rayTraceST(*scene);
 	}

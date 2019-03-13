@@ -7,7 +7,9 @@
 
 #include "Object.h"
 
-Object::Object() {
+Object::Object(bool isPrimitive) {
+
+	 _isPrimitive = isPrimitive;
 
 	_properties._ambient = vec3(0.0f, 0.0f, 0.0f);
 	_properties._emission = vec3(0.0f, 0.0f, 0.0f);

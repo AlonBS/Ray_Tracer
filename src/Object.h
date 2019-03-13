@@ -39,6 +39,8 @@ class Object {
 
 private:
 
+	bool _isPrimitive;
+
 
 
 //	vec3 _ambient;
@@ -74,7 +76,7 @@ protected:
 public:
 
 
-	Object();
+	Object(bool isPrimitive=true);
 	virtual ~Object();
 
 	void setTexture(Image *texture);
@@ -86,6 +88,8 @@ public:
 	friend std::ostream& operator<< (std::ostream& out, const Object & obj);
 
 	virtual void print() const;
+
+	auto isPrimitive() -> bool { return _isPrimitive;};
 
 
 	auto properties() -> ObjectProperties& { return _properties; };
