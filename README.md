@@ -20,6 +20,7 @@ Current list of features supported:
 
 
 
+
 Installation (For Ubuntu and Debian Distros)
 =============================================
 
@@ -308,6 +309,15 @@ The result image can be found in "./Rendered_Scenes/ExampleSphere_result.png
 
 Version History:
 =================
+
+2.5:
+- Major update - code was refactor to support bounding volume optimizations. Tracing no longer 
+  happens from rays to objects, but rather to bounding volumes. 
+- In order to support all features as before, code was modeled so that meshes are bounded by extents, and primitive objects are left unbounded. 
+- Next stages will include adding bounding volumes for primitives, and also gathering multiple objects in the same extent.
+- This change made it possible to render complex scenes using models that contain large number of polygons. It was a matter of hours before, and now some
+  scenes render time is cut down to few minutes, and even seconds. Still - more optimizations are needed. 
+- Added new scene "ExamplePlant" depicting this feature. Note that the 3d module is bugged , more accurate 3d models are to come. 
 
 2.2:
 - Added bounding box as a (simple) acceleration structure.

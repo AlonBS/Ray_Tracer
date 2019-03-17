@@ -44,7 +44,7 @@ private:
 
 	vec3 computeLight(Scene & scene, Ray& r, Intersection& hit);
 
-	bool isVisibleToLight(vector<Object*>& objects, Ray& shadowRay, GLfloat limit);
+	bool isVisibleToLight(vector<BoundingVolume*>& bvs, Ray& shadowRay, GLfloat limit);
 
 
 	vec3 __blinn_phong(const ObjectProperties& objProps,

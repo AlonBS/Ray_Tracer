@@ -161,17 +161,14 @@ Intersection RayTracer::intersectScene(Scene & scene, Ray& ray)
 	ObjectTexColors texColors;
 	ObjectProperties objProps;
 
-	Intersection hit =
-	{
-			.isValid = false
-	};
+	Intersection hit;
+	hit.isValid = false;
 
 
 	for (BoundingVolume* bv : scene.getBoundingVolumes() ) {
 
 		if (bv->intersectRay(ray, minDist, &dist, &point, &normal, &texColors, &objProps)) {
 
-			minDist = hit.dist;
 			minDist = dist;
 			hit.point = point;
 			hit.normal = normal;
@@ -184,39 +181,29 @@ Intersection RayTracer::intersectScene(Scene & scene, Ray& ray)
 
 	return hit;
 
-//		bool = bv.intersect([IN]ray, [IN]minDist, [OUT]OBJECT ETC) {
+
+//	for (Object *object : scene.getObjects()) {
 //
-//		if (intersect ) {
+//		if (object->intersectsRay(ray, &dist, &point, &normal, &texColors, &objProps)) {
 //
-//			HIT;
+//			if (dist < minDist) {
+//
+//				minDist = dist;
+//				hit.point = point;
+//				hit.normal = normal;
+//				hit.texColors = texColors;
+//
+//				hit.properties = objProps;
+//				hit.isValid = true;
+//			}
 //		}
 //	}
-
-
-
-
-	for (Object *object : scene.getObjects()) {
-
-		if (object->intersectsRay(ray, &dist, &point, &normal, &texColors, &objProps)) {
-
-			if (dist < minDist) {
-
-				minDist = dist;
-				hit.point = point;
-				hit.normal = normal;
-				hit.texColors = texColors;
-
-				hit.properties = objProps;
-				hit.isValid = true;
-			}
-		}
-	}
-
-	if (minDist == INFINITY) {
-		hit.isValid = false;
-	}
-
-	return hit;
+//
+//	if (minDist == INFINITY) {
+//		hit.isValid = false;
+//	}
+//
+//	return hit;
 }
 
 
@@ -244,7 +231,7 @@ vec3 RayTracer::computeLight(Scene& scene, Ray& r, Intersection& hit)
 		shadowRay = Ray(srOrigin, srDir);
 		maxDist = length(p->_position - hit.point);
 
-		if (isVisibleToLight(scene.getObjects(), shadowRay, maxDist)) {
+		if (isVisibleToLight(scene.getBoundingVolumes(), shadowRay, maxDist)) {
 
 			halfAng = normalize(srDir + eyeDir);
 
@@ -265,7 +252,7 @@ vec3 RayTracer::computeLight(Scene& scene, Ray& r, Intersection& hit)
 		maxDist = INFINITY;
 
 
-		if (isVisibleToLight(scene.getObjects(), shadowRay, maxDist)) {
+		if (isVisibleToLight(scene.getBoundingVolumes(), shadowRay, maxDist)) {
 
 			halfAng = normalize(srDir + eyeDir);
 			tempColor = __blinn_phong(hit.properties, hit.texColors, p->_color, srDir, hit.normal, halfAng);
@@ -282,24 +269,38 @@ vec3 RayTracer::computeLight(Scene& scene, Ray& r, Intersection& hit)
 }
 
 
-bool RayTracer::isVisibleToLight(vector<Object*>& objects, Ray& shadowRay, GLfloat limit)
+bool RayTracer::isVisibleToLight(vector<BoundingVolume*>& bvs, Ray& shadowRay, GLfloat limit)
 {
+	GLfloat minDist = limit; // Were looking only for objects that are in between the shadow ray and the light source
 	GLfloat dist;
-	vec3 point, normal;
-	for (Object * o : objects) {
 
-		if (o->intersectsRay(shadowRay, &dist, nullptr, nullptr, nullptr, nullptr)) {
+	for (BoundingVolume* bv : bvs ) {
 
-			// If there's a intersection to a object which is within limit (no 'after' the light)
-			// then there's no visibility
-			if (dist < limit) {
-				return false;
-			}
+		if (bv->intersectRay(shadowRay, minDist, &dist, nullptr, nullptr, nullptr, nullptr)) {
+			return false;
 		}
-
 	}
 
 	return true;
+
+
+
+//	GLfloat dist;
+//	vec3 point, normal;
+//	for (Object * o : objects) {
+//
+//		if (o->intersectsRay(shadowRay, &dist, nullptr, nullptr, nullptr, nullptr)) {
+//
+//			// If there's a intersection to a object which is within limit (no 'after' the light)
+//			// then there's no visibility
+//			if (dist < limit) {
+//				return false;
+//			}
+//		}
+//
+//	}
+//
+//	return true;
 }
 
 vec3 RayTracer::__blinn_phong(const ObjectProperties& objProps,

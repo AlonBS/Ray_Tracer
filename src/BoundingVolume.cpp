@@ -74,23 +74,24 @@ bool BoundingVolume::intersectRay(const Ray &r,
 	// TODO - need to sort them
 	for (Extent* e : extents) {
 
-		e->intersectRay(r,  &tNear);
+		if (e->intersectRay(r,  &tNear)) {
 
-		if (tNear < closestDist) {
+			if (tNear < closestDist) {
 
-			if (e->mesh->intersectsRay(r, &closestDist, &tP, &tN, &ttC, &meshProps))
-			{
-				if (point)  *point = tP;
-				if (normal) *normal = tN;
+				if (e->mesh->intersectsRay(r, &closestDist, &tP, &tN, &ttC, &meshProps))
+				{
+					if (point)  *point = tP;
+					if (normal) *normal = tN;
 
-				if (texColors) {
-					texColors->_ambientTexColor  = e->mesh->getAmbientTextureColor(ttC) * this->boundObject->getAmbientTextureColor(ttC);
-					texColors->_diffuseTexColor  = e->mesh->getDiffuseTextureColor(ttC) * this->boundObject->getDiffuseTextureColor(ttC);
-					texColors->_specularTexColor = e->mesh->getSpecularTextureColor(ttC) * this->boundObject->getSpecularTextureColor(ttC);
+					if (texColors) {
+						texColors->_ambientTexColor  = e->mesh->getAmbientTextureColor(ttC) * this->boundObject->getAmbientTextureColor(ttC);
+						texColors->_diffuseTexColor  = e->mesh->getDiffuseTextureColor(ttC) * this->boundObject->getDiffuseTextureColor(ttC);
+						texColors->_specularTexColor = e->mesh->getSpecularTextureColor(ttC) * this->boundObject->getSpecularTextureColor(ttC);
+					}
+
+					if (properties) *properties = meshProps * boundObject->properties();
+
 				}
-
-				if (properties) *properties = meshProps * boundObject->properties();
-
 			}
 		}
 	}
@@ -102,24 +103,6 @@ bool BoundingVolume::intersectRay(const Ray &r,
 
 	return true;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -154,7 +137,7 @@ void BoundingVolume::Extent::__computeBounds(vector<Vertex>& vertices)
 
 
 
-bool BoundingVolume::Extent::intersectRay(const Ray &r, GLfloat* dist)
+bool BoundingVolume::Extent::intersectRay(const Ray &r, GLfloat* t_near)
 {
 
 	GLfloat t_far_final = INFINITY, t_near_final = -INFINITY;
@@ -181,7 +164,7 @@ bool BoundingVolume::Extent::intersectRay(const Ray &r, GLfloat* dist)
 	}
 
 	if (t_far_final > t_near_final) {
-		*dist = t_near_final;
+		*t_near = t_near_final;
 		return true;
 	}
 
