@@ -14,6 +14,10 @@ Scene::Scene() {
 
 Scene::~Scene() {
 
+	for (auto* bv : _boundingVolumes) {
+		delete bv;
+	}
+
 	for (auto* o : _objects) {
 		delete o;
 	}
@@ -30,6 +34,7 @@ Scene::~Scene() {
 		delete d;
 	}
 
+	_boundingVolumes.clear();
 	_objects.clear();
 	_textures.clear();
 	_pointLights.clear();
