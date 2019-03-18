@@ -64,8 +64,8 @@ pushTransform
 
 	translate 0 0 5
 	scale 0.5 0.5 0.5
-#	model ./3ds/indoor_plant/indoor_plant_02.obj
-	model ./3ds/cube/cube.obj
+	model ./3ds/indoor_plant/indoor_plant_02.obj
+#	model ./3ds/cube/cube.obj
 #	unbindTexture
 #
 popTransform

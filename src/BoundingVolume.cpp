@@ -26,6 +26,7 @@ BoundingVolume::BoundingVolume(Object* obj)
 	}
 	else {
 		Model* model = static_cast<Model*>(obj);
+		cout << "MM size " << model->meshes.size() << endl;
 		for (Mesh* mesh : model->meshes) {
 			extents.push_back(new Extent(mesh));
 		}
