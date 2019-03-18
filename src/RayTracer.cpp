@@ -164,6 +164,28 @@ Intersection RayTracer::intersectScene(Scene & scene, Ray& ray)
 	Intersection hit;
 	hit.isValid = false;
 
+	// Currently - primitive objects are not divided within the bounding volume hierarchies.
+	// This will be changed in next stages. And so, we first search for an intersection with any of
+	// the primitives (which is rather quickly, since it's a single function call (and also BBox optimized)
+	// and then we move to the complex objects (models), and we can use the closest intersection when testing
+	// against extents (and not meshes).
+	for (Object *object : scene.getObjects()) {
+
+		if (object->intersectsRay(ray, &dist, &point, &normal, &texColors, &objProps)) {
+
+			if (dist < minDist) {
+
+				minDist = dist;
+				hit.point = point;
+				hit.normal = normal;
+				hit.texColors = texColors;
+
+				hit.properties = objProps;
+				hit.isValid = true;
+			}
+		}
+	}
+
 
 	for (BoundingVolume* bv : scene.getBoundingVolumes() ) {
 
@@ -182,22 +204,7 @@ Intersection RayTracer::intersectScene(Scene & scene, Ray& ray)
 	return hit;
 
 
-//	for (Object *object : scene.getObjects()) {
-//
-//		if (object->intersectsRay(ray, &dist, &point, &normal, &texColors, &objProps)) {
-//
-//			if (dist < minDist) {
-//
-//				minDist = dist;
-//				hit.point = point;
-//				hit.normal = normal;
-//				hit.texColors = texColors;
-//
-//				hit.properties = objProps;
-//				hit.isValid = true;
-//			}
-//		}
-//	}
+
 //
 //	if (minDist == INFINITY) {
 //		hit.isValid = false;
