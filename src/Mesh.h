@@ -22,7 +22,8 @@ typedef struct MeshProperties : ObjectProperties {
 }MeshProperties;
 
 
-class Mesh : Model{
+
+class Mesh : Model {
 
 private:
 
@@ -57,7 +58,7 @@ public:
 			MeshProperties& properties,
 			Image *ambientTexture,
 			Image *diffuseTexture,
-			Image *specualrTexture,
+			Image *specualrTexture
 			/*const Model* const* - TODO */);
 
 

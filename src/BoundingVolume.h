@@ -13,7 +13,8 @@
 #include <vector>
 
 #include "Object.h"
-#include "Model.h"
+//#include "Model.h"
+#include "Mesh.h"
 
 typedef struct SlabDist {
 

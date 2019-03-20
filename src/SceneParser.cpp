@@ -557,7 +557,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 			model->setTexture(boundTexture);
 		}
 
-		model->loadModel(modelFile); // This must be called after all properties are set
+		model->loadModel(modelFile); // This must be called after all properties are set - TODO - I hate this
 		scene->addObject(model);
 	}
 }

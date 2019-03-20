@@ -80,9 +80,13 @@ Model::~Model()
 
 
 
-void
-Model::loadModel(string const &path)
+vector<Mesh*>
+Model::loadModel(string const &path, ObjectProperties& op, ObjectTransforms& ot)
 {
+	meshes.clear();
+	objectProperties = op;
+	objectTransforms = ot;
+
 	// read file via ASSIMP
 	Assimp::Importer importer;
 	//const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
@@ -91,7 +95,7 @@ Model::loadModel(string const &path)
 	if(!scene || (scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) || !scene->mRootNode) // if is Not Zero
 	{
 		cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << endl;
-		return;
+		return nullptr;
 	}
 
 	// retrieve the directory path of the filepath
@@ -99,6 +103,8 @@ Model::loadModel(string const &path)
 
 	// process ASSIMP's root node recursively
 	processNode(scene->mRootNode, scene);
+
+	return meshes;
 }
 
 // processes a node in a recursive fashion. Processes each individual mesh located at the node and repeats this process on its children nodes (if any).
@@ -121,6 +127,7 @@ Model::processNode(aiNode *node, const aiScene *scene)
 
 }
 
+
 Mesh*
 Model::processMesh(aiMesh *mesh, const aiScene *scene)
 {
@@ -142,7 +149,7 @@ Model::processMesh(aiMesh *mesh, const aiScene *scene)
 		vector.x = mesh->mVertices[i].x;
 		vector.y = mesh->mVertices[i].y;
 		vector.z = mesh->mVertices[i].z;
-		vertex.Position = vec3 (_transforms._transform * vec4(vector, 1.0f));;
+		vertex.Position = vec3 (objectTransforms._transform * vec4(vector, 1.0f));;
 		// normals
 		if (mesh->HasNormals()) {
 			vector.x = mesh->mNormals[i].x;
@@ -215,7 +222,7 @@ Model::processMesh(aiMesh *mesh, const aiScene *scene)
 
 	// return a mesh object created from the extracted mesh data
 	//return Mesh(vertices, indices/*, textures*/);
-	this->properties()
+	properties *= objectProperties;
 	return new Mesh(vertices, indices, properties, ambientTexture, diffuseTexture, specularTexture);
 }
 
