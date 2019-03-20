@@ -28,18 +28,22 @@ public:
 
     /*  Functions   */
     // constructor, expects a filepath to a 3D model.
-    Model(string const &path, mat4& transform, mat3& normalsTrans);
+    Model();
 
     virtual ~Model();
 
     // TODO - currently this won't be in use - refactor code
-    virtual bool intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties);
+    virtual bool intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties) = 0;
 
+
+    /**
+     * TODO - add doc
+     */
+    void loadModel(string const &path);
 
 private:
 
     /*  Functions   */
-    void loadModel(string const &path);
 
     // processes a node in a recursive fashion. Processes each individual mesh located at the node and repeats this process on its children nodes (if any).
     void processNode(aiNode *node, const aiScene *scene);

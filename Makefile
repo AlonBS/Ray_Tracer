@@ -5,7 +5,7 @@ LINKFLAGS  = -lassimp -lfreeimage -lGLEW -L /usr/lib/x86_64-linux-gnu/ \
 	     -lboost_filesystem -lboost_system -lboost_program_options 
 
 
-CFLAGS    = -Wall -Wextra -g -std=c++17 -pthread #-fopenmp 
+CFLAGS    = -g -std=c++17 -pthread #-fopenmp -Wall -Wextra 
 CC        = g++
 SRC_DIR   = ./src
 SRCS      = $(SRC_DIR)/main.cpp \

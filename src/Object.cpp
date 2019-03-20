@@ -7,20 +7,10 @@
 
 #include "Object.h"
 
-Object::Object(bool isPrimitive) {
+using namespace glm;
 
-	 _isPrimitive = isPrimitive;
-
-	_properties._ambient = vec3(0.0f, 0.0f, 0.0f);
-	_properties._emission = vec3(0.0f, 0.0f, 0.0f);
-	_properties._diffuse = vec3(0.0f, 0.0f, 0.0f);
-	_properties._specular = vec3(0.0f, 0.0f, 0.0f);
-	_properties._shininess = 0.0f;
-
-	_transform = mat4(1.0f);
-	_invTransform = mat4(1.0f);
-	_invTransposeTrans = mat3(1.0f);
-
+Object::Object()
+{
 	_ambientTexture = nullptr;
 	_diffuseTexture = nullptr;
 	_speularTexture = nullptr;
@@ -30,6 +20,7 @@ Object::Object(bool isPrimitive) {
 Object::~Object() {
 	// TODO Auto-generated destructor stub
 }
+
 
 std::ostream& operator<< (std::ostream& out, const Object & obj)
 {
@@ -68,6 +59,8 @@ vec3 Object::getTextureColor(Image *texture, vec2& uv)
 	/* TODO - consider interpolation for better effects (average near by pixels) */
 	return texture->getPixel((int)(uv.x * w), (int) (uv.y * h));
 }
+
+
 
 
 vec3 Object::getAmbientTextureColor(vec2& uv)

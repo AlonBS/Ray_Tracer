@@ -544,15 +544,20 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 
 		mat4 transform = transformsStack.top();
 		mat3 normalsTransform = mat3(transpose(inverse(transform)));
-		Object *model = new Model(modelFile, transform, normalsTransform);
+		Model *model = new Model();
 		model->ambient() = ambient;
 		model->emission() = emission;
 		model->diffuse() = diffuse;
 		model->specular() = specular;
 		model->shininess() = shininess;
+		model->transform() = transformsStack.top();
+		model->invTransform() = inverse(model->transform());
+		model->invTransposeTrans() = mat3(transpose(model->invTransform()));
 		if (textureIsBound) {
 			model->setTexture(boundTexture);
 		}
+
+		model->loadModel(modelFile); // This must be called after all properties are set
 		scene->addObject(model);
 	}
 }

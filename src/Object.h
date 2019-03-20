@@ -25,6 +25,16 @@ typedef struct ObjectProperties {
 
 }ObjectProperties;
 
+
+typedef struct ObjectTransforms {
+
+	mat4 _transform;
+	mat4 _invTransform;	  	 // We compute it once, instead of each intersection test
+	mat3 _invTransposeTrans; // For normals transforms - notice 3x3
+
+}ObjectTransforms;
+
+
 typedef struct ObjectTexColors {
 
 
@@ -54,19 +64,6 @@ class Object {
 
 private:
 
-	bool _isPrimitive;
-
-
-
-//	vec3 _ambient;
-//	vec3 _diffuse;
-//	vec3 _specular;
-//	vec3 _emission;
-//	GLfloat _shininess;
-
-
-
-	vec3 getTextureColor(Image *texture, vec2& uv);
 
 	Image *_ambientTexture;
 	Image *_diffuseTexture;
@@ -74,24 +71,22 @@ private:
 
 protected:
 
-	mat4 _transform;
-	mat4 _invTransform;	  	 // We compute it once, instead of each intersection test
-	mat3 _invTransposeTrans; // For normals transforms - notice 3x3
 
 	ObjectProperties _properties;
+	ObjectTransforms _transforms;
+
+	vec3 getTextureColor(Image *texture, vec2& uv);
 
 	//bool _textured;
 
 public:
 
-	vec3 getAmbientTextureColor(vec2& uv);
-	vec3 getDiffuseTextureColor(vec2& uv);
-	vec3 getSpecularTextureColor(vec2& uv);
+	virtual vec3 getAmbientTextureColor(vec2& uv);
+	virtual vec3 getDiffuseTextureColor(vec2& uv);
+	virtual vec3 getSpecularTextureColor(vec2& uv);
 
 
-
-
-	Object(bool isPrimitive=true);
+	Object();
 	virtual ~Object();
 
 	void setTexture(Image *texture);
@@ -99,13 +94,9 @@ public:
 	virtual bool intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties) = 0;
 
 
-
 	friend std::ostream& operator<< (std::ostream& out, const Object & obj);
 
 	virtual void print() const;
-
-	auto isPrimitive() -> bool { return _isPrimitive;};
-
 
 	auto properties() -> ObjectProperties& { return _properties; };
 	auto ambient () -> vec3& { return _properties._ambient; }
@@ -114,9 +105,9 @@ public:
 	auto specular() -> vec3& { return _properties._specular; }
 	auto shininess() -> GLfloat& { return _properties._shininess; }
 
-	auto transform() -> mat4& { return _transform; }
-	auto invTransform() -> mat4& { return _invTransform; }
-	auto invTransposeTrans() -> mat3& { return _invTransposeTrans; }
+	auto transform() -> mat4& { return _transforms._transform; }
+	auto invTransform() -> mat4& { return _transforms._invTransform; }
+	auto invTransposeTrans() -> mat3& { return _transforms._invTransposeTrans; }
 
 
 };

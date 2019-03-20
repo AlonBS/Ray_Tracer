@@ -43,7 +43,7 @@ TODOs:
 - Add the option to insert colors in RGB values instead of 0-1 in scenes. (DONE)
 
 
-- Test normal transformation when creating meshes of object 
+- Test normal transformation when creating meshes of object (PRIORITY 1!!!)
 - Add textures generation
 - Fix mesh properties multiply operator when value is not given (default) 
 - Fix folder structure and fix dependecy within scene to textures and models

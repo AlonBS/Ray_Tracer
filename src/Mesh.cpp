@@ -29,12 +29,15 @@ Mesh::Mesh(vector<Vertex>& vertices,
 		   MeshProperties& properties,
 		   Image *ambientTexture,
 		   Image *diffuseTexture,
-		   Image *specularTexture)
+		   Image *specularTexture,
+		   /*const Model* const model - TODO */)
 
-:_properties(properties),
- _ambientTexture(ambientTexture),
- _diffuseTexture(diffuseTexture),
- _specularTexture(specularTexture)
+:
+  Model(),
+  _properties(properties * super::properties()),
+ _meshAmbientTexture(ambientTexture),
+ _meshDiffuseTexture(diffuseTexture),
+ _meshSpecularTexture(specularTexture)
 {
 	_vertices = vertices; // Yes - this is shit, but a must for now
 	__triangulate(vertices, indices);
@@ -137,7 +140,12 @@ Mesh::__triangulate(vector<Vertex> vertices, vector<unsigned int> indices)
 
 
 bool
-Mesh::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, vec2* texCoords, MeshProperties* properties)
+Mesh::intersectsRay(const Ray &r,
+					GLfloat* dist,
+					vec3* point,
+					vec3* normal,
+					ObjectTexColors* texColors,
+					ObjectProperties* properties)
 {
 	GLfloat minDist = INFINITY;
 
@@ -146,13 +154,13 @@ Mesh::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, vec2
 	vec2 ttC;
 
 	// If we don't pass the bounding box test - we don't test each triangle of this mesh
-//	if (!boundingBox->intersectsRay(r, &tDist, nullptr, nullptr, nullptr, nullptr)) {
-//		return false;
-//	}
+	//	if (!boundingBox->intersectsRay(r, &tDist, nullptr, nullptr, nullptr, nullptr)) {
+	//		return false;
+	//	}
 
-//	if (!boundingVolume->intersectRay(r)) {
-//		return false;
-//	}
+	//	if (!boundingVolume->intersectRay(r)) {
+	//		return false;
+	//	}
 
 	for (Triangle *t : triangles) {
 
@@ -166,7 +174,11 @@ Mesh::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, vec2
 				*dist = minDist = tDist;
 				if (point) *point = tP;
 				if (normal) *normal = tN;
-				if (texCoords) *texCoords = ttC;
+				if (texColors) {
+					texColors->_ambientTexColor  = this->getAmbientTextureColor(ttC);
+					texColors->_diffuseTexColor  = this->getDiffuseTextureColor(ttC);
+					texColors->_specularTexColor = this->getSpecularTextureColor(ttC);
+				}
 				if (properties) *properties = this->_properties;
 			}
 		}
@@ -178,36 +190,64 @@ Mesh::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, vec2
 
 	return true;
 }
+//
+//bool
+//Mesh::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, vec2* texCoords, MeshProperties* properties)
+//{
+//	GLfloat minDist = INFINITY;
+//
+//	GLfloat tDist;
+//	vec3 tP, tN;
+//	vec2 ttC;
+//
+//	// If we don't pass the bounding box test - we don't test each triangle of this mesh
+////	if (!boundingBox->intersectsRay(r, &tDist, nullptr, nullptr, nullptr, nullptr)) {
+////		return false;
+////	}
+//
+////	if (!boundingVolume->intersectRay(r)) {
+////		return false;
+////	}
+//
+//	for (Triangle *t : triangles) {
+//
+//		/* When we iterate over triangles as part of mesh - we take the properties of the mesh
+//		 * and not the triangle. In fact, this triangle doesn't have other but default properties
+//		 */
+//		if (t->intersectsRayM(r, &tDist, &tP, &tN, &ttC)) {
+//
+//			if (tDist < minDist) {
+//
+//				*dist = minDist = tDist;
+//				if (point) *point = tP;
+//				if (normal) *normal = tN;
+//				if (texCoords) *texCoords = ttC;
+//				if (properties) *properties = this->_properties * this->properties();
+//			}
+//		}
+//	}
+//
+//	if (minDist == INFINITY) {
+//		return false;
+//	}
+//
+//	return true;
+//}
 
-
-vec3 Mesh::__getTextureColor(Image* texture, vec2& uv)
-{
-	if (!texture) {
-		return COLOR_WHITE;
-	}
-
-	uv = glm::clamp(uv, 0.f + EPSILON, 1.f - EPSILON); // Textures at the edges tend to be not accurate
-
-	int w = texture->getWidth();
-	int h = texture->getHeight();
-
-	/* TODO - consider interpolation for better effects (average near by pixels) */
-	return texture->getPixel((int)(uv.x * w), (int) (uv.y * h));
-}
 
 
 vec3 Mesh::getAmbientTextureColor(vec2& uv)
 {
-	return this->__getTextureColor(_ambientTexture, uv);
+	return this->getTextureColor(_meshAmbientTexture, uv) * super::getAmbientTextureColor(uv);
 }
 
 vec3 Mesh::getDiffuseTextureColor(vec2& uv)
 {
-	return this->__getTextureColor(_diffuseTexture, uv);
+	return this->getTextureColor(_meshDiffuseTexture, uv) * super::getDiffuseTextureColor(uv);
 }
 
 vec3 Mesh::getSpecularTextureColor(vec2& uv)
 {
-	return this->__getTextureColor(_specularTexture, uv);
+	return this->getTextureColor(_meshSpecularTexture, uv) * super::getSpecularTextureColor(uv);
 }
 

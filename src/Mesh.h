@@ -7,6 +7,7 @@
 
 #include "Triangle.h"
 #include "Box.h"
+#include "Model.h"
 
 
 using namespace std;
@@ -21,9 +22,11 @@ typedef struct MeshProperties : ObjectProperties {
 }MeshProperties;
 
 
-class Mesh{
+class Mesh : Model{
 
 private:
+
+	using super = Object;
 
 	MeshProperties _properties;
 	vector<Triangle*> triangles;
@@ -33,18 +36,17 @@ private:
 	//	Box* boundingBox; TODO - remove
 	//	BoundingVolume* boundingVolume; TODO - remove
 
-	glm::vec3 ambient;
-	glm::vec3 emmision;
-	glm::vec3 diffuse;
-	glm::vec3 specular;
-	GLfloat shininess;
+//	glm::vec3 ambient;
+//	glm::vec3 emmision;
+//	glm::vec3 diffuse;
+//	glm::vec3 specular;
+//	GLfloat shininess;
 
-	Image *_ambientTexture;
-	Image *_diffuseTexture;
-	Image *_specularTexture;
+	Image *_meshAmbientTexture;
+	Image *_meshDiffuseTexture;
+	Image *_meshSpecularTexture;
 
-
-	vec3 __getTextureColor(Image* texture, vec2& uv);
+	//const Model* const _model; - TODO
 
 
 public:
@@ -55,13 +57,15 @@ public:
 			MeshProperties& properties,
 			Image *ambientTexture,
 			Image *diffuseTexture,
-			Image *specualrTexture);
+			Image *specualrTexture,
+			/*const Model* const* - TODO */);
 
 
 	virtual ~Mesh();
 
 
-	bool intersectsRay(const Ray& r, GLfloat* dist, vec3* point, vec3* normal, vec2* texCoords, MeshProperties* properties);
+//	bool intersectsRay(const Ray& r, GLfloat* dist, vec3* point, vec3* normal, vec2* texCoords, MeshProperties* properties);
+	virtual bool intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties);
 
 
 	vec3 getAmbientTextureColor(vec2& uv);
@@ -80,4 +84,6 @@ private:
 	//    void __computeBoundingVolume(vector<Vertex>& vertices);
 
 };
+
+
 #endif

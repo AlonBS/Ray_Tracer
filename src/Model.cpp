@@ -16,12 +16,9 @@ using namespace std;
 
 unsigned int TextureFromFile(const char *path, const string &directory, bool gamma = false);
 
-Model::Model(string const &path, mat4& transform, mat3& invTransposeTrans)
-:Object(false)
+Model::Model()
+:Object()
 {
-	this->transform() = transform;
-	this->invTransposeTrans() = invTransposeTrans;
-	loadModel(path);
 }
 
 Model::~Model()
@@ -42,44 +39,44 @@ Model::~Model()
 }
 
 
-bool
-Model::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties)
-{
-	GLfloat minDist = INFINITY;
-
-	GLfloat tDist;
-	vec3 tP, tN;
-	vec2 ttC;
-	MeshProperties meshProps;
-
-	for (Mesh *m : meshes) {
-
-		if (m->intersectsRay(r, &tDist, &tP, &tN, &ttC, &meshProps)) {
-
-			if (tDist < minDist) {
-
-				*dist = minDist = tDist;
-				if (point)  *point = tP;
-				if (normal) *normal = tN;
-
-				if (texColors) {
-					texColors->_ambientTexColor  = m->getAmbientTextureColor(ttC)  * this->getAmbientTextureColor(ttC);
-					texColors->_diffuseTexColor  = m->getDiffuseTextureColor(ttC)  * this->getDiffuseTextureColor(ttC);
-					texColors->_specularTexColor = m->getSpecularTextureColor(ttC) * this->getSpecularTextureColor(ttC);
-				}
-
-				if (properties) *properties = meshProps * _properties;
-			}
-		}
-	}
-
-	if (minDist == INFINITY) {
-		return false;
-	}
-
-	return true;
-
-}
+//bool
+//Model::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties)
+//{
+//	GLfloat minDist = INFINITY;
+//
+//	GLfloat tDist;
+//	vec3 tP, tN;
+//	vec2 ttC;
+//	MeshProperties meshProps;
+//
+//	for (Mesh *m : meshes) {
+//
+//		if (m->intersectsRay(r, &tDist, &tP, &tN, &ttC, &meshProps)) {
+//
+//			if (tDist < minDist) {
+//
+//				*dist = minDist = tDist;
+//				if (point)  *point = tP;
+//				if (normal) *normal = tN;
+//
+//				if (texColors) {
+//					texColors->_ambientTexColor  = m->getAmbientTextureColor(ttC)  * this->getAmbientTextureColor(ttC);
+//					texColors->_diffuseTexColor  = m->getDiffuseTextureColor(ttC)  * this->getDiffuseTextureColor(ttC);
+//					texColors->_specularTexColor = m->getSpecularTextureColor(ttC) * this->getSpecularTextureColor(ttC);
+//				}
+//
+//				if (properties) *properties = meshProps * _properties;
+//			}
+//		}
+//	}
+//
+//	if (minDist == INFINITY) {
+//		return false;
+//	}
+//
+//	return true;
+//
+//}
 
 
 
@@ -145,7 +142,7 @@ Model::processMesh(aiMesh *mesh, const aiScene *scene)
 		vector.x = mesh->mVertices[i].x;
 		vector.y = mesh->mVertices[i].y;
 		vector.z = mesh->mVertices[i].z;
-		vertex.Position = vec3 (_transform * vec4(vector, 1.0f));;
+		vertex.Position = vec3 (_transforms._transform * vec4(vector, 1.0f));;
 		// normals
 		if (mesh->HasNormals()) {
 			vector.x = mesh->mNormals[i].x;
@@ -218,6 +215,7 @@ Model::processMesh(aiMesh *mesh, const aiScene *scene)
 
 	// return a mesh object created from the extracted mesh data
 	//return Mesh(vertices, indices/*, textures*/);
+	this->properties()
 	return new Mesh(vertices, indices, properties, ambientTexture, diffuseTexture, specularTexture);
 }
 
