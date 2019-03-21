@@ -61,132 +61,107 @@ public:
 };
 
 
-bool BBox::intersect(const vec3& orig, const vec3& invDir, const bvec3& sign, float& tHit) const
-{
-
-	//numRayBBoxTests++; - TODO - add
-	float tmin, tmax, tymin, tymax, tzmin, tzmax;
-
-	tmin  = (bounds[sign[0]    ].x - orig.x) * invDir.x;
-	tmax  = (bounds[1 - sign[0]].x - orig.x) * invDir.x;
-	tymin = (bounds[sign[1]    ].y - orig.y) * invDir.y;
-	tymax = (bounds[1 - sign[1]].y - orig.y) * invDir.y;
-
-	if ((tmin > tymax) || (tymin > tmax))
-		return false;
-
-	if (tymin > tmin)
-		tmin = tymin;
-	if (tymax < tmax)
-		tmax = tymax;
-
-	tzmin = (bounds[sign[2]    ].z - orig.z) * invDir.z;
-	tzmax = (bounds[1 - sign[2]].z - orig.z) * invDir.z;
-
-	if ((tmin > tzmax) || (tzmin > tmax))
-		return false;
-
-	if (tzmin > tmin)
-		tmin = tzmin;
-	if (tzmax < tmax)
-		tmax = tzmax;
-
-	tHit = tmin;
-
-	return true;
-}
-
-
-class AccelerationStructure
-{
-public:
-	// [comment]
-	// We transfer owner ship of the mesh list to the acceleration structure. This makes
-	// more sense from a functional/structure stand point because the objects/meshes themselves
-	// should be destroyed/deleted when the acceleration structure is being deleted
-	// Ideally this means the render function() itself should be bounded (in terms of lifespan)
-	// to the lifespan of the acceleration structure (aka we should wrap the accel struc instance
-	// and the render method() within the same object, so that when this object is deleted,
-	// the render function can't be called anymore.
-	// [/comment]
-	AccelerationStructure(std::vector<std::unique_ptr<const Mesh>>& m) : meshes(std::move(m)) {}
-	virtual ~AccelerationStructure() {}
-	virtual bool intersect(const vec3& orig, const vec3& dir, const uint32_t& rayId, float& tHit) const
-	{
-		// [comment]
-		// Because we don't want to change the content of the mesh itself, just get a point to it so
-		// it's safer to make it const (which doesn't mean we can't change its assignment just that
-		// we can't do something like intersectedMesh->color = blue. You would get something like:
-		// "read-only variable is not assignable" error message at compile time)
-		// [/comment]
-		const Mesh* intersectedMesh = nullptr;
-		float t = INFINITY;
-		for (const auto& mesh: meshes) {
-			//            if (mesh->intersect(orig, dir, t) && t < tHit) {
-			//                intersectedMesh = mesh.get();
-			//                tHit = t;
-			//            }
-		}
-
-		return (intersectedMesh != nullptr);
-	}
-protected:
-	const std::vector<std::unique_ptr<const Mesh>> meshes;
-};
+//
+//class AccelerationStructure
+//{
+//public:
+//	// [comment]
+//	// We transfer owner ship of the mesh list to the acceleration structure. This makes
+//	// more sense from a functional/structure stand point because the objects/meshes themselves
+//	// should be destroyed/deleted when the acceleration structure is being deleted
+//	// Ideally this means the render function() itself should be bounded (in terms of lifespan)
+//	// to the lifespan of the acceleration structure (aka we should wrap the accel struc instance
+//	// and the render method() within the same object, so that when this object is deleted,
+//	// the render function can't be called anymore.
+//	// [/comment]
+//	AccelerationStructure(std::vector<std::unique_ptr<const Mesh>>& m) : meshes(std::move(m)) {}
+//	virtual ~AccelerationStructure() {}
+//	virtual bool intersect(const vec3& orig, const vec3& dir, const uint32_t& rayId, float& tHit) const
+//	{
+//		// [comment]
+//		// Because we don't want to change the content of the mesh itself, just get a point to it so
+//		// it's safer to make it const (which doesn't mean we can't change its assignment just that
+//		// we can't do something like intersectedMesh->color = blue. You would get something like:
+//		// "read-only variable is not assignable" error message at compile time)
+//		// [/comment]
+//		const Mesh* intersectedMesh = nullptr;
+//		float t = INFINITY;
+//		for (const auto& mesh: meshes) {
+//			//            if (mesh->intersect(orig, dir, t) && t < tHit) {
+//			//                intersectedMesh = mesh.get();
+//			//                tHit = t;
+//			//            }
+//		}
+//
+//		return (intersectedMesh != nullptr);
+//	}
+//protected:
+//	const std::vector<std::unique_ptr<const Mesh>> meshes;
+//};
 
 // [comment]
 // Implementation of the ray-bbox method. If the ray intersects the bbox of a mesh then
 // we test if the ray intersects the mesh contained by the bbox itself.
 // [/comment]
-class BBoxAcceleration : public AccelerationStructure
+//class BBoxAcceleration : public AccelerationStructure
+//{
+//public:
+//	BBoxAcceleration(std::vector<std::unique_ptr<const Mesh>>& m) : AccelerationStructure(m) {}
+//
+//	// [comment]
+//	// Implement the ray-bbox acceleration method. The method consist of intersecting the
+//	// ray against the bbox of the mesh first, and if the ray inteesects the boudning box
+//	// then test if the ray intersects the mesh itsefl. It is obvious that the ray can't
+//	// intersect the mesh if it doesn't intersect its boudning volume (a box in this case)
+//	// [/comment]
+//	virtual bool intersect(const vec3& orig, const vec3& dir, const uint32_t& rayId, float& tHit) const
+//	{
+//		const Mesh* intersectedMesh = nullptr;
+//		const vec3 invDir = 1.f / dir;
+//		const bvec3 sign(dir.x < 0, dir.y < 0, dir.z < 0);
+//		float t = INFINITY;
+//		for (const auto& mesh : meshes) {
+//			//            // If you intersect the box
+//			//            if (mesh->bbox.intersect(orig, invDir, sign, t)) {
+//			//                // Then test if the ray intersects the mesh and if does then first check
+//			//                // if the intersection distance is the nearest and if we pass that test as well
+//			//                // then update tNear variable with t and keep a pointer to the intersected mesh
+//			//                if (mesh->intersect(orig, dir, t) && t < tHit) {
+//			//                    tHit = t;
+//			//                    intersectedMesh = mesh.get();
+//			//                }
+//			//            }
+//		}
+//
+//		// Return true if the variable intersectedMesh is not null, false otherwise
+//		return (intersectedMesh != nullptr);
+//	}
+//};
+
+
+class BVH /*: AccelerationStructure */
 {
-public:
-	BBoxAcceleration(std::vector<std::unique_ptr<const Mesh>>& m) : AccelerationStructure(m) {}
-
-	// [comment]
-	// Implement the ray-bbox acceleration method. The method consist of intersecting the
-	// ray against the bbox of the mesh first, and if the ray inteesects the boudning box
-	// then test if the ray intersects the mesh itsefl. It is obvious that the ray can't
-	// intersect the mesh if it doesn't intersect its boudning volume (a box in this case)
-	// [/comment]
-	virtual bool intersect(const vec3& orig, const vec3& dir, const uint32_t& rayId, float& tHit) const
-	{
-		const Mesh* intersectedMesh = nullptr;
-		const vec3 invDir = 1.f / dir;
-		const bvec3 sign(dir.x < 0, dir.y < 0, dir.z < 0);
-		float t = INFINITY;
-		for (const auto& mesh : meshes) {
-			//            // If you intersect the box
-			//            if (mesh->bbox.intersect(orig, invDir, sign, t)) {
-			//                // Then test if the ray intersects the mesh and if does then first check
-			//                // if the intersection distance is the nearest and if we pass that test as well
-			//                // then update tNear variable with t and keep a pointer to the intersected mesh
-			//                if (mesh->intersect(orig, dir, t) && t < tHit) {
-			//                    tHit = t;
-			//                    intersectedMesh = mesh.get();
-			//                }
-			//            }
-		}
-
-		// Return true if the variable intersectedMesh is not null, false otherwise
-		return (intersectedMesh != nullptr);
-	}
-};
-
-
-class BVH : AccelerationStructure
-{
 
 public:
-	BVH(std::vector<std::unique_ptr<const Mesh>>& m);
+	BVH(vector<Mesh*>& meshes);
 	~BVH();
 	bool intersect(const vec3&, const vec3&, const uint32_t&, float&) const;
+
+	bool intersectsRay(const Ray &r,
+					   GLfloat &minDist,
+					   GLfloat* dist,
+					   vec3* point,
+					   vec3* normal,
+					   ObjectTexColors* texColors,
+					   ObjectProperties* properties);
 
 
 
 private:
 	static const GLuint NUM_OF_SET_NORMALS = 7;
 	static const vec3 planeSetNormals[NUM_OF_SET_NORMALS];
+
+	vector<Mesh*> meshes;
 
 
 	struct Extents

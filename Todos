@@ -44,6 +44,8 @@ TODOs:
 
 
 - Test normal transformation when creating meshes of object (PRIORITY 1!!!)
+- Move to unique ptrs
+- Fix Vertices in Mesh class - (Copy of Vertex)
 - Add textures generation
 - Fix mesh properties multiply operator when value is not given (default) 
 - Fix folder structure and fix dependecy within scene to textures and models

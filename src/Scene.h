@@ -12,7 +12,8 @@
 #include "Object.h"
 #include "Lights.h"
 #include "Camera.hpp"
-#include "BoundingVolume.h"
+//#include "BoundingVolume.h"
+#include "BVH.h"
 
 
 class Scene {
@@ -25,6 +26,7 @@ private:
 	Camera							_camera;
 
 	std::vector<Object*> 	  		_objects;
+	std::vector<Mesh*>				_meshes;
 	std::vector<Image*>				_textures;
 
 	std::vector<PointLight*>  		_pointLights;
@@ -33,8 +35,11 @@ private:
 	Attenuation_t _attenuation;
 
 
+	BVH* bvh;
 
-	std::vector<BoundingVolume*>	_boundingVolumes;
+
+
+	//std::vector<BoundingVolume*>	_boundingVolumes;
 
 
 public:
@@ -56,7 +61,20 @@ public:
 	void addObject(Object *obj) { _objects.push_back(obj); }
 	std::vector<Object*>& getObjects() { return _objects; }
 
+	// TODO - FIX
+	void addMeshes(vector<Mesh*>& meshes)
+	{
+		_meshes.reserve(_meshes.size() + meshes.size());
+		_meshes.insert(_meshes.end(), meshes.begin(), meshes.end());
+	}
+	std::vector<Mesh*>& getMeshes() { return _meshes; }
+
 	void addTexture(Image *texture) { _textures.push_back(texture); }
+	void addTextures(vector<Image*>& textures)
+	{
+		_textures.reserve(_textures.size() + textures.size());
+		_textures.insert(_textures.end(), textures.begin(), textures.end());
+	}
 	Image* getTexture(uint i) { assert(i < _textures.size()); return _textures[i]; }
 
 	void addPointLight(PointLight *light) { _pointLights.push_back(light); }
@@ -68,7 +86,7 @@ public:
 	Attenuation_t& attenuation() { return _attenuation; }
 
 
-	std::vector<BoundingVolume*>& getBoundingVolumes() { return _boundingVolumes; }
+//	std::vector<BoundingVolume*>& getBoundingVolumes() { return _boundingVolumes; }
 	void constructAccelerationStructures();
 
 

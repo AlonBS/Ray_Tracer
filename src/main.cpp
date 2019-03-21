@@ -236,3 +236,4 @@ int main(int argc, char *argv[])
 	FreeImage_DeInitialise();
 	return 0;
 }
+

@@ -14,28 +14,35 @@
 
 using namespace std;
 
-unsigned int TextureFromFile(const char *path, const string &directory, bool gamma = false);
 
-Model::Model()
-:Object()
+
+
+vector<Mesh*> Model::_meshes {};
+ObjectProperties Model::_objectProperties{};
+ObjectTransforms Model::_objectTransforms{};
+Image* Model::_texture = nullptr;
+vector<Model::Texture*> Model::_loadedTextures{}; // We store all the textures loaded for this module, to avoid load duplication
+string Model::_directory{};
+
+
+//Model::Model()
+//:Object()
+//{
+//}
+//
+void Model::FreeTextures()
 {
-}
+//	for (Mesh* m : meshes)
+//	{
+//		delete (m);
+//		m = nullptr;
+//	}
 
-Model::~Model()
-{
-	for (Mesh* m : meshes)
-	{
-		delete (m);
-		m = nullptr;
-	}
-
-	for (Texture * t : loadedTextures) {
+	for (Texture * t : _loadedTextures) {
 		delete(t->texture);
 		delete(t);
 		t = nullptr;
 	}
-
-	meshes.clear();
 }
 
 
@@ -79,13 +86,20 @@ Model::~Model()
 //}
 
 
+void
+Model::loadModel(string const &path,
+				 const ObjectProperties& op,
+				 const ObjectTransforms& ot,
+				 Image* texture,
+				 vector<Mesh*>& modelMeshes,
+				 vector<Image*>& modelTextures)
 
-vector<Mesh*>
-Model::loadModel(string const &path, ObjectProperties& op, ObjectTransforms& ot)
 {
-	meshes.clear();
-	objectProperties = op;
-	objectTransforms = ot;
+	_meshes.clear();
+	_loadedTextures.clear();
+	_objectProperties = op;
+	_objectTransforms = ot;
+	_texture = texture;
 
 	// read file via ASSIMP
 	Assimp::Importer importer;
@@ -95,16 +109,20 @@ Model::loadModel(string const &path, ObjectProperties& op, ObjectTransforms& ot)
 	if(!scene || (scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) || !scene->mRootNode) // if is Not Zero
 	{
 		cout << "ERROR::ASSIMP:: " << importer.GetErrorString() << endl;
-		return nullptr;
+
+		return;
 	}
 
 	// retrieve the directory path of the filepath
-	directory = path.substr(0, path.find_last_of('/'));
+	_directory = path.substr(0, path.find_last_of('/'));
 
 	// process ASSIMP's root node recursively
 	processNode(scene->mRootNode, scene);
 
-	return meshes;
+	modelMeshes = _meshes;
+	for (Texture* img : _loadedTextures) {
+		modelTextures.push_back(img->texture);
+	}
 }
 
 // processes a node in a recursive fashion. Processes each individual mesh located at the node and repeats this process on its children nodes (if any).
@@ -117,7 +135,7 @@ Model::processNode(aiNode *node, const aiScene *scene)
 		// the node object only contains indices to index the actual objects in the scene.
 		// the scene contains all the data, node is just to keep stuff organized (like relations between nodes).
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
-		meshes.push_back(processMesh(mesh, scene));
+		_meshes.push_back(processMesh(mesh, scene));
 	}
 	// after we've processed all of the meshes (if any) we then recursively process each of the children nodes
 	for(unsigned int i = 0; i < node->mNumChildren; i++)
@@ -149,7 +167,7 @@ Model::processMesh(aiMesh *mesh, const aiScene *scene)
 		vector.x = mesh->mVertices[i].x;
 		vector.y = mesh->mVertices[i].y;
 		vector.z = mesh->mVertices[i].z;
-		vertex.Position = vec3 (objectTransforms._transform * vec4(vector, 1.0f));;
+		vertex.Position = vec3 (_objectTransforms._transform * vec4(vector, 1.0f));;
 		// normals
 		if (mesh->HasNormals()) {
 			vector.x = mesh->mNormals[i].x;
@@ -212,18 +230,17 @@ Model::processMesh(aiMesh *mesh, const aiScene *scene)
 		// Load textures
 		// Currently - we only support one ambient, one diffuse, and one specular texture
 		// 1. Ambient maps
-		ambientTexture = this->loadMaterialTextures(material, aiTextureType_AMBIENT);
+		ambientTexture = loadMaterialTextures(material, aiTextureType_AMBIENT);
 		// 2. Diffuse maps
-		diffuseTexture = this->loadMaterialTextures(material, aiTextureType_DIFFUSE);
+		diffuseTexture = loadMaterialTextures(material, aiTextureType_DIFFUSE);
 		// 3. Specular maps
-		specularTexture = this->loadMaterialTextures(material, aiTextureType_SPECULAR);
+		specularTexture = loadMaterialTextures(material, aiTextureType_SPECULAR);
 	}
 
 
 	// return a mesh object created from the extracted mesh data
-	//return Mesh(vertices, indices/*, textures*/);
-	properties *= objectProperties;
-	return new Mesh(vertices, indices, properties, ambientTexture, diffuseTexture, specularTexture);
+	ObjectProperties op = _objectProperties * properties;
+	return new Mesh(vertices, indices, op, ambientTexture, diffuseTexture, specularTexture, _texture);
 }
 
 
@@ -242,11 +259,11 @@ Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type)
 
 	// Check if texture was loaded before and if so, continue to next iteration: skip loading a new texture
 	GLboolean skip = false;
-	for(GLuint j = 0; j < loadedTextures.size(); ++j)
+	for(GLuint j = 0; j < _loadedTextures.size(); ++j)
 	{
-		if(loadedTextures[j]->name.compare(str.C_Str()) == 0)
+		if(_loadedTextures[j]->name.compare(str.C_Str()) == 0)
 		{
-			texture = loadedTextures[j]->texture;
+			texture = _loadedTextures[j]->texture;
 			skip = true; // A texture with the same filepath has already been loaded, continue to next one. (optimization)
 			break;
 		}
@@ -256,11 +273,11 @@ Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type)
 		Texture *loadedTexture = new Texture();
 		loadedTexture->name = string(str.C_Str());
 		loadedTexture->texture = new Image(0, 0);
-		string path = directory + "/" + loadedTexture->name;
+		string path = _directory + "/" + loadedTexture->name;
 		loadedTexture->texture->loadImage(path);
 
 		texture = loadedTexture->texture;
-		this->loadedTextures.push_back(loadedTexture);  // Store it as texture loaded for entire model, to ensure we won't unnecesery load duplicate textures.
+		_loadedTextures.push_back(loadedTexture);  // Store it as texture loaded for entire model, to ensure we won't unnecesery load duplicate textures.
 	}
 
 	return texture;

@@ -26,19 +26,20 @@ ObjectProperties operator*(const ObjectProperties& op, const MeshProperties& mp)
     // constructor
 Mesh::Mesh(vector<Vertex>& vertices,
 		   vector<unsigned int>& indices,
-		   MeshProperties& properties,
+		   ObjectProperties& properties,
 		   Image *ambientTexture,
 		   Image *diffuseTexture,
 		   Image *specularTexture,
-		   /*const Model* const model - TODO */)
+		   Image *generalTexture)
 
-:
-  Model(),
-  _properties(properties * super::properties()),
- _meshAmbientTexture(ambientTexture),
+: Object(),
+  _meshAmbientTexture(ambientTexture),
  _meshDiffuseTexture(diffuseTexture),
  _meshSpecularTexture(specularTexture)
 {
+	super::setTexture(generalTexture);
+	super::properties() = properties;
+
 	_vertices = vertices; // Yes - this is shit, but a must for now
 	__triangulate(vertices, indices);
 //	__computeBoundingBox(vertices);

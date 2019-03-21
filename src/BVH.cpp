@@ -1,6 +1,54 @@
 
 #include "BVH.h"
 
+
+
+
+/***************************BBOX ****************************************/
+
+
+/******************************
+//       Public Methods
+/*****************************/
+
+
+
+bool BBox::intersect(const vec3& orig, const vec3& invDir, const bvec3& sign, float& tHit) const
+{
+
+	//numRayBBoxTests++; - TODO - add
+	float tmin, tmax, tymin, tymax, tzmin, tzmax;
+
+	tmin  = (bounds[sign[0]    ].x - orig.x) * invDir.x;
+	tmax  = (bounds[1 - sign[0]].x - orig.x) * invDir.x;
+	tymin = (bounds[sign[1]    ].y - orig.y) * invDir.y;
+	tymax = (bounds[1 - sign[1]].y - orig.y) * invDir.y;
+
+	if ((tmin > tymax) || (tymin > tmax))
+		return false;
+
+	if (tymin > tmin)
+		tmin = tymin;
+	if (tymax < tmax)
+		tmax = tymax;
+
+	tzmin = (bounds[sign[2]    ].z - orig.z) * invDir.z;
+	tzmax = (bounds[1 - sign[2]].z - orig.z) * invDir.z;
+
+	if ((tmin > tzmax) || (tzmin > tmax))
+		return false;
+
+	if (tzmin > tmin)
+		tmin = tzmin;
+	if (tzmax < tmax)
+		tmax = tzmax;
+
+	tHit = tmin;
+
+	return true;
+}
+
+
 /***************************BVH ****************************************/
 
 
@@ -19,21 +67,24 @@ const vec3 BVH::planeSetNormals[BVH::NUM_OF_SET_NORMALS] = {
 };
 
 
-BVH::BVH(std::vector<std::unique_ptr<const Mesh>>& m) : AccelerationStructure(m)
+//BVH::BVH(std::vector<std::unique_ptr<const Mesh>>& m) : AccelerationStructure(m)
+BVH::BVH(std::vector<Mesh*>& meshes) /*: AccelerationStructure(meshes)*/
+: meshes(meshes)
 {
+
 	Extents sceneExtents; // that's the extent of the entire scene which we need to compute for the octree
 	extentsList.reserve(meshes.size());
 	for (uint32_t i = 0; i < meshes.size(); ++i) {
 		for (uint8_t j = 0; j < NUM_OF_SET_NORMALS; ++j) {
-			//            for (const auto vtx : meshes[i]->vertexPool) {
-			//                float d = dot(planeSetNormals[j], vtx);
-			//                // set dNEar and dFar
-			//                if (d < extentsList[i].d[j][0]) extentsList[i].d[j][0] = d;
-			//                if (d > extentsList[i].d[j][1]) extentsList[i].d[j][1] = d;
-			//            }
+			for (const auto vtx : meshes[i]->getVertices()) {
+				float d = glm::dot(planeSetNormals[j], vtx.Position);
+				// set dNEar and dFar
+				if (d < extentsList[i].d[j][0]) extentsList[i].d[j][0] = d;
+				if (d > extentsList[i].d[j][1]) extentsList[i].d[j][1] = d;
+			}
 		}
 		sceneExtents.extendBy(extentsList[i]); // expand the scene extent of this object's extent
-		extentsList[i].mesh = meshes[i].get(); // the extent itself needs to keep a pointer to the object its holds
+		extentsList[i].mesh = meshes[i]; // the extent itself needs to keep a pointer to the object its holds
 	}
 
 	// Now that we have the extent of the scene we can start building our octree
@@ -53,6 +104,7 @@ BVH::~BVH()
 {
 	delete octree;
 }
+
 
 
 bool
@@ -295,4 +347,5 @@ bool BVH::Extents::intersect(
 
 	return true;
 }
+
 

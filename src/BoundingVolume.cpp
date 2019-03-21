@@ -21,17 +21,17 @@ BoundingVolume::BoundingVolume(Object* obj)
 : boundObject(obj)
 {
 
-	if (obj->isPrimitive()) {
+//	if (obj->isPrimitive()) {
 		extents.clear();
-	}
-	else {
-		Model* model = static_cast<Model*>(obj);
-		cout << "MM size " << model->meshes.size() << endl;
-		for (Mesh* mesh : model->meshes) {
-			extents.push_back(new Extent(mesh));
-		}
+//	}
+//	else {
+//		Model* model = static_cast<Model*>(obj);
+//		cout << "MM size " << model->meshes.size() << endl;
+//		for (Mesh* mesh : model->meshes) {
+//			extents.push_back(new Extent(mesh));
+//		}
 
-	}
+//	}
 }
 
 
@@ -62,13 +62,13 @@ bool BoundingVolume::intersectRay(const Ray &r,
 	vec2 ttC;
 	MeshProperties meshProps;
 
-	if (boundObject->isPrimitive()) {
+//	if (boundObject->isPrimitive()) {
 		intersect = boundObject->intersectsRay(r, dist, point, normal, texColors, properties);
 		if (intersect && *dist < minDist) {
 			return true;
 		}
 		return false;
-	}
+//	}
 
 
 
@@ -79,7 +79,7 @@ bool BoundingVolume::intersectRay(const Ray &r,
 
 			if (tNear < closestDist) {
 
-				if (e->mesh->intersectsRay(r, &closestDist, &tP, &tN, &ttC, &meshProps))
+//				if (e->mesh->intersectsRay(r, &closestDist, &tP, &tN, &ttC, &meshProps))
 				{
 					if (point)  *point = tP;
 					if (normal) *normal = tN;
@@ -121,7 +121,7 @@ BoundingVolume::Extent::Extent(Mesh* m)
 }
 
 
-void BoundingVolume::Extent::__computeBounds(vector<Vertex>& vertices)
+void BoundingVolume::Extent::__computeBounds(const vector<Vertex>& vertices)
 {
 	GLfloat d;
 

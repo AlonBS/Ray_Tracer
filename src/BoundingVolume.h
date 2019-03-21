@@ -43,7 +43,7 @@ private:
 	struct Extent {
 
 		Extent(Mesh* mesh);
-		void __computeBounds(vector<Vertex>& vertices);
+		void __computeBounds(const vector<Vertex>& vertices);
 		bool intersectRay(const Ray &r, GLfloat* t_near);
 		void print() const;
 

@@ -14,13 +14,18 @@ Scene::Scene() {
 
 Scene::~Scene() {
 
-	for (auto* bv : _boundingVolumes) {
-		delete bv;
-	}
+//	for (auto* bv : _boundingVolumes) {
+//		delete bv;
+//	}
 
 	for (auto* o : _objects) {
 		delete o;
 	}
+
+	// TODO - fix
+	for (auto* m : _meshes) {
+			delete m;
+		}
 
 	for (auto* t : _textures) {
 		delete t;
@@ -34,23 +39,20 @@ Scene::~Scene() {
 		delete d;
 	}
 
-	_boundingVolumes.clear();
+
+	//_boundingVolumes.clear();
 	_objects.clear();
+	_meshes.clear();
 	_textures.clear();
 	_pointLights.clear();
 	_directionalLights.clear();
+	delete (bvh); bvh = nullptr;
 }
 
 
 void Scene::constructAccelerationStructures()
 {
 	// TODO - this will be update with Oct-tree on next stages
-
-	for (Object* obj : _objects)
-	{
-
-		_boundingVolumes.push_back(new BoundingVolume(obj));
-
-	}
+	bvh = new BVH(_meshes);
 }
 

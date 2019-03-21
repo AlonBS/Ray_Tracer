@@ -318,7 +318,7 @@ SceneParser::readFile(const char* fileName)
 
 	in.close();
 
-	/* BUffers clean up */
+	/* Buffers clean up */
 	lineNumber = 0;
 	vertices.clear();
 	verticesNormals.clear();
@@ -542,23 +542,45 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		string modelFile;
 		s >> modelFile;
 
-		mat4 transform = transformsStack.top();
-		mat3 normalsTransform = mat3(transpose(inverse(transform)));
-		Model *model = new Model();
-		model->ambient() = ambient;
-		model->emission() = emission;
-		model->diffuse() = diffuse;
-		model->specular() = specular;
-		model->shininess() = shininess;
-		model->transform() = transformsStack.top();
-		model->invTransform() = inverse(model->transform());
-		model->invTransposeTrans() = mat3(transpose(model->invTransform()));
-		if (textureIsBound) {
-			model->setTexture(boundTexture);
-		}
+		ObjectProperties op = {
+				._ambient = ambient,
+				._emission = emission,
+				._diffuse = diffuse,
+				._specular = specular,
+				._shininess = shininess
+		};
 
-		model->loadModel(modelFile); // This must be called after all properties are set - TODO - I hate this
-		scene->addObject(model);
+		mat4 transform = transformsStack.top();
+		mat4 invTransform = inverse(transform);
+		mat3 normalsTransform = mat3(transpose(inverse(transform)));
+
+		ObjectTransforms ot = {
+				._transform = transform,
+				._invTransform = invTransform,
+				._invTransposeTrans = normalsTransform
+		};
+
+//		Model *model = new Model();
+//		model->ambient() = ambient;
+//		model->emission() = emission;
+//		model->diffuse() = diffuse;
+//		model->specular() = specular;
+//		model->shininess() = shininess;
+//		model->transform() = transformsStack.top();
+//		model->invTransform() = inverse(model->transform());
+//		model->invTransposeTrans() = mat3(transpose(model->invTransform()));
+//		if (textureIsBound) {
+//			model->setTexture(boundTexture);
+//		}
+
+		vector<Mesh*> modelMeshes{};
+		vector<Image*> modelTextures{};
+		Model::loadModel(modelFile, op, ot, boundTexture, modelMeshes, modelTextures);
+
+		scene->addTextures(modelTextures);
+		scene->addMeshes(modelMeshes);
+//		model->loadModel(modelFile); // This must be called after all properties are set - TODO - I hate this
+//		scene->addObject(model);
 	}
 }
 

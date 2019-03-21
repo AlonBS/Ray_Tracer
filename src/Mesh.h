@@ -7,8 +7,6 @@
 
 #include "Triangle.h"
 #include "Box.h"
-#include "Model.h"
-
 
 using namespace std;
 
@@ -23,13 +21,12 @@ typedef struct MeshProperties : ObjectProperties {
 
 
 
-class Mesh : Model {
+class Mesh : Object {
 
 private:
 
 	using super = Object;
 
-	MeshProperties _properties;
 	vector<Triangle*> triangles;
 
 	vector<Vertex> _vertices;
@@ -43,9 +40,9 @@ private:
 //	glm::vec3 specular;
 //	GLfloat shininess;
 
-	Image *_meshAmbientTexture;
-	Image *_meshDiffuseTexture;
-	Image *_meshSpecularTexture;
+	Image* _meshAmbientTexture;
+	Image* _meshDiffuseTexture;
+	Image* _meshSpecularTexture;
 
 	//const Model* const _model; - TODO
 
@@ -55,10 +52,12 @@ public:
 
 	Mesh(vector<Vertex>& vertices,
 			vector<unsigned int>& indices,
-			MeshProperties& properties,
+			ObjectProperties& properties,
 			Image *ambientTexture,
 			Image *diffuseTexture,
-			Image *specualrTexture
+			Image *specualrTexture,
+			Image *generalTexture
+
 			/*const Model* const* - TODO */);
 
 
@@ -73,7 +72,7 @@ public:
 	vec3 getDiffuseTextureColor(vec2& uv);
 	vec3 getSpecularTextureColor(vec2& uv);
 
-	vector<Vertex>& getVertices() { return _vertices; }
+	const vector<Vertex>& getVertices() { return _vertices; }
 
 
 private:
