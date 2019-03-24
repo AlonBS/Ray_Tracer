@@ -173,7 +173,6 @@ bool BoundingVolume::Extent::intersectRay(const Ray &r, GLfloat* t_near)
 }
 
 
-
 void BoundingVolume::Extent::print() const
 {
 	for (int i = 0 ; i < NUM_OF_SET_NORMALS ; ++i) {

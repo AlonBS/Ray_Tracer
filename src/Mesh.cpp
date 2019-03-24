@@ -191,6 +191,19 @@ Mesh::intersectsRay(const Ray &r,
 
 	return true;
 }
+
+
+
+bool
+Mesh::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties) const
+{
+	Mesh* m = (Mesh*)(this);
+	return m->intersectsRay(r, dist, point, normal, texColors, properties);
+
+}
+
+
+
 //
 //bool
 //Mesh::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, vec2* texCoords, MeshProperties* properties)

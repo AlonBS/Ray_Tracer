@@ -66,13 +66,15 @@ public:
 
 //	bool intersectsRay(const Ray& r, GLfloat* dist, vec3* point, vec3* normal, vec2* texCoords, MeshProperties* properties);
 	virtual bool intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties);
+	virtual bool intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties) const;
 
 
 	vec3 getAmbientTextureColor(vec2& uv);
 	vec3 getDiffuseTextureColor(vec2& uv);
 	vec3 getSpecularTextureColor(vec2& uv);
 
-	const vector<Vertex>& getVertices() { return _vertices; }
+	const vector<Vertex>& getVertices() const { return _vertices; }
+	const vector<Vertex>& getVertices() { return const_cast<vector<Vertex>&>(static_cast<const Mesh &>(*this).getVertices()); }
 
 
 private:

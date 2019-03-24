@@ -45,10 +45,12 @@ TODOs:
 
 - Test normal transformation when creating meshes of object (PRIORITY 1!!!)
 - Move to unique ptrs
+- Ipmlemnt const mechanisms 
 - Fix Vertices in Mesh class - (Copy of Vertex)
 - Add textures generation
 - Fix mesh properties multiply operator when value is not given (default) 
 - Fix folder structure and fix dependecy within scene to textures and models
+- FIx the applyObjectProps idiom
 - Stop recursion of light contribution is minor. 
 - Fix textures when applying transformations. 
 - Consider Normal transformation when adding normals to meshes. (Model.cpp)
@@ -57,4 +59,14 @@ TODOs:
 - Transform normals for mesh objects
 - Insert bounding-box intersection op.
 - Consider adding more primitives : Torus, disc and more. 
+
+
+
+
+
+
+3.0:
+-----
+- Fixed a bug were object translated upon creation affected objects created after with same translation. 
+
 

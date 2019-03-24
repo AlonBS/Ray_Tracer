@@ -208,7 +208,7 @@ SceneParser::readValues(stringstream &s, const int numOfVals, GLfloat* values)
 }
 
 
-void SceneParser::applyPropsToObject(Object* object, bool isTriangle)
+void SceneParser::applyPropsToObject(Object* object, mat4& objectTransformation, bool isTriangle)
 {
 	object->ambient() = ambient;
 	object->emission() = emission;
@@ -216,8 +216,8 @@ void SceneParser::applyPropsToObject(Object* object, bool isTriangle)
 	object->specular() = specular;
 	object->shininess() = shininess;
 	if (!isTriangle) { // Triangles are applied with the transformation matrix, so these aren't needed */
-		object->transform() = transformsStack.top();
-		object->invTransform() = inverse(object->transform());
+		object->transform() = objectTransformation;
+		object->invTransform() = inverse(objectTransformation);
 		object->invTransposeTrans() = mat3(transpose(object->invTransform()));
 	}
 
@@ -380,22 +380,25 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		 */
 		vec3 center = glm::vec3(0, 0, 0);
 		mat4 objectTranslation = glm::translate(mat4(1.0), vec3(values[0], values[1], values[2]));
-		transformsStack.top() = objectTranslation * transformsStack.top(); // yes - left multiplied!
+
+		// Notice we don't change the top of the stack here, so this won't affect other objects
+		mat4 objectTransformation = objectTranslation * transformsStack.top(); // yes - left multiplied!
+
 		GLfloat radius = values[3];
 		Object *sphere = new Sphere(center, radius);
-		applyPropsToObject(sphere);
+		applyPropsToObject(sphere, objectTransformation);
 	}
 
 	else if (cmd == Commands.cylinder) {
 		readValues(s, 5, values);
 		vec3 center = glm::vec3(0, 0, 0);
 		mat4 objectTranslation = glm::translate(mat4(1.0), vec3(values[0], values[1], values[2]));
-		transformsStack.top() = objectTranslation * transformsStack.top(); // yes - left multiplied! - see note at sphere
+		mat4 objectTransformation = objectTranslation * transformsStack.top(); // yes - left multiplied! - see note at sphere
 
 		GLfloat height = values[3];
 		GLfloat radius = values[4];
 		Object *cylinder = new Cylinder(center, height, radius);
-		applyPropsToObject(cylinder);
+		applyPropsToObject(cylinder, objectTransformation);
 	}
 
 	else if (cmd == Commands.box) {
@@ -403,7 +406,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		vec3 minBound = vec3(values[0], values[1], values[2]);
 		vec3 maxBound = vec3(values[3], values[4], values[5]);
 		Object *box = new Box(minBound, maxBound);
-		applyPropsToObject(box);
+		applyPropsToObject(box, transformsStack.top());
 	}
 
 
@@ -411,12 +414,12 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		readValues(s, 5, values);
 		vec3 center = glm::vec3(0, 0, 0);
 		mat4 objectTranslation = glm::translate(mat4(1.0), vec3(values[0], values[1], values[2]));
-		transformsStack.top() = objectTranslation * transformsStack.top(); // yes - left multiplied! - see note at sphere
+		mat4 objectTransformation = objectTranslation * transformsStack.top(); // yes - left multiplied! - see note at sphere
 
 		GLfloat minCap = values[3];
 		GLfloat maxCap = values[4];
 		Object *cone = new Cone(center, minCap, maxCap);
-		applyPropsToObject(cone);
+		applyPropsToObject(cone, objectTransformation);
 	}
 
 	else if (cmd == Commands.plane) {
@@ -442,7 +445,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		}
 
 		Object *plane = new Plane(tp);
-		applyPropsToObject(plane);
+		applyPropsToObject(plane, transformsStack.top());
 	}
 
 
@@ -480,7 +483,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		vec3 B = vec3 (transformsStack.top() * vec4(vertices[values[1]], 1.0f));
 		vec3 C = vec3 (transformsStack.top() * vec4(vertices[values[2]], 1.0f));
 		Object *triangle = new Triangle(A, B, C);
-		applyPropsToObject(triangle, true);
+//		applyPropsToObject(triangle, true);
 	}
 
 	else if (cmd == Commands.triNormal) {
@@ -510,7 +513,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		vec2 Cuv = vec2(verticesTexT[values[2]]);
 
 		Object *triangle = new Triangle(A, B, C, Auv, Buv, Cuv);
-		applyPropsToObject(triangle, true);
+		applyPropsToObject(triangle, transformsStack.top(), true);
 	}
 
 	else if (cmd == Commands.texture) {

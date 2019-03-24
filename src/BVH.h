@@ -145,8 +145,8 @@ class BVH /*: AccelerationStructure */
 public:
 	BVH(vector<Mesh*>& meshes);
 	~BVH();
-	bool intersect(const vec3&, const vec3&, const uint32_t&, float&) const;
 
+//	bool intersect(const vec3&, const vec3&, const uint32_t&, float&) const;
 	bool intersectsRay(const Ray &r,
 					   GLfloat &minDist,
 					   GLfloat* dist,
@@ -169,28 +169,57 @@ private:
 		Extents()
 		:mesh(nullptr)
 		{
-			for (uint8_t i = 0;  i < NUM_OF_SET_NORMALS; ++i)
-				d[i][0] = INFINITY, d[i][1] = -INFINITY;
+			for (uint8_t i = 0;  i < NUM_OF_SET_NORMALS; ++i) {
+				dists[i].dNear = INFINITY, dists[i].dFar = -INFINITY;
+			}
 		}
 
-		void extendBy(const Extents& e)
+		void build(const Mesh* mesh)
+		{
+			for (uint8_t i = 0; i < NUM_OF_SET_NORMALS; ++i) {
+
+				dists[i].dNear = INFINITY, dists[i].dFar = -INFINITY;
+				for (const auto& v : mesh->getVertices()) {
+
+					GLfloat d = dot(planeSetNormals[i], v.Position);
+					dists[i].dNear = glm::min(dists[i].dNear, d);
+					dists[i].dFar  = glm::max(dists[i].dFar, d);
+				}
+			}
+
+			this->mesh = mesh; // Associate this Extents with the given mesh
+		}
+
+		void extendBy(const Extents& other)
 		{
 
 			for (uint8_t i = 0;  i < NUM_OF_SET_NORMALS; ++i) {
-				if (e.d[i][0] < d[i][0]) d[i][0] = e.d[i][0];
-				if (e.d[i][1] > d[i][1]) d[i][1] = e.d[i][1];
+
+				dists[i].dNear = glm::min(dists[i].dNear, other.dists[i].dNear);
+				dists[i].dFar  = glm::max(dists[i].dFar,  other.dists[i].dFar);
 			}
 		}
+
 		/* inline */
 		vec3 centroid() const
 		{
-			return vec3(d[0][0] + d[0][1] * 0.5,
-					d[1][0] + d[1][1] * 0.5,
-					d[2][0] + d[2][1] * 0.5);
+			// With respect to XYZ axis
+			return vec3( 0.5 * (dists[0].dNear + dists[0].dFar),
+						 0.5 * (dists[1].dNear + dists[1].dFar),
+						 0.5 * (dists[2].dNear + dists[2].dFar));
 		}
 
-		bool intersect(const float*, const float*, float&, float&, uint8_t&) const;
-		float d[NUM_OF_SET_NORMALS][2];
+		bool intersect(const GLfloat[], const GLfloat[], GLfloat*, GLfloat*) const;
+
+
+		typedef struct SlabDist {
+
+			GLfloat dNear;
+			GLfloat dFar;
+
+		}SlabDist;
+
+		SlabDist dists [NUM_OF_SET_NORMALS];
 		const Mesh* mesh;
 	};
 
@@ -233,6 +262,9 @@ private:
 
 		void build(OctreeNode*& node, const BBox& bbox);
 	};
+
+
+	Extents __buildSceneExtents(std::vector<Mesh*>& meshes);
 
 
 	std::vector<Extents> extentsList;

@@ -164,6 +164,9 @@ Intersection RayTracer::intersectScene(Scene & scene, Ray& ray)
 	Intersection hit;
 	hit.isValid = false;
 
+	ray.origin = vec3(0.f, 0.f, 10);
+	ray.direction = vec3(0.f, 0.f, -1);
+
 	// Currently - primitive objects are not divided within the bounding volume hierarchies.
 	// This will be changed in next stages. And so, we first search for an intersection with any of
 	// the primitives (which is rather quickly, since it's a single function call (and also BBox optimized)
@@ -187,32 +190,19 @@ Intersection RayTracer::intersectScene(Scene & scene, Ray& ray)
 	}
 
 
+	// Now we check for complex object, where we already know the closest primitive object for this ray.
+	if (scene.getBVH()->intersectsRay(ray, minDist, &dist, &point, &normal, &texColors, &objProps))
+	{
+		hit.point = point;
+		hit.normal = normal;
+		hit.texColors = texColors;
 
+		hit.properties = objProps;
+		hit.isValid = true;
+	}
 
-//	for (BoundingVolume* bv : scene.getBoundingVolumes() ) {
-//
-//		if (bv->intersectRay(ray, minDist, &dist, &point, &normal, &texColors, &objProps)) {
-//
-//			minDist = dist;
-//			hit.point = point;
-//			hit.normal = normal;
-//			hit.texColors = texColors;
-//
-//			hit.properties = objProps;
-//			hit.isValid = true;
-//		}
-//	}
 
 	return hit;
-
-
-
-//
-//	if (minDist == INFINITY) {
-//		hit.isValid = false;
-//	}
-//
-//	return hit;
 }
 
 

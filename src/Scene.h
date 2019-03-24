@@ -67,7 +67,9 @@ public:
 		_meshes.reserve(_meshes.size() + meshes.size());
 		_meshes.insert(_meshes.end(), meshes.begin(), meshes.end());
 	}
-	std::vector<Mesh*>& getMeshes() { return _meshes; }
+
+	BVH* getBVH() { return bvh;}
+	//std::vector<Mesh*>& getMeshes() { return _meshes; }
 
 	void addTexture(Image *texture) { _textures.push_back(texture); }
 	void addTextures(vector<Image*>& textures)
