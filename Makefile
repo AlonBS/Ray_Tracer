@@ -25,7 +25,7 @@ SRCS      = $(SRC_DIR)/main.cpp \
             $(SRC_DIR)/Box.cpp \
 	    $(SRC_DIR)/Cone.cpp \
 	    $(SRC_DIR)/Plane.cpp \
-	    $(SRC_DIR)/BoundingVolume.cpp \
+	    $(SRC_DIR)/BoundingBox.cpp \
 	    $(SRC_DIR)/BVH.cpp \
 
 

@@ -9,47 +9,16 @@ bool Box::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, 
 {
 
 	Ray tr = this->invTransform() * r; // Transformed ray
-	GLfloat tmin, tmax, tymin, tymax, tzmin, tzmax;
+	GLfloat tmin;
 	vec3 ip{}, ip2{};
 	vec3 n;
 
 	++rayTracerStats.numOfIntersectTests;
 
-	tmin = (bounds[tr.sign[0]].x - tr.origin.x) * tr.invDirection.x;
-	tmax = (bounds[1-tr.sign[0]].x - tr.origin.x) * tr.invDirection.x;
-	tymin = (bounds[tr.sign[1]].y - tr.origin.y) * tr.invDirection.y;
-	tymax = (bounds[1-tr.sign[1]].y - tr.origin.y) * tr.invDirection.y;
-
-	if ((tmin > tymax) || (tymin > tmax))
+	// The Bbox of this box is the exactly the same, so we can use it.
+	if (!bbox->intersectsRay(tr, &tmin))
+	{
 		return false;
-	if (tymin > tmin) {
-		tmin = tymin;
-	}
-	if (tymax < tmax) {
-		tmax = tymax;
-	}
-
-	tzmin = (bounds[tr.sign[2]].z - tr.origin.z) * tr.invDirection.z;
-	tzmax = (bounds[1-tr.sign[2]].z - tr.origin.z) * tr.invDirection.z;
-
-	if ((tmin > tzmax) || (tzmin > tmax))
-		return false;
-	if (tzmin > tmin) {
-		tmin = tzmin;
-	}
-	if (tzmax < tmax) {
-		tmax = tzmax;
-	}
-
-	if (tmin < 0 || isnan(tmin)) {
-		tmin = tmax;
-		if (tmin < 0 || isnan(tmin)) {
-//			 If dist is a negative values (accounting for floating point errors)
-//			 then both solutions were negative. Meaning we have to go back from the origin of
-//			 the ray (against its direction) to the intersection point - which means of course that
-//			 there's no intersection.
-			return false;
-		}
 	}
 
 
@@ -84,8 +53,6 @@ bool Box::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, 
 	++rayTracerStats.numOfHits;
 	return true;
 }
-
-
 
 vec3 Box::_normalAt(const vec3 &point)
 {

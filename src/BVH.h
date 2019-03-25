@@ -25,40 +25,41 @@
 #include <glm/glm.hpp>
 
 #include "Mesh.h"
+#include "Box.h"
 
 using namespace glm;
 
 
-class BBox
-{
-public:
-	BBox() {
-		bounds[0] = vec3(-INFINITY, -INFINITY, -INFINITY);
-		bounds[1] = vec3(+INFINITY, +INFINITY, +INFINITY);
-	}
-
-	BBox(vec3 min_, vec3 max_)
-	{
-		bounds[0] = min_;
-		bounds[1] = max_;
-	}
-	BBox& extendBy(const vec3& p)
-	{
-		if (p.x < bounds[0].x) bounds[0].x = p.x;
-		if (p.y < bounds[0].y) bounds[0].y = p.y;
-		if (p.z < bounds[0].z) bounds[0].z = p.z;
-		if (p.x > bounds[1].x) bounds[1].x = p.x;
-		if (p.y > bounds[1].y) bounds[1].y = p.y;
-		if (p.z > bounds[1].z) bounds[1].z = p.z;
-
-		return *this;
-	}
-	vec3 centroid() const { return (bounds[0] + bounds[1]) * 0.5f; }
-	//vec3& operator [] (bool i) { return bounds[i]; }
-	//const vec3 operator [] (bool i) const { return bounds[i]; }
-	bool intersect(const vec3&, const vec3&, const bvec3&, float&) const;
-	vec3 bounds[2];
-};
+//class BBox
+//{
+//public:
+//	BBox() {
+//		bounds[0] = vec3(-INFINITY, -INFINITY, -INFINITY);
+//		bounds[1] = vec3(+INFINITY, +INFINITY, +INFINITY);
+//	}
+//
+//	BBox(vec3 min_, vec3 max_)
+//	{
+//		bounds[0] = min_;
+//		bounds[1] = max_;
+//	}
+//	BBox& extendBy(const vec3& p)
+//	{
+//		if (p.x < bounds[0].x) bounds[0].x = p.x;
+//		if (p.y < bounds[0].y) bounds[0].y = p.y;
+//		if (p.z < bounds[0].z) bounds[0].z = p.z;
+//		if (p.x > bounds[1].x) bounds[1].x = p.x;
+//		if (p.y > bounds[1].y) bounds[1].y = p.y;
+//		if (p.z > bounds[1].z) bounds[1].z = p.z;
+//
+//		return *this;
+//	}
+//	vec3 centroid() const { return (bounds[0] + bounds[1]) * 0.5f; }
+//	//vec3& operator [] (bool i) { return bounds[i]; }
+//	//const vec3 operator [] (bool i) const { return bounds[i]; }
+//	bool intersect(const vec3&, const vec3&, const bvec3&, float&) const;
+//	vec3 bounds[2];
+//};
 
 
 //
@@ -148,7 +149,7 @@ public:
 
 //	bool intersect(const vec3&, const vec3&, const uint32_t&, float&) const;
 	bool intersectsRay(const Ray &r,
-					   GLfloat &minDist,
+					   const GLfloat &minDist,
 					   GLfloat* dist,
 					   vec3* point,
 					   vec3* normal,
@@ -158,14 +159,23 @@ public:
 
 
 private:
+
 	static const GLuint NUM_OF_SET_NORMALS = 7;
-	static const vec3 planeSetNormals[NUM_OF_SET_NORMALS];
+	static const vec3 PLANE_SET_NORMALS[NUM_OF_SET_NORMALS];
 
 	vector<Mesh*> meshes;
 
 
 	struct Extents
 	{
+		typedef struct SlabDist {
+
+			GLfloat dNear;
+			GLfloat dFar;
+
+		}SlabDist;
+
+
 		Extents()
 		:mesh(nullptr)
 		{
@@ -181,7 +191,7 @@ private:
 				dists[i].dNear = INFINITY, dists[i].dFar = -INFINITY;
 				for (const auto& v : mesh->getVertices()) {
 
-					GLfloat d = dot(planeSetNormals[i], v.Position);
+					GLfloat d = dot(PLANE_SET_NORMALS[i], v.Position);
 					dists[i].dNear = glm::min(dists[i].dNear, d);
 					dists[i].dFar  = glm::max(dists[i].dFar, d);
 				}
@@ -203,7 +213,7 @@ private:
 		/* inline */
 		vec3 centroid() const
 		{
-			// With respect to XYZ axis
+			// With respect to XYZ axis - simple average
 			return vec3( 0.5 * (dists[0].dNear + dists[0].dFar),
 						 0.5 * (dists[1].dNear + dists[1].dFar),
 						 0.5 * (dists[2].dNear + dists[2].dFar));
@@ -212,12 +222,7 @@ private:
 		bool intersect(const GLfloat[], const GLfloat[], GLfloat*, GLfloat*) const;
 
 
-		typedef struct SlabDist {
 
-			GLfloat dNear;
-			GLfloat dFar;
-
-		}SlabDist;
 
 		SlabDist dists [NUM_OF_SET_NORMALS];
 		const Mesh* mesh;
@@ -226,6 +231,7 @@ private:
 
 	class Octree
 	{
+
 	public:
 		Octree(const Extents& sceneExtents);
 
@@ -242,25 +248,31 @@ private:
 			bool isLeaf = true;
 		};
 
+		// For priority queue sorting
 		struct QueueElement
 		{
 			const OctreeNode *node; // octree node held by this element in the queue
-			float t; // distance from the ray origin to the extents of the node
-			QueueElement(const OctreeNode *n, float tn) : node(n), t(tn) {}
-			// priority_queue behaves like a min-heap
+			GLfloat t; // distance from the ray origin to the extents of the node
+			QueueElement(const OctreeNode *n, GLfloat tn) : node(n), t(tn) {}
 			friend bool operator < (const QueueElement &a, const QueueElement &b) { return a.t > b.t; }
 		};
 
-		OctreeNode* root = nullptr; // make unique son don't have to manage deallocation
-		BBox bbox;
+		OctreeNode* root = nullptr;
+		BoundingBox bbox;
 
 	private:
 
 		void deleteOctreeNode(OctreeNode*& node);
 
-		void insert(OctreeNode*& node, const Extents* extents, const BBox& bbox, uint32_t depth);
+		void insert(OctreeNode*& node, const Extents* extents, const BoundingBox& bbox, uint32_t depth);
 
-		void build(OctreeNode*& node, const BBox& bbox);
+		void build(OctreeNode*& node, const BoundingBox& bbox);
+
+
+		void computeChildIndexAndBbox(const vec3& extentsCentroid,
+				   	   	   	   	   	  const vec3& nodeCentroid,
+									  BoundingBox* childBbox,
+									  GLuint* childIndex);
 	};
 
 

@@ -19,20 +19,25 @@ class Box: public Object {
 
 private:
 
-	vec3 bounds[2];
-
-
 	vec3 _normalAt(const vec3 &point);
 	vec2 _textureAt(const vec3& point);
 
+	vec3 bounds[2]; // Yes! public
 
 public:
 
+
+	Box()
+	: Object()
+	{
+
+	}
 	Box(vec3 & minBound, vec3& maxBound)
 	: Object()
 	{
 		bounds[0] = {minBound};
 		bounds[1] = {maxBound};
+		bbox = new BoundingBox(minBound, maxBound);
 	}
 	virtual ~Box() {}
 
