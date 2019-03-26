@@ -164,11 +164,15 @@ Intersection RayTracer::intersectScene(Scene & scene, Ray& ray)
 	Intersection hit;
 	hit.isValid = false;
 
-//	ray.origin = vec3(0.f, 0.f, 0);
+
+//	vec3 o = vec3(0.f, 0.f, 10);
+//	vec3 d = vec3(0.f, 0.f, -1);
+//	ray = Ray(o, d);
+//	ray.origin =
 //	ray.direction = vec3(0.f, 0.f, -1);
 
 	// Currently - primitive objects are not divided within the bounding volume hierarchies.
-	// This will be changed in next stages. And so, we first search for an intersection with any of
+	// And so, we first search for an intersection with any of
 	// the primitives (which is rather quickly, since it's a single function call (and also BBox optimized)
 	// and then we move to the complex objects (models), and we can use the closest intersection when testing
 	// against extents (and not meshes).
@@ -220,7 +224,7 @@ vec3 RayTracer::computeLight(Scene& scene, Ray& r, Intersection& hit)
 	Ray shadowRay;
 	vec3 srOrigin;
 	vec3 srDir;
-	GLfloat maxDist;
+	GLfloat distToLight;
 
 	vec3 eyeDir;
 	vec3 halfAng;
@@ -235,15 +239,15 @@ vec3 RayTracer::computeLight(Scene& scene, Ray& r, Intersection& hit)
 		srDir = normalize(p->_position - hit.point);
 		srOrigin = hit.point + 10 * EPSILON * srDir; // Move a little to avoid floating point errors
 		shadowRay = Ray(srOrigin, srDir);
-		maxDist = length(p->_position - hit.point);
+		distToLight = length(p->_position - hit.point);
 
-		if (isVisibleToLight(scene, shadowRay, maxDist)) {
+		if (isVisibleToLight(scene, shadowRay, distToLight)) {
 
 			halfAng = normalize(srDir + eyeDir);
 
 			tempColor = __blinn_phong(hit.properties, hit.texColors, p->_color, srDir, hit.normal, halfAng);
 			// take attenuation into account
-			GLfloat atten = 1 / (scene.attenuation().constant + scene.attenuation().linear * maxDist + scene.attenuation().quadratic * maxDist * maxDist);
+			GLfloat atten = 1 / (scene.attenuation().constant + scene.attenuation().linear * distToLight + scene.attenuation().quadratic * distToLight * distToLight);
 			tempColor *= atten;
 			color += tempColor;
 		}
@@ -255,10 +259,10 @@ vec3 RayTracer::computeLight(Scene& scene, Ray& r, Intersection& hit)
 		srDir = normalize(p->_direction);
 		srOrigin = hit.point + 10 * EPSILON * srDir; // Move a little to avoid floating point errors
 		shadowRay = Ray(srOrigin, srDir);
-		maxDist = INFINITY;
+		distToLight = INFINITY;
 
 
-		if (isVisibleToLight(scene, shadowRay, maxDist)) {
+		if (isVisibleToLight(scene, shadowRay, distToLight)) {
 
 			halfAng = normalize(srDir + eyeDir);
 			tempColor = __blinn_phong(hit.properties, hit.texColors, p->_color, srDir, hit.normal, halfAng);

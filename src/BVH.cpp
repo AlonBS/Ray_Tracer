@@ -309,7 +309,7 @@ void BVH::Octree::deleteOctreeNode(OctreeNode*& node)
 }
 
 
-void BVH::Octree::insert(OctreeNode*& node, const Extents* extents, const BoundingBox& bbox, uint32_t depth)
+void BVH::Octree::insert(OctreeNode*& node, const Extents* extents, const AABB& bbox, uint32_t depth)
 {
 	if (node->isLeaf) {
 		if (node->nodeExtentsList.size() == 0 || depth == 16) {
@@ -333,7 +333,7 @@ void BVH::Octree::insert(OctreeNode*& node, const Extents* extents, const Boundi
 		vec3 extentsCentroid = extents->centroid();
 		vec3 nodeCentroid = (bbox.bounds[0] + bbox.bounds[1]) * 0.5f;
 
-		BoundingBox childBBox;
+		AABB childBBox;
 		GLuint childIndex = 0;
 		computeChildIndexAndBbox(extentsCentroid, nodeCentroid, &childBBox, &childIndex);
 
@@ -346,7 +346,7 @@ void BVH::Octree::insert(OctreeNode*& node, const Extents* extents, const Boundi
 }
 
 
-void BVH::Octree::build(OctreeNode*& node, const BoundingBox& bbox)
+void BVH::Octree::build(OctreeNode*& node, const AABB& bbox)
 {
 	if (node->isLeaf) {
 		for (const auto& e: node->nodeExtentsList) {
@@ -370,7 +370,7 @@ void BVH::Octree::build(OctreeNode*& node, const BoundingBox& bbox)
 				maxBound.z = (i & 1) ? bbox.bounds[1].z : centroid.z;
 
 
-				BoundingBox childBBox{minBound, maxBound};
+				AABB childBBox{minBound, maxBound};
 
 				// Inspect child
 				build(node->child[i], childBBox);
@@ -386,7 +386,7 @@ void BVH::Octree::build(OctreeNode*& node, const BoundingBox& bbox)
 
 void BVH::Octree::computeChildIndexAndBbox(const vec3& extentsCentroid,
 										   const vec3& nodeCentroid,
-										   BoundingBox* childBbox,
+										   AABB* childBbox,
 										   GLuint* childIndex)
 {
 	GLuint index = 0;
@@ -425,7 +425,7 @@ void BVH::Octree::computeChildIndexAndBbox(const vec3& extentsCentroid,
 	}
 
 	*childIndex = index;
-	*childBbox = BoundingBox(minBound, maxBound);
+	*childBbox = AABB(minBound, maxBound);
 }
 
 

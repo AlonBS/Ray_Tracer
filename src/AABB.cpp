@@ -1,9 +1,10 @@
-#include "BoundingBox.h"
+#include "AABB.h"
 
 using namespace glm;
 
-bool BoundingBox::intersectsRay(const Ray& tr, GLfloat* t_near)
+bool AABB::intersectsRay(const Ray& tr, GLfloat* t_near)
 {
+
 	GLfloat tmin, tmax, tymin, tymax, tzmin, tzmax;
 
 	tmin = (bounds[tr.sign[0]].x - tr.origin.x) * tr.invDirection.x;
@@ -48,7 +49,7 @@ bool BoundingBox::intersectsRay(const Ray& tr, GLfloat* t_near)
 }
 
 
-void BoundingBox::print() const
+void AABB::print() const
 {
 	std::cout << "Min Bound: ("<< bounds[0].x << "," << bounds[0].y << "," << bounds[0].z << ")" << std::endl;
 	std::cout << "Max Bound: ("<< bounds[1].x << "," << bounds[1].y << "," << bounds[1].z << ")" << std::endl;

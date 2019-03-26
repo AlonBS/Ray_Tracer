@@ -9,10 +9,11 @@
 #define OBJECT_H_
 
 #include <GL/glew.h>
+
+#include "AABB.h"
 #include "Ray.h"
 #include "General.h"
 #include "Image.h"
-#include "BoundingBox.h"
 
 using namespace glm;
 
@@ -37,12 +38,11 @@ protected:
 
 	vec3 getTextureColor(Image *texture, vec2& uv);
 
-	BoundingBox* bbox;
+	AABB* bbox;
 
 	//bool _textured;
 
 public:
-
 
 
 
@@ -60,6 +60,8 @@ public:
 
 	virtual bool intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties) = 0;
 	bool bBoxIntersectsRay(const Ray& tr, GLfloat* t_near);
+
+	virtual void computeBoundingBox() { this->bbox = nullptr; }
 
 
 	auto properties() -> ObjectProperties& { return _properties; };

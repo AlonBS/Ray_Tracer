@@ -9,11 +9,11 @@ CFLAGS    = -g -std=c++17 -pthread #-fopenmp -Wall -Wextra
 CC        = g++
 SRC_DIR   = ./src
 SRCS      = $(SRC_DIR)/main.cpp \
-	    $(SRC_DIR)/General.cpp \
-	    $(SRC_DIR)/Image.cpp \
-	    $(SRC_DIR)/Ray.cpp \
-	    $(SRC_DIR)/RayTracer.cpp \
-	    $(SRC_DIR)/Scene.cpp \
+            $(SRC_DIR)/General.cpp \
+            $(SRC_DIR)/Image.cpp \
+            $(SRC_DIR)/Ray.cpp \
+            $(SRC_DIR)/RayTracer.cpp \
+            $(SRC_DIR)/Scene.cpp \
             $(SRC_DIR)/SceneParser.cpp \
             $(SRC_DIR)/Object.cpp \
             $(SRC_DIR)/Sphere.cpp \
@@ -23,10 +23,10 @@ SRCS      = $(SRC_DIR)/main.cpp \
             $(SRC_DIR)/Model.cpp \
             $(SRC_DIR)/Cylinder.cpp \
             $(SRC_DIR)/Box.cpp \
-	    $(SRC_DIR)/Cone.cpp \
-	    $(SRC_DIR)/Plane.cpp \
-	    $(SRC_DIR)/BoundingBox.cpp \
-	    $(SRC_DIR)/BVH.cpp \
+            $(SRC_DIR)/Cone.cpp \
+            $(SRC_DIR)/Plane.cpp \
+            $(SRC_DIR)/AABB.cpp \
+            $(SRC_DIR)/BVH.cpp \
 
 
 	    

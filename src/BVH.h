@@ -258,20 +258,20 @@ private:
 		};
 
 		OctreeNode* root = nullptr;
-		BoundingBox bbox;
+		AABB bbox;
 
 	private:
 
 		void deleteOctreeNode(OctreeNode*& node);
 
-		void insert(OctreeNode*& node, const Extents* extents, const BoundingBox& bbox, uint32_t depth);
+		void insert(OctreeNode*& node, const Extents* extents, const AABB& bbox, uint32_t depth);
 
-		void build(OctreeNode*& node, const BoundingBox& bbox);
+		void build(OctreeNode*& node, const AABB& bbox);
 
 
 		void computeChildIndexAndBbox(const vec3& extentsCentroid,
 				   	   	   	   	   	  const vec3& nodeCentroid,
-									  BoundingBox* childBbox,
+									  AABB* childBbox,
 									  GLuint* childIndex);
 	};
 

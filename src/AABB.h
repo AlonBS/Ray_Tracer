@@ -1,12 +1,12 @@
 /*
- * Box.h
+ * AABB.h
  *
  *  Created on: Mar 25, 2019
  *      Author: alonbs
  */
 
-#ifndef BOUNDING_BOX_H
-#define BOUNDING_BOX_H
+#ifndef AABB_H
+#define AABB_H
 
 #include <GL/glew.h>
 #include <GL/glut.h>
@@ -16,19 +16,14 @@
 
 using namespace glm;
 
+// Implementation for Axis Aligned Bounding Box
+struct AABB {
 
-class BoundingBox {
+	vec3 bounds[2];
 
-private:
+	AABB(){ }
 
-
-public:
-
-	vec3 bounds[2]; // Yes! public
-
-	BoundingBox(){ }
-
-	BoundingBox(vec3 & minBound, vec3& maxBound)
+	AABB(vec3 & minBound, vec3& maxBound)
 	{
 		bounds[0] = {minBound};
 		bounds[1] = {maxBound};
@@ -41,4 +36,4 @@ public:
 	void print() const;
 };
 
-#endif /* BOUNDING_BOX_H */
+#endif /* AABB_H */

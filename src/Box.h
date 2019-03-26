@@ -37,7 +37,6 @@ public:
 	{
 		bounds[0] = {minBound};
 		bounds[1] = {maxBound};
-		bbox = new BoundingBox(minBound, maxBound);
 	}
 	virtual ~Box() {}
 

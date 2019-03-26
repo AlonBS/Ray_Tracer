@@ -224,6 +224,7 @@ void SceneParser::applyPropsToObject(Object* object, mat4& objectTransformation,
 	if (textureIsBound) {
 		object->setTexture(boundTexture);
 	}
+	object->computeBoundingBox();
 	scene->addObject(object);
 }
 

@@ -50,7 +50,7 @@ Usage:
 		                  jpeg, jpg, bmp, tiff.
 	  -s [ --single-thread ]  Flag to force single thread rendering. Default 
 		                  behavior is multi-threaded.
-	    --stats               Generate and print statistics about each scene 
+          --stats                 Generate and print statistics about each scene 
                     		  rendered.
 
 	Other values are specified within each scene separately. 

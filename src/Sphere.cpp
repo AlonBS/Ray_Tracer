@@ -5,6 +5,7 @@
  *      Author: alonbs
  */
 
+#include <vector>
 #include "Sphere.h"
 
 
@@ -108,5 +109,38 @@ void Sphere::print() const
 {
 	std::cout << "Center: (" << center.x << "," << center.y << "," << center.z << ") | Radius: " << radius << std::endl;
 	Object::print();
+}
+
+
+void Sphere::computeBoundingBox()
+{
+	GLfloat min = - radius;
+	GLfloat max = + radius;
+
+	vec3 minBound = vec3(+INFINITY, +INFINITY, +INFINITY);
+	vec3 maxBound = vec3(-INFINITY, -INFINITY, -INFINITY);
+
+	std::vector<vec3> verts {
+		vec3(min, min, min),
+		vec3(min, min, max),
+		vec3(min, max, min),
+		vec3(min, max, max),
+		vec3(max, min, min),
+		vec3(max, min, max),
+		vec3(max, max, min),
+		vec3(max, max, max),
+	};
+
+	printMat4("trans", this->transform());
+
+	for (vec3& v : verts) {
+
+		v = vec3 (this->transform() * vec4(v, 1.0f));;
+
+		minBound = glm::min(v, minBound);
+		maxBound = glm::max(v, maxBound);
+	}
+
+	this->bbox = new AABB(minBound, maxBound);
 }
 
