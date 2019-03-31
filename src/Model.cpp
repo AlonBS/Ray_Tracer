@@ -25,65 +25,14 @@ vector<Model::Texture*> Model::_loadedTextures{}; // We store all the textures l
 string Model::_directory{};
 
 
-//Model::Model()
-//:Object()
-//{
-//}
-//
 void Model::FreeTextures()
 {
-//	for (Mesh* m : meshes)
-//	{
-//		delete (m);
-//		m = nullptr;
-//	}
-
 	for (Texture * t : _loadedTextures) {
 		delete(t->texture);
 		delete(t);
 		t = nullptr;
 	}
 }
-
-
-//bool
-//Model::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties)
-//{
-//	GLfloat minDist = INFINITY;
-//
-//	GLfloat tDist;
-//	vec3 tP, tN;
-//	vec2 ttC;
-//	MeshProperties meshProps;
-//
-//	for (Mesh *m : meshes) {
-//
-//		if (m->intersectsRay(r, &tDist, &tP, &tN, &ttC, &meshProps)) {
-//
-//			if (tDist < minDist) {
-//
-//				*dist = minDist = tDist;
-//				if (point)  *point = tP;
-//				if (normal) *normal = tN;
-//
-//				if (texColors) {
-//					texColors->_ambientTexColor  = m->getAmbientTextureColor(ttC)  * this->getAmbientTextureColor(ttC);
-//					texColors->_diffuseTexColor  = m->getDiffuseTextureColor(ttC)  * this->getDiffuseTextureColor(ttC);
-//					texColors->_specularTexColor = m->getSpecularTextureColor(ttC) * this->getSpecularTextureColor(ttC);
-//				}
-//
-//				if (properties) *properties = meshProps * _properties;
-//			}
-//		}
-//	}
-//
-//	if (minDist == INFINITY) {
-//		return false;
-//	}
-//
-//	return true;
-//
-//}
 
 
 void
@@ -206,7 +155,7 @@ Model::processMesh(aiMesh *mesh, const aiScene *scene)
 
 	// Process materials
 
-//	if(mesh->mMaterialIndex >= 0)
+	if(mesh->mMaterialIndex >= 0)
 	{
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 		aiColor3D c (0.0f, 0.0f, 0.0f);

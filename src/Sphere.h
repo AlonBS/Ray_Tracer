@@ -31,10 +31,6 @@ public:
 	Sphere(const glm::vec3 & center, GLfloat &radius)
 	: Object(), center(center), radius(radius)
 	{
-//		__computeBoundingBox();
-//		vec3 minBound = vec3(center.x-radius, center.y-radius, center.z-radius);
-//		vec3 maxBound = vec3(center.x+radius, center.y+radius, center.z+radius);
-//		this->bbox = new BoundingBox(minBound, maxBound);
 	}
 	virtual ~Sphere() {	}
 

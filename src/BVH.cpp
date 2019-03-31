@@ -2,53 +2,6 @@
 #include "BVH.h"
 
 
-//
-//
-///***************************BBOX ****************************************/
-//
-//
-///******************************
-////       Public Methods
-///*****************************/
-//
-//
-//
-//bool BBox::intersect(const vec3& orig, const vec3& invDir, const bvec3& sign, float& tHit) const
-//{
-//
-//	//numRayBBoxTests++; - TODO - add
-//	float tmin, tmax, tymin, tymax, tzmin, tzmax;
-//
-//	tmin  = (bounds[sign[0]    ].x - orig.x) * invDir.x;
-//	tmax  = (bounds[1 - sign[0]].x - orig.x) * invDir.x;
-//	tymin = (bounds[sign[1]    ].y - orig.y) * invDir.y;
-//	tymax = (bounds[1 - sign[1]].y - orig.y) * invDir.y;
-//
-//	if ((tmin > tymax) || (tymin > tmax))
-//		return false;
-//
-//	if (tymin > tmin)
-//		tmin = tymin;
-//	if (tymax < tmax)
-//		tmax = tymax;
-//
-//	tzmin = (bounds[sign[2]    ].z - orig.z) * invDir.z;
-//	tzmax = (bounds[1 - sign[2]].z - orig.z) * invDir.z;
-//
-//	if ((tmin > tzmax) || (tzmin > tmax))
-//		return false;
-//
-//	if (tzmin > tmin)
-//		tmin = tzmin;
-//	if (tzmax < tmax)
-//		tmax = tzmax;
-//
-//	tHit = tmin;
-//
-//	return true;
-//}
-
-
 /***************************BVH ****************************************/
 
 
@@ -67,8 +20,7 @@ const vec3 BVH::PLANE_SET_NORMALS[BVH::NUM_OF_SET_NORMALS] = {
 };
 
 
-//BVH::BVH(std::vector<std::unique_ptr<const Mesh>>& m) : AccelerationStructure(m)
-BVH::BVH(std::vector<Mesh*>& meshes) /*: AccelerationStructure(meshes)*/
+BVH::BVH(std::vector<Mesh*>& meshes)
 : meshes(meshes)
 {
 
@@ -90,74 +42,6 @@ BVH::~BVH()
 	delete octree;
 }
 
-
-//
-//bool
-//BVH::intersect(const vec3& orig, const vec3& dir, const uint32_t& rayId, float& tHit) const
-//{
-//	tHit = INFINITY;
-//	const Mesh* intersectedMesh = nullptr;
-//	float precomputedNumerator[BVH::NUM_OF_SET_NORMALS];
-//	float precomputedDenominator[BVH::NUM_OF_SET_NORMALS];
-//	for (uint8_t i = 0; i < NUM_OF_SET_NORMALS; ++i) {
-//		precomputedNumerator[i] = dot(planeSetNormals[i], orig);
-//		precomputedDenominator[i] = dot(planeSetNormals[i], dir);
-//	}
-//
-//	/*
-//    tNear = kInfinity; // set
-//    for (uint32_t i = 0; i < meshes.size(); ++i) {
-//        numRayVolumeTests++;
-//        float tn = -kInfinity, tf = kInfinity;
-//        uint8_t planeIndex;
-//        if (extents[i].intersect(precomputedNumerator, precomputedDenominator, tn, tf, planeIndex)) {
-//            if (tn < tNear) {
-//                intersectedMesh = meshes[i].get();
-//                tNear = tn;
-//                // normal = planeSetNormals[planeIndex];
-//            }
-//        }
-//    }
-//	 */
-//
-//	uint8_t planeIndex;
-//	float tNear = 0, tFar = INFINITY; // tNear, tFar for the intersected extents
-//	if (!octree->root->nodeExtents.intersect(precomputedNumerator, precomputedDenominator, tNear, tFar, planeIndex) || tFar < 0)
-//		return false;
-//	tHit = tFar;
-//	std::priority_queue<BVH::Octree::QueueElement> queue;
-//	queue.push(BVH::Octree::QueueElement(octree->root, 0));
-//	while (!queue.empty() && queue.top().t < tHit) {
-//		const Octree::OctreeNode *node = queue.top().node;
-//		queue.pop();
-//		if (node->isLeaf) {
-//			for (const auto& e: node->nodeExtentsList) {
-//				float t = INFINITY;
-//				//                if (e->mesh->intersect(orig, dir, t) && t < tHit) {
-//				//                    tHit = t;
-//				//                    intersectedMesh = e->mesh;
-//				//                }
-//			}
-//		}
-//		else {
-//			for (uint8_t i = 0; i < 8; ++i) {
-//				if (node->child[i] != nullptr) {
-//					float tNearChild = 0, tFarChild = tFar;
-//					if (node->child[i]->nodeExtents.intersect(precomputedNumerator, precomputedDenominator, tNearChild, tFarChild, planeIndex)) {
-//						float t = (tNearChild < 0 && tFarChild >= 0) ? tFarChild : tNearChild;
-//						queue.push(BVH::Octree::QueueElement(node->child[i], t));
-//					}
-//				}
-//			}
-//		}
-//	}
-//
-//	return (intersectedMesh != nullptr);
-//}
-
-
-
-
 bool BVH::intersectsRay(const Ray &r,
 				   	    const GLfloat &minDist,
 						GLfloat* dist,
@@ -168,9 +52,6 @@ bool BVH::intersectsRay(const Ray &r,
 {
 	bool intersected = false;
 	GLfloat closestHit = minDist;
-
-	//tHit = INFINITY;
-	//const Mesh* intersectedMesh = nullptr;
 
 	GLfloat precomputedNumerators[BVH::NUM_OF_SET_NORMALS];
 	GLfloat precomputedDenominators[BVH::NUM_OF_SET_NORMALS];
@@ -193,9 +74,6 @@ bool BVH::intersectsRay(const Ray &r,
 		return false;
 	}
 
-//	closestHit = tNear; // TODO - was tFar;
-//	closestHit = tFar; // TODO - was tFar;
-
 	priority_queue<BVH::Octree::QueueElement> queue;
 	queue.push(BVH::Octree::QueueElement(octree->root, 0));
 
@@ -205,7 +83,6 @@ bool BVH::intersectsRay(const Ray &r,
 		if (node->isLeaf) {
 			for (const auto& e: node->nodeExtentsList) {
 
-//				GLfloat t = INFINITY;
 				if (e->mesh->intersectsRay(r, dist, point, normal, texColors, properties)) {
 
 					if (*dist < closestHit) {
@@ -246,9 +123,6 @@ BVH::Extents BVH::__buildSceneExtents(std::vector<Mesh*>& meshes)
 
 	return sceneExtents;
 }
-
-
-
 
 
 
@@ -383,7 +257,6 @@ void BVH::Octree::build(OctreeNode*& node, const AABB& bbox)
 }
 
 
-
 void BVH::Octree::computeChildIndexAndBbox(const vec3& extentsCentroid,
 										   const vec3& nodeCentroid,
 										   AABB* childBbox,
@@ -430,11 +303,6 @@ void BVH::Octree::computeChildIndexAndBbox(const vec3& extentsCentroid,
 
 
 
-
-
-
-
-
 bool BVH::Extents::intersect(const GLfloat precomputedNumerator[],
 							 const GLfloat precomputedDenominator[],
 							 GLfloat* tNear,   // tn and tf in this method need to be contained
@@ -464,5 +332,3 @@ bool BVH::Extents::intersect(const GLfloat precomputedNumerator[],
 	*tFar = final_t_far;
 	return true;
 }
-
-

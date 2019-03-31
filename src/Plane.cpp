@@ -44,11 +44,8 @@ bool Plane::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal
 	}
 	if (texColors) {
 
-
 		// Mirror Textures
 		vec2 uv = _textureAt(ip2);
-
-
 		texColors->_ambientTexColor  = this->getAmbientTextureColor(uv);
 		texColors->_diffuseTexColor  = this->getDiffuseTextureColor(uv);
 		texColors->_specularTexColor = this->getSpecularTextureColor(uv);
@@ -57,11 +54,11 @@ bool Plane::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal
 		*properties = this->properties();
 	}
 
-
 	++rayTracerStats.numOfHits;
 	return true;
 
 }
+
 
 vec2 Plane::_textureAt(const vec3& point)
 {

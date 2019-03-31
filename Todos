@@ -54,6 +54,7 @@ TODOs:
 - Fix consts shits
 - Stop recursion of light contribution is minor. 
 - Fix textures when applying transformations. 
+- Fix todos!
 - Consider Normal transformation when adding normals to meshes. (Model.cpp)
 - Interpolate normals in triangles. (Triangle.cpp)
 - Make sure specular and diffuse lighting also work on transformed object
@@ -64,10 +65,5 @@ TODOs:
 
 
 
-
-
-3.0:
------
-- Fixed a bug were object translated upon creation affected objects created after with same translation. 
 
 

@@ -36,8 +36,6 @@ void Object::setTexture(Image *texture)
 	this->_ambientTexture = texture;
 	this->_diffuseTexture = texture;
 	this->_speularTexture = texture;
-//	this->_texture = texture;
-//	this->_textured = true;
 
 }
 

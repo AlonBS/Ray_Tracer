@@ -17,14 +17,6 @@ using namespace std;
 class Model
 {
 public:
-    /*  Model Data */
-//    vector<Texture> textures_loaded;	// stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
-
-//    vector<Mesh*> meshes;
-//    string directory;
-
-    /*  Functions   */
-    // constructor, expects a filepath to a 3D model.
 
     /**
      * TODO - add doc

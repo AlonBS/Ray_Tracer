@@ -15,9 +15,6 @@
 #include "RayTracer.h"
 #include "General.h"
 
-//using namespace std;
-
-
 
 RayTracer::RayTracer()
 {
@@ -28,7 +25,6 @@ RayTracer::~RayTracer() {
 
 
 Image* RayTracer::rayTraceMT(Scene& scene)
-		/*Camera & camera, Scene & scene, GLuint width, GLuint height, GLuint maxDepth)*/
 {
 	Image *image = new Image(scene.width(), scene.height());
 
@@ -81,7 +77,6 @@ Image* RayTracer::rayTraceMT(Scene& scene)
 
 // single threaded - for benchmark purposes and debugging
 Image* RayTracer::rayTraceST(Scene& scene)
-		/*Camera & camera, Scene & scene, GLuint width, GLuint height, GLuint maxDepth)*/
 {
 	Image *image = new Image(scene.width(), scene.height());
 	vec3 color;
@@ -139,16 +134,13 @@ vec3 RayTracer::recursiveRayTrace(Scene& scene, Ray & ray, GLuint depth)
 bool RayTracer::rayIsValid(const Ray& ray)
 {
 	// If any of the components of the ray is invalid - we declare the whole ray as invalid
-
 	if (isnan(ray.origin.x) || isnan(ray.origin.y) || isnan(ray.origin.z)  ||
 	    isnan(ray.direction.x) || isnan(ray.direction.y) || isnan(ray.direction.z) )
 	{
 		return false;
 	}
 
-
 	return true;
-
 }
 
 
@@ -164,12 +156,6 @@ Intersection RayTracer::intersectScene(Scene & scene, Ray& ray)
 	Intersection hit;
 	hit.isValid = false;
 
-
-//	vec3 o = vec3(0.f, 9.f, 10);
-//	vec3 d = vec3(0.f, -1.f, -1);
-//	ray = Ray(o, d);
-//	ray.origin =
-//	ray.direction = vec3(0.f, 0.f, -1);
 
 	// Currently - primitive objects are not divided within the bounding volume hierarchies.
 	// And so, we first search for an intersection with any of
@@ -211,7 +197,6 @@ Intersection RayTracer::intersectScene(Scene & scene, Ray& ray)
 		hit.properties = objProps;
 		hit.isValid = true;
 	}
-
 
 	return hit;
 }
@@ -282,15 +267,23 @@ vec3 RayTracer::computeLight(Scene& scene, Ray& r, Intersection& hit)
 bool RayTracer::isVisibleToLight(Scene& scene, Ray& shadowRay, GLfloat limit)
 {
 	GLfloat dist;
+	GLfloat bboxDist;
 
 	for (Object * o : scene.getObjects()) {
 
-		if (o->intersectsRay(shadowRay, &dist, nullptr, nullptr, nullptr, nullptr)) {
+		if (o->bBoxIntersectsRay(shadowRay, &bboxDist)) {
 
-			// If there's a intersection to a object which is within limit (no 'after' the light)
-			// then there's no visibility
-			if (dist < limit) {
-				return false;
+			// The light is closer from hit point and object BBox. So no point in checking.
+			if (limit < bboxDist)
+				continue;
+
+			if (o->intersectsRay(shadowRay, &dist, nullptr, nullptr, nullptr, nullptr)) {
+
+				// If there's a intersection to a object which is within limit (no 'after' the light)
+				// then there's no visibility
+				if (dist < limit) {
+					return false;
+				}
 			}
 		}
 
@@ -301,7 +294,6 @@ bool RayTracer::isVisibleToLight(Scene& scene, Ray& shadowRay, GLfloat limit)
 	{
 		return false;
 	}
-
 
 	return true;
 }

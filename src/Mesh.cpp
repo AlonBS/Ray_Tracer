@@ -42,8 +42,6 @@ Mesh::Mesh(vector<Vertex>& vertices,
 
 	_vertices = vertices; // Yes - this is shit, but a must for now
 	__triangulate(vertices, indices);
-//	__computeBoundingBox(vertices);
-//	__computeBoundingVolume(vertices);
 }
 
 
@@ -56,17 +54,7 @@ Mesh::~Mesh()
 
 	triangles.clear();
 
-//	if (boundingBox) {
-//		delete(boundingBox);
-//		boundingBox = nullptr;
-//	}
-//
-//	if (boundingVolume) {
-//		delete(boundingVolume);
-//		boundingVolume = nullptr;
-//	}
 }
-
 
 
 void
@@ -98,46 +86,6 @@ Mesh::__triangulate(vector<Vertex> vertices, vector<unsigned int> indices)
 
 
 }
-//
-//void
-//Mesh::__computeBoundingBox(vector<Vertex>& vertices)
-//{
-//	vec3 minBound = vec3(INFINITY, INFINITY, INFINITY);
-//	vec3 maxBound = vec3(-INFINITY, -INFINITY, -INFINITY);
-//
-//	for (Vertex v : vertices) {
-//
-//		// Min Bound Calc
-//		if (v.Position.x < minBound.x)
-//			minBound.x = v.Position.x;
-//		if (v.Position.y < minBound.y)
-//			minBound.y = v.Position.y;
-//		if (v.Position.z < minBound.z)
-//			minBound.z = v.Position.z;
-//
-//		// Max Bound Calc
-//		if (v.Position.x > maxBound.x)
-//			maxBound.x = v.Position.x;
-//		if (v.Position.y > maxBound.y)
-//			maxBound.y = v.Position.y;
-//		if (v.Position.z > maxBound.z)
-//			maxBound.z = v.Position.z;
-//
-//	}
-//
-//	//TODO - REMOVE
-////	boundingBox = new Box(minBound, maxBound);
-////	boundingBox->print();
-//}
-
-
-//void
-//Mesh::__computeBoundingVolume(vector<Vertex>& vertices)
-//{
-//	boundingVolume = new BoundingVolume();
-//
-//	boundingVolume->computeBounds(vertices);
-//}
 
 
 bool
@@ -154,14 +102,6 @@ Mesh::intersectsRay(const Ray &r,
 	vec3 tP, tN;
 	vec2 ttC;
 
-	// If we don't pass the bounding box test - we don't test each triangle of this mesh
-	//	if (!boundingBox->intersectsRay(r, &tDist, nullptr, nullptr, nullptr, nullptr)) {
-	//		return false;
-	//	}
-
-	//	if (!boundingVolume->intersectRay(r)) {
-	//		return false;
-	//	}
 
 	for (Triangle *t : triangles) {
 
@@ -201,52 +141,6 @@ Mesh::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, Obje
 	return m->intersectsRay(r, dist, point, normal, texColors, properties);
 
 }
-
-
-
-//
-//bool
-//Mesh::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, vec2* texCoords, MeshProperties* properties)
-//{
-//	GLfloat minDist = INFINITY;
-//
-//	GLfloat tDist;
-//	vec3 tP, tN;
-//	vec2 ttC;
-//
-//	// If we don't pass the bounding box test - we don't test each triangle of this mesh
-////	if (!boundingBox->intersectsRay(r, &tDist, nullptr, nullptr, nullptr, nullptr)) {
-////		return false;
-////	}
-//
-////	if (!boundingVolume->intersectRay(r)) {
-////		return false;
-////	}
-//
-//	for (Triangle *t : triangles) {
-//
-//		/* When we iterate over triangles as part of mesh - we take the properties of the mesh
-//		 * and not the triangle. In fact, this triangle doesn't have other but default properties
-//		 */
-//		if (t->intersectsRayM(r, &tDist, &tP, &tN, &ttC)) {
-//
-//			if (tDist < minDist) {
-//
-//				*dist = minDist = tDist;
-//				if (point) *point = tP;
-//				if (normal) *normal = tN;
-//				if (texCoords) *texCoords = ttC;
-//				if (properties) *properties = this->_properties * this->properties();
-//			}
-//		}
-//	}
-//
-//	if (minDist == INFINITY) {
-//		return false;
-//	}
-//
-//	return true;
-//}
 
 
 

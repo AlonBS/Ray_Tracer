@@ -4,7 +4,7 @@ Computer Graphics Ray Tracer (CPU) based on Edx CG-course.
 
 Current list of features supported:
 ====================================
-- Intersections with primitives: Triangles, Spheres, Cylinders, Boxs, Cones, Planes, ..., 
+- Intersections with primitives: Triangles, Spheres, Cylinders, Boxes, Cones, Planes, ..., 
 - Transformations: Scale, Rotation and translate. Also support transformations stacks (for transforms hierarchy) 
 - Blinn-Phong illumination module - including normals interpolation and attenuation.
 - Rendering of models comprised of multiple meshes with (partial) material properties. 
@@ -15,8 +15,8 @@ Current list of features supported:
 - Command line argument parse
 - Saved image formats supported: .png, .jpeg, .jpg, .bmp, .tiff
 - Ray tracing accelerations using bounding box and bounding volume (Kay and Kajiya 1986)
+- BVH implementation to further accelerate rendering (Kay and Kajiya 1986)
 - Statistics about rendering
-
 
 
 
@@ -96,7 +96,7 @@ Primitives and Models:
 	cone <center_v3> <minCap_f> <maxCap_f> - Defines a cone centered around the center point, 
 		where maxCap and minCap define top and button caps of the cone. This means
 		that its fairly easy to decide wheather its a single cone (where maxCap or minCap == 0) or double cone, or inifinite etc.). It is 			assumed that maxCap > minCap.
-	plane <texture-pattern_e> - Creates a plane passing through the origin(0,0,0) and allinged as XZ plane (that is, with normal (0,1,0).
+	plane <texture-pattern_e> - Creates a plane passing through the origin(0,0,0) and aligned as XZ plane (that is, with normal (0,1,0).
 		Ofcourse this can be tranformed like anyother object to achieve various types. Notice that this plane is infinite. 
 		texture-pattern will define how a texture should be applied to this plane, if indeed this is a textured plane. Options are:
 		"R" - Repeated pattern. (Only the fraction part of the intersection point will be taken)
@@ -147,7 +147,7 @@ Primitives and Models:
 		to name a few. See full list here: http://freeimage.sourceforge.net/features.html).
 		A defined texture will be automatically assigned with an index (starting with 0), for being able to bind
 		it to an object (see below).
-	bindTextrue <index_i> - Binds a previously defined texture with the given index. Any object (primitive or model)
+	bindTexture <index_i> - Binds a previously defined texture with the given index. Any object (primitive or model)
 		created from this point on, will be assigned with this texture (assuming it supports textures mapping
 		and/or those mapping were given before). 
 	unbindTexture - unbind the last bound texture. Any object created from this point on, will not have textures
@@ -309,6 +309,23 @@ The result image can be found in "./Rendered_Scenes/ExampleSphere_result.png
 
 Version History:
 =================
+
+3.0:
+-----
+- Full Support in Bounding Volume Hierarchies. The implementation is based on Kay and Kajiya (1986) and includes slabs, extents, and octrees for scene subsurface divisions.
+- Also added bounding boxes (AABB) for primitive objects which are finite.
+- To support the above - the code was refactored: Model is no longer an object, but rather a static factory class which creates meshes, which are derived from object. The model class now acts as a way to define a set of meshes that will all share the same properties. (Note that it is still possible to define per-mesh properties from within the .mtl files). 
+- Meshes are inserted into an octree, so ray-object intersection tests are reduced dramatically. 
+- Also - primitives are first intersected with their bounding box, and this value is used to determine the nearest object so far before checking for complex objects (i.e. meshes). Obviously, this increased render time for the example scene, because they feature a small number of primitives - but when tested against large number of objects - the results were improved dramatically. (up to 100 times faster for some scenes). 
+- Meshes and primitives are now intersected separately. First primitives, and then meshes. the same applies for shadow rays. 
+- Fixed a bug were object translated upon creation affected objects created after with same translation. 
+- Fixed Cone example scene after fixing the bug above.
+- Fixed texture apply on meshes vs. object (="general" textures")
+- Changed object properties to a specific struct. This will be further changed - an object must be built using properties and transformations.
+- Small fixed in Cone and Cylinder radius and textures calculations. 
+- Added AABB.h and .cpp and removed BoundingVolume.h and .cpp. Added BVH.h and .cpp.
+- Removed many comments and irrelevant code. 
+
 
 2.5:
 - Major update - code was refactor to support bounding volume optimizations. Tracing no longer 

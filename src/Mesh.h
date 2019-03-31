@@ -31,20 +31,9 @@ private:
 
 	vector<Vertex> _vertices;
 
-	//	Box* boundingBox; TODO - remove
-	//	BoundingVolume* boundingVolume; TODO - remove
-
-//	glm::vec3 ambient;
-//	glm::vec3 emmision;
-//	glm::vec3 diffuse;
-//	glm::vec3 specular;
-//	GLfloat shininess;
-
 	Image* _meshAmbientTexture;
 	Image* _meshDiffuseTexture;
 	Image* _meshSpecularTexture;
-
-	//const Model* const _model; - TODO
 
 
 public:
@@ -63,8 +52,6 @@ public:
 
 	virtual ~Mesh();
 
-
-//	bool intersectsRay(const Ray& r, GLfloat* dist, vec3* point, vec3* normal, vec2* texCoords, MeshProperties* properties);
 	virtual bool intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties);
 	virtual bool intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties) const;
 
@@ -81,9 +68,6 @@ private:
 
 
 	void __triangulate(vector<Vertex> vertices, vector<unsigned int> indices);
-
-	//    void __computeBoundingBox(vector<Vertex>& vertices);
-	//    void __computeBoundingVolume(vector<Vertex>& vertices);
 
 };
 

@@ -18,8 +18,6 @@ bool Box::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, 
 	// There's no need for a bounding box for a box. Still, we don't want code repetition, so we use this temp box.
 	// Note we transform the ray
 	AABB aabb{bounds[0], bounds[1]};
-//	printVec3("MinBound", aabb.bounds[0]);
-//	printVec3("MaxBound", aabb.bounds[1]);
 	if (!aabb.intersectsRay(tr, &tmin)) {
 		return false;
 	}

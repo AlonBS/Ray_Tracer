@@ -18,9 +18,6 @@
 using namespace glm;
 
 
-
-
-
 class Object {
 
 private:
@@ -40,10 +37,7 @@ protected:
 
 	AABB* bbox;
 
-	//bool _textured;
-
 public:
-
 
 
 	Object();

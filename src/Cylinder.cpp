@@ -12,8 +12,6 @@ using namespace glm;
 
 
 
-
-
 bool Cylinder::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties)
 {
 	// To find intersection between Ray and canonical cylinder (aligned to the y-axis), we need to solve the following equation:
@@ -201,6 +199,5 @@ void Cylinder::computeBoundingBox()
 	}
 
 	this->bbox = new AABB(minBound, maxBound);
-	this->bbox->print();
 }
 
