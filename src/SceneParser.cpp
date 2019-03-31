@@ -408,6 +408,8 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		vec3 maxBound = vec3(values[3], values[4], values[5]);
 		Object *box = new Box(minBound, maxBound);
 		applyPropsToObject(box, transformsStack.top());
+
+		box->print();
 	}
 
 

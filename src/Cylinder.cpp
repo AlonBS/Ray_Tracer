@@ -5,10 +5,14 @@
  *      Author: alonbs
  */
 
+#include <vector>
 #include "Cylinder.h"
 
-
 using namespace glm;
+
+
+
+
 
 bool Cylinder::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties)
 {
@@ -163,5 +167,40 @@ void Cylinder::print() const
 {
 	std::cout << "Cylinder Center: (" << center.x << "," << center.y << "," << center.z << ") | Radius: " << radius << " | minCap: " << minCap << " | Max Cap: " << maxCap << std::endl;
 	Object::print();
+}
+
+
+
+
+void Cylinder::computeBoundingBox()
+{
+	GLfloat min = -radius;
+	GLfloat max = +radius;
+
+	vec3 minBound = vec3(+INFINITY, +INFINITY, +INFINITY);
+	vec3 maxBound = vec3(-INFINITY, -INFINITY, -INFINITY);
+
+	std::vector<vec3> verts {
+		vec3(min, minCap, min),
+		vec3(min, minCap, max),
+		vec3(min, maxCap, min),
+		vec3(min, maxCap, max),
+		vec3(max, minCap, min),
+		vec3(max, minCap, max),
+		vec3(max, maxCap, min),
+		vec3(max, maxCap, max),
+	};
+
+
+	for (vec3& v : verts) {
+
+		v = vec3 (this->transform() * vec4(v, 1.0f));;
+
+		minBound = glm::min(v, minBound);
+		maxBound = glm::max(v, maxBound);
+	}
+
+	this->bbox = new AABB(minBound, maxBound);
+	this->bbox->print();
 }
 

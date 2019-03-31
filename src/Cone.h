@@ -34,12 +34,8 @@ public:
 	Cone(const glm::vec3 & center, GLfloat& minCap, GLfloat& maxCap)
 	: Object(), center(center), minCap(minCap), maxCap(maxCap), height(maxCap - minCap)
 	{
-		if (maxCap > EPSILON) {
-			radius = sqrt(maxCap);
-		}
-		else {
-			radius = sqrt(-minCap);
-		}
+//		radius = sqrt(glm::max(abs(maxCap), abs(minCap)));
+		radius = glm::max(abs(maxCap), abs(minCap)); // TODO - consider
 	}
 
 	virtual ~Cone() {}
@@ -47,6 +43,8 @@ public:
 	virtual bool intersectsRay(const Ray& r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties);
 
 	virtual void print() const;
+
+	void computeBoundingBox();
 };
 
 #endif /* CONE_H */

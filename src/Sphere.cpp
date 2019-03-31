@@ -114,8 +114,8 @@ void Sphere::print() const
 
 void Sphere::computeBoundingBox()
 {
-	GLfloat min = - radius;
-	GLfloat max = + radius;
+	GLfloat min = -radius;
+	GLfloat max = +radius;
 
 	vec3 minBound = vec3(+INFINITY, +INFINITY, +INFINITY);
 	vec3 maxBound = vec3(-INFINITY, -INFINITY, -INFINITY);
@@ -131,7 +131,6 @@ void Sphere::computeBoundingBox()
 		vec3(max, max, max),
 	};
 
-	printMat4("trans", this->transform());
 
 	for (vec3& v : verts) {
 

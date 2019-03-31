@@ -97,7 +97,7 @@ vec3 Object::getSpecularTextureColor(vec2& uv)
 bool Object::bBoxIntersectsRay(const Ray& r, GLfloat* t_near)
 {
 	if (!bbox) {
-		*t_near = INFINITY;
+		*t_near = -INFINITY;
 		return true;
 	}
 

@@ -165,8 +165,8 @@ Intersection RayTracer::intersectScene(Scene & scene, Ray& ray)
 	hit.isValid = false;
 
 
-//	vec3 o = vec3(0.f, 0.f, 10);
-//	vec3 d = vec3(0.f, 0.f, -1);
+//	vec3 o = vec3(0.f, 9.f, 10);
+//	vec3 d = vec3(0.f, -1.f, -1);
 //	ray = Ray(o, d);
 //	ray.origin =
 //	ray.direction = vec3(0.f, 0.f, -1);

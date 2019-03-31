@@ -167,9 +167,7 @@ Model::processMesh(aiMesh *mesh, const aiScene *scene)
 		vector.x = mesh->mVertices[i].x;
 		vector.y = mesh->mVertices[i].y;
 		vector.z = mesh->mVertices[i].z;
-		printVec3("Before", vertex.Position);
 		vertex.Position = vec3 (_objectTransforms._transform * vec4(vector, 1.0f));;
-		printVec3("After", vertex.Position);
 		// normals
 		if (mesh->HasNormals()) {
 			vector.x = mesh->mNormals[i].x;
