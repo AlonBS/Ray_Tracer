@@ -7,34 +7,21 @@
 
 #include "Object.h"
 
-Object::Object(bool isPrimitive) {
+using namespace glm;
 
-	 _isPrimitive = isPrimitive;
-
-	_properties._ambient = vec3(0.0f, 0.0f, 0.0f);
-	_properties._emission = vec3(0.0f, 0.0f, 0.0f);
-	_properties._diffuse = vec3(0.0f, 0.0f, 0.0f);
-	_properties._specular = vec3(0.0f, 0.0f, 0.0f);
-	_properties._shininess = 0.0f;
-
-	_transform = mat4(1.0f);
-	_invTransform = mat4(1.0f);
-	_invTransposeTrans = mat3(1.0f);
-
+Object::Object()
+{
 	_ambientTexture = nullptr;
 	_diffuseTexture = nullptr;
 	_speularTexture = nullptr;
 
+	bbox = nullptr;
 }
 
 Object::~Object() {
-	// TODO Auto-generated destructor stub
-}
-
-std::ostream& operator<< (std::ostream& out, const Object & obj)
-{
-	obj.print();
-	return out;
+	if (bbox) {
+		delete bbox; bbox = nullptr;
+	}
 }
 
 
@@ -49,10 +36,27 @@ void Object::setTexture(Image *texture)
 	this->_ambientTexture = texture;
 	this->_diffuseTexture = texture;
 	this->_speularTexture = texture;
-//	this->_texture = texture;
-//	this->_textured = true;
 
 }
+
+
+std::ostream& operator<< (std::ostream& out, const Object & obj)
+{
+	obj.print();
+	return out;
+}
+
+
+void Object::print() const
+{
+	printVec3("Ambient", _properties._ambient);
+	printVec3("_emission", _properties._emission);
+	printVec3("_diffuse", _properties._diffuse);
+	printVec3("_specular", _properties._specular);
+	cout << "Shininess: " << _properties._shininess << endl;
+}
+
+
 
 vec3 Object::getTextureColor(Image *texture, vec2& uv)
 {
@@ -68,6 +72,8 @@ vec3 Object::getTextureColor(Image *texture, vec2& uv)
 	/* TODO - consider interpolation for better effects (average near by pixels) */
 	return texture->getPixel((int)(uv.x * w), (int) (uv.y * h));
 }
+
+
 
 
 vec3 Object::getAmbientTextureColor(vec2& uv)
@@ -86,14 +92,16 @@ vec3 Object::getSpecularTextureColor(vec2& uv)
 }
 
 
-
-
-void Object::print() const
+bool Object::bBoxIntersectsRay(const Ray& r, GLfloat* t_near)
 {
-	printVec3("Ambient", _properties._ambient);
-	printVec3("_emission", _properties._emission);
-	printVec3("_diffuse", _properties._diffuse);
-	printVec3("_specular", _properties._specular);
-	cout << "Shininess: " << _properties._shininess << endl;
+	if (!bbox) {
+		*t_near = -INFINITY;
+		return true;
+	}
+
+	return bbox->intersectsRay(r, t_near);
 }
+
+
+
 

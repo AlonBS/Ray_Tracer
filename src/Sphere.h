@@ -24,18 +24,24 @@ private:
 	GLfloat radius;
 
 
+
+
 public:
 
 	Sphere(const glm::vec3 & center, GLfloat &radius)
 	: Object(), center(center), radius(radius)
 	{
-
 	}
-	virtual ~Sphere() {}
+	virtual ~Sphere() {	}
 
 	virtual bool intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties);
 
 	virtual void print() const;
+
+	virtual void computeBoundingBox();
+
 };
+
+
 
 #endif /* SPHERE_H_ */

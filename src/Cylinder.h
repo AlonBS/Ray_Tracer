@@ -23,7 +23,6 @@ private:
 	GLfloat minCap, maxCap;
 	GLfloat radius;
 
-
 	vec3 _normalAt(const vec3& point, bool minCapIntersect, bool maxCapIntersect);
 
 
@@ -39,6 +38,8 @@ public:
 	virtual bool intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties);
 
 	virtual void print() const;
+
+	void computeBoundingBox();
 };
 
 #endif /* CYLINDER_H */

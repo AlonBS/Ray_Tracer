@@ -10,43 +10,27 @@
 #include <assimp/postprocess.h>
 
 #include "Mesh.h"
-#include "Object.h"
-
-
 
 using namespace std;
 
-//unsigned int TextureFromFile(const char *path, const string &directory, bool gamma = false);
 
-class Model : public Object
+class Model
 {
 public:
-    /*  Model Data */
-//    vector<Texture> textures_loaded;	// stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
-    vector<Mesh*> meshes;
-//    string directory;
 
-    /*  Functions   */
-    // constructor, expects a filepath to a 3D model.
-    Model(string const &path, mat4& transform, mat3& normalsTrans);
+    /**
+     * TODO - add doc
+     */
+    static void loadModel(string const &path, const ObjectProperties& op, const ObjectTransforms& ot, Image* texture,
+    					  vector<Mesh*>& modelMeshes, vector<Image*>& modelTextures);
 
-    virtual ~Model();
-
-    // TODO - currently this won't be in use - refactor code
-    virtual bool intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties);
-
+    static void FreeTextures();
 
 private:
 
-    /*  Functions   */
-    void loadModel(string const &path);
-
     // processes a node in a recursive fashion. Processes each individual mesh located at the node and repeats this process on its children nodes (if any).
-    void processNode(aiNode *node, const aiScene *scene);
-
-    Mesh* processMesh(aiMesh *mesh, const aiScene *scene);
-
-
+    static void processNode(aiNode *node, const aiScene *scene);
+    static Mesh* processMesh(aiMesh *mesh, const aiScene *scene);
 
     struct Texture {
 
@@ -54,11 +38,14 @@ private:
     	string name;
     };
 
-    Image* loadMaterialTextures(aiMaterial* mat, aiTextureType type);
+    static vector<Mesh*> _meshes;
+    static ObjectProperties _objectProperties;
+    static ObjectTransforms _objectTransforms;
+    static Image* _texture;
 
-    vector<Texture*> loadedTextures; // We store all the textures loaded for this module, to avoid load duplication
-
-    string directory;
+    static Image* loadMaterialTextures(aiMaterial* mat, aiTextureType type);
+    static vector<Texture*> _loadedTextures; // We store all the textures loaded for this module, to avoid load duplication
+    static string _directory;
 };
 
 

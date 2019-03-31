@@ -126,7 +126,7 @@ pushTransform
 		scale 1 2.5 1
 		cone 0 3 7 -1 0
 		pushTransform
-			translate 0 -1 0
+			translate -3.5 0.2 6
 			box -1.2 -0.05 -1.2 1.2 0 1.2 
 		popTransform
 		unbindTexture

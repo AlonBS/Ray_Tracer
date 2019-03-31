@@ -15,9 +15,6 @@
 #include "RayTracer.h"
 #include "General.h"
 
-//using namespace std;
-
-
 
 RayTracer::RayTracer()
 {
@@ -28,7 +25,6 @@ RayTracer::~RayTracer() {
 
 
 Image* RayTracer::rayTraceMT(Scene& scene)
-		/*Camera & camera, Scene & scene, GLuint width, GLuint height, GLuint maxDepth)*/
 {
 	Image *image = new Image(scene.width(), scene.height());
 
@@ -81,7 +77,6 @@ Image* RayTracer::rayTraceMT(Scene& scene)
 
 // single threaded - for benchmark purposes and debugging
 Image* RayTracer::rayTraceST(Scene& scene)
-		/*Camera & camera, Scene & scene, GLuint width, GLuint height, GLuint maxDepth)*/
 {
 	Image *image = new Image(scene.width(), scene.height());
 	vec3 color;
@@ -139,23 +134,20 @@ vec3 RayTracer::recursiveRayTrace(Scene& scene, Ray & ray, GLuint depth)
 bool RayTracer::rayIsValid(const Ray& ray)
 {
 	// If any of the components of the ray is invalid - we declare the whole ray as invalid
-
 	if (isnan(ray.origin.x) || isnan(ray.origin.y) || isnan(ray.origin.z)  ||
 	    isnan(ray.direction.x) || isnan(ray.direction.y) || isnan(ray.direction.z) )
 	{
 		return false;
 	}
 
-
 	return true;
-
 }
 
 
 Intersection RayTracer::intersectScene(Scene & scene, Ray& ray)
 {
 	GLfloat minDist = INFINITY;
-	GLfloat dist;
+	GLfloat dist, bboxDist;
 	vec3 point;
 	vec3 normal;
 	ObjectTexColors texColors;
@@ -165,45 +157,48 @@ Intersection RayTracer::intersectScene(Scene & scene, Ray& ray)
 	hit.isValid = false;
 
 
-	for (BoundingVolume* bv : scene.getBoundingVolumes() ) {
+	// Currently - primitive objects are not divided within the bounding volume hierarchies.
+	// And so, we first search for an intersection with any of
+	// the primitives (which is rather quickly, since it's a single function call (and also BBox optimized)
+	// and then we move to the complex objects (models), and we can use the closest intersection when testing
+	// against extents (and not meshes).
+	for (Object *object : scene.getObjects()) {
 
-		if (bv->intersectRay(ray, minDist, &dist, &point, &normal, &texColors, &objProps)) {
+		if (object->bBoxIntersectsRay(ray, &bboxDist)) {
 
-			minDist = dist;
-			hit.point = point;
-			hit.normal = normal;
-			hit.texColors = texColors;
+			// If we already found a closer object than this object bbox - no point in checking this object
+			if (minDist < bboxDist)
+				continue;
 
-			hit.properties = objProps;
-			hit.isValid = true;
+			if (object->intersectsRay(ray, &dist, &point, &normal, &texColors, &objProps)) {
+
+				if (dist < minDist) {
+
+					minDist = dist;
+					hit.point = point;
+					hit.normal = normal;
+					hit.texColors = texColors;
+
+					hit.properties = objProps;
+					hit.isValid = true;
+				}
+			}
 		}
 	}
 
+
+	// Now we check for complex object, where we already know the closest primitive object for this ray.
+	if (scene.getBVH()->intersectsRay(ray, minDist, &dist, &point, &normal, &texColors, &objProps))
+	{
+		hit.point = point;
+		hit.normal = normal;
+		hit.texColors = texColors;
+
+		hit.properties = objProps;
+		hit.isValid = true;
+	}
+
 	return hit;
-
-
-//	for (Object *object : scene.getObjects()) {
-//
-//		if (object->intersectsRay(ray, &dist, &point, &normal, &texColors, &objProps)) {
-//
-//			if (dist < minDist) {
-//
-//				minDist = dist;
-//				hit.point = point;
-//				hit.normal = normal;
-//				hit.texColors = texColors;
-//
-//				hit.properties = objProps;
-//				hit.isValid = true;
-//			}
-//		}
-//	}
-//
-//	if (minDist == INFINITY) {
-//		hit.isValid = false;
-//	}
-//
-//	return hit;
 }
 
 
@@ -214,7 +209,7 @@ vec3 RayTracer::computeLight(Scene& scene, Ray& r, Intersection& hit)
 	Ray shadowRay;
 	vec3 srOrigin;
 	vec3 srDir;
-	GLfloat maxDist;
+	GLfloat distToLight;
 
 	vec3 eyeDir;
 	vec3 halfAng;
@@ -229,15 +224,15 @@ vec3 RayTracer::computeLight(Scene& scene, Ray& r, Intersection& hit)
 		srDir = normalize(p->_position - hit.point);
 		srOrigin = hit.point + 10 * EPSILON * srDir; // Move a little to avoid floating point errors
 		shadowRay = Ray(srOrigin, srDir);
-		maxDist = length(p->_position - hit.point);
+		distToLight = length(p->_position - hit.point);
 
-		if (isVisibleToLight(scene.getBoundingVolumes(), shadowRay, maxDist)) {
+		if (isVisibleToLight(scene, shadowRay, distToLight)) {
 
 			halfAng = normalize(srDir + eyeDir);
 
 			tempColor = __blinn_phong(hit.properties, hit.texColors, p->_color, srDir, hit.normal, halfAng);
 			// take attenuation into account
-			GLfloat atten = 1 / (scene.attenuation().constant + scene.attenuation().linear * maxDist + scene.attenuation().quadratic * maxDist * maxDist);
+			GLfloat atten = 1 / (scene.attenuation().constant + scene.attenuation().linear * distToLight + scene.attenuation().quadratic * distToLight * distToLight);
 			tempColor *= atten;
 			color += tempColor;
 		}
@@ -249,10 +244,10 @@ vec3 RayTracer::computeLight(Scene& scene, Ray& r, Intersection& hit)
 		srDir = normalize(p->_direction);
 		srOrigin = hit.point + 10 * EPSILON * srDir; // Move a little to avoid floating point errors
 		shadowRay = Ray(srOrigin, srDir);
-		maxDist = INFINITY;
+		distToLight = INFINITY;
 
 
-		if (isVisibleToLight(scene.getBoundingVolumes(), shadowRay, maxDist)) {
+		if (isVisibleToLight(scene, shadowRay, distToLight)) {
 
 			halfAng = normalize(srDir + eyeDir);
 			tempColor = __blinn_phong(hit.properties, hit.texColors, p->_color, srDir, hit.normal, halfAng);
@@ -269,38 +264,38 @@ vec3 RayTracer::computeLight(Scene& scene, Ray& r, Intersection& hit)
 }
 
 
-bool RayTracer::isVisibleToLight(vector<BoundingVolume*>& bvs, Ray& shadowRay, GLfloat limit)
+bool RayTracer::isVisibleToLight(Scene& scene, Ray& shadowRay, GLfloat limit)
 {
-	GLfloat minDist = limit; // Were looking only for objects that are in between the shadow ray and the light source
 	GLfloat dist;
+	GLfloat bboxDist;
 
-	for (BoundingVolume* bv : bvs ) {
+	for (Object * o : scene.getObjects()) {
 
-		if (bv->intersectRay(shadowRay, minDist, &dist, nullptr, nullptr, nullptr, nullptr)) {
-			return false;
+		if (o->bBoxIntersectsRay(shadowRay, &bboxDist)) {
+
+			// The light is closer from hit point and object BBox. So no point in checking.
+			if (limit < bboxDist)
+				continue;
+
+			if (o->intersectsRay(shadowRay, &dist, nullptr, nullptr, nullptr, nullptr)) {
+
+				// If there's a intersection to a object which is within limit (no 'after' the light)
+				// then there's no visibility
+				if (dist < limit) {
+					return false;
+				}
+			}
 		}
+
+	}
+
+	// Now we check for complex object, where we already know the closest primitive object for this ray.
+	if (scene.getBVH()->intersectsRay(shadowRay, limit, &dist, nullptr, nullptr, nullptr, nullptr))
+	{
+		return false;
 	}
 
 	return true;
-
-
-
-//	GLfloat dist;
-//	vec3 point, normal;
-//	for (Object * o : objects) {
-//
-//		if (o->intersectsRay(shadowRay, &dist, nullptr, nullptr, nullptr, nullptr)) {
-//
-//			// If there's a intersection to a object which is within limit (no 'after' the light)
-//			// then there's no visibility
-//			if (dist < limit) {
-//				return false;
-//			}
-//		}
-//
-//	}
-//
-//	return true;
 }
 
 vec3 RayTracer::__blinn_phong(const ObjectProperties& objProps,

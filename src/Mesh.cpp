@@ -26,20 +26,22 @@ ObjectProperties operator*(const ObjectProperties& op, const MeshProperties& mp)
     // constructor
 Mesh::Mesh(vector<Vertex>& vertices,
 		   vector<unsigned int>& indices,
-		   MeshProperties& properties,
+		   ObjectProperties& properties,
 		   Image *ambientTexture,
 		   Image *diffuseTexture,
-		   Image *specularTexture)
+		   Image *specularTexture,
+		   Image *generalTexture)
 
-:_properties(properties),
- _ambientTexture(ambientTexture),
- _diffuseTexture(diffuseTexture),
- _specularTexture(specularTexture)
+: Object(),
+  _meshAmbientTexture(ambientTexture),
+ _meshDiffuseTexture(diffuseTexture),
+ _meshSpecularTexture(specularTexture)
 {
+	super::setTexture(generalTexture);
+	super::properties() = properties;
+
 	_vertices = vertices; // Yes - this is shit, but a must for now
 	__triangulate(vertices, indices);
-//	__computeBoundingBox(vertices);
-//	__computeBoundingVolume(vertices);
 }
 
 
@@ -52,17 +54,7 @@ Mesh::~Mesh()
 
 	triangles.clear();
 
-//	if (boundingBox) {
-//		delete(boundingBox);
-//		boundingBox = nullptr;
-//	}
-//
-//	if (boundingVolume) {
-//		delete(boundingVolume);
-//		boundingVolume = nullptr;
-//	}
 }
-
 
 
 void
@@ -94,50 +86,15 @@ Mesh::__triangulate(vector<Vertex> vertices, vector<unsigned int> indices)
 
 
 }
-//
-//void
-//Mesh::__computeBoundingBox(vector<Vertex>& vertices)
-//{
-//	vec3 minBound = vec3(INFINITY, INFINITY, INFINITY);
-//	vec3 maxBound = vec3(-INFINITY, -INFINITY, -INFINITY);
-//
-//	for (Vertex v : vertices) {
-//
-//		// Min Bound Calc
-//		if (v.Position.x < minBound.x)
-//			minBound.x = v.Position.x;
-//		if (v.Position.y < minBound.y)
-//			minBound.y = v.Position.y;
-//		if (v.Position.z < minBound.z)
-//			minBound.z = v.Position.z;
-//
-//		// Max Bound Calc
-//		if (v.Position.x > maxBound.x)
-//			maxBound.x = v.Position.x;
-//		if (v.Position.y > maxBound.y)
-//			maxBound.y = v.Position.y;
-//		if (v.Position.z > maxBound.z)
-//			maxBound.z = v.Position.z;
-//
-//	}
-//
-//	//TODO - REMOVE
-////	boundingBox = new Box(minBound, maxBound);
-////	boundingBox->print();
-//}
-
-
-//void
-//Mesh::__computeBoundingVolume(vector<Vertex>& vertices)
-//{
-//	boundingVolume = new BoundingVolume();
-//
-//	boundingVolume->computeBounds(vertices);
-//}
 
 
 bool
-Mesh::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, vec2* texCoords, MeshProperties* properties)
+Mesh::intersectsRay(const Ray &r,
+					GLfloat* dist,
+					vec3* point,
+					vec3* normal,
+					ObjectTexColors* texColors,
+					ObjectProperties* properties)
 {
 	GLfloat minDist = INFINITY;
 
@@ -145,14 +102,6 @@ Mesh::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, vec2
 	vec3 tP, tN;
 	vec2 ttC;
 
-	// If we don't pass the bounding box test - we don't test each triangle of this mesh
-//	if (!boundingBox->intersectsRay(r, &tDist, nullptr, nullptr, nullptr, nullptr)) {
-//		return false;
-//	}
-
-//	if (!boundingVolume->intersectRay(r)) {
-//		return false;
-//	}
 
 	for (Triangle *t : triangles) {
 
@@ -166,7 +115,11 @@ Mesh::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, vec2
 				*dist = minDist = tDist;
 				if (point) *point = tP;
 				if (normal) *normal = tN;
-				if (texCoords) *texCoords = ttC;
+				if (texColors) {
+					texColors->_ambientTexColor  = this->getAmbientTextureColor(ttC);
+					texColors->_diffuseTexColor  = this->getDiffuseTextureColor(ttC);
+					texColors->_specularTexColor = this->getSpecularTextureColor(ttC);
+				}
 				if (properties) *properties = this->_properties;
 			}
 		}
@@ -180,34 +133,29 @@ Mesh::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, vec2
 }
 
 
-vec3 Mesh::__getTextureColor(Image* texture, vec2& uv)
+
+bool
+Mesh::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties) const
 {
-	if (!texture) {
-		return COLOR_WHITE;
-	}
+	Mesh* m = (Mesh*)(this);
+	return m->intersectsRay(r, dist, point, normal, texColors, properties);
 
-	uv = glm::clamp(uv, 0.f + EPSILON, 1.f - EPSILON); // Textures at the edges tend to be not accurate
-
-	int w = texture->getWidth();
-	int h = texture->getHeight();
-
-	/* TODO - consider interpolation for better effects (average near by pixels) */
-	return texture->getPixel((int)(uv.x * w), (int) (uv.y * h));
 }
+
 
 
 vec3 Mesh::getAmbientTextureColor(vec2& uv)
 {
-	return this->__getTextureColor(_ambientTexture, uv);
+	return this->getTextureColor(_meshAmbientTexture, uv) * super::getAmbientTextureColor(uv);
 }
 
 vec3 Mesh::getDiffuseTextureColor(vec2& uv)
 {
-	return this->__getTextureColor(_diffuseTexture, uv);
+	return this->getTextureColor(_meshDiffuseTexture, uv) * super::getDiffuseTextureColor(uv);
 }
 
 vec3 Mesh::getSpecularTextureColor(vec2& uv)
 {
-	return this->__getTextureColor(_specularTexture, uv);
+	return this->getTextureColor(_meshSpecularTexture, uv) * super::getSpecularTextureColor(uv);
 }
 

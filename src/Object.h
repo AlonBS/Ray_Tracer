@@ -8,65 +8,20 @@
 #ifndef OBJECT_H_
 #define OBJECT_H_
 
-#include "Ray.h"
 #include <GL/glew.h>
+
+#include "AABB.h"
+#include "Ray.h"
 #include "General.h"
 #include "Image.h"
 
 using namespace glm;
-
-typedef struct ObjectProperties {
-
-	vec3 _ambient;
-	vec3 _emission;
-	vec3 _diffuse;
-	vec3 _specular;
-	GLfloat _shininess;
-
-}ObjectProperties;
-
-typedef struct ObjectTexColors {
-
-
-	vec3 _ambientTexColor;
-	vec3 _diffuseTexColor;
-	vec3 _specularTexColor;
-
-
-}ObjectTexColors;
-
-
-// TODO - CHANGE
-typedef struct Intersection {
-
-	bool isValid;
-
-	vec3 point;
-	vec3 normal;
-	ObjectTexColors texColors;
-
-	ObjectProperties properties; // The object's properties at intersection
-
-}Intersection;
 
 
 class Object {
 
 private:
 
-	bool _isPrimitive;
-
-
-
-//	vec3 _ambient;
-//	vec3 _diffuse;
-//	vec3 _specular;
-//	vec3 _emission;
-//	GLfloat _shininess;
-
-
-
-	vec3 getTextureColor(Image *texture, vec2& uv);
 
 	Image *_ambientTexture;
 	Image *_diffuseTexture;
@@ -74,37 +29,33 @@ private:
 
 protected:
 
-	mat4 _transform;
-	mat4 _invTransform;	  	 // We compute it once, instead of each intersection test
-	mat3 _invTransposeTrans; // For normals transforms - notice 3x3
 
 	ObjectProperties _properties;
+	ObjectTransforms _transforms;
 
-	//bool _textured;
+	vec3 getTextureColor(Image *texture, vec2& uv);
+
+	AABB* bbox;
 
 public:
 
-	vec3 getAmbientTextureColor(vec2& uv);
-	vec3 getDiffuseTextureColor(vec2& uv);
-	vec3 getSpecularTextureColor(vec2& uv);
 
-
-
-
-	Object(bool isPrimitive=true);
+	Object();
 	virtual ~Object();
 
 	void setTexture(Image *texture);
-
-	virtual bool intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties) = 0;
-
-
-
 	friend std::ostream& operator<< (std::ostream& out, const Object & obj);
-
 	virtual void print() const;
 
-	auto isPrimitive() -> bool { return _isPrimitive;};
+	virtual vec3 getAmbientTextureColor(vec2& uv);
+	virtual vec3 getDiffuseTextureColor(vec2& uv);
+	virtual vec3 getSpecularTextureColor(vec2& uv);
+
+
+	virtual bool intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties) = 0;
+	bool bBoxIntersectsRay(const Ray& tr, GLfloat* t_near);
+
+	virtual void computeBoundingBox() { this->bbox = nullptr; }
 
 
 	auto properties() -> ObjectProperties& { return _properties; };
@@ -114,10 +65,9 @@ public:
 	auto specular() -> vec3& { return _properties._specular; }
 	auto shininess() -> GLfloat& { return _properties._shininess; }
 
-	auto transform() -> mat4& { return _transform; }
-	auto invTransform() -> mat4& { return _invTransform; }
-	auto invTransposeTrans() -> mat3& { return _invTransposeTrans; }
-
+	auto transform() -> mat4& { return _transforms._transform; }
+	auto invTransform() -> mat4& { return _transforms._invTransform; }
+	auto invTransposeTrans() -> mat3& { return _transforms._invTransposeTrans; }
 
 };
 

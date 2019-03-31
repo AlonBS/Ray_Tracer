@@ -8,7 +8,6 @@
 #include "Triangle.h"
 #include "Box.h"
 
-
 using namespace std;
 
 
@@ -21,30 +20,20 @@ typedef struct MeshProperties : ObjectProperties {
 }MeshProperties;
 
 
-class Mesh{
+
+class Mesh : Object {
 
 private:
 
-	MeshProperties _properties;
+	using super = Object;
+
 	vector<Triangle*> triangles;
 
 	vector<Vertex> _vertices;
 
-	//	Box* boundingBox; TODO - remove
-	//	BoundingVolume* boundingVolume; TODO - remove
-
-	glm::vec3 ambient;
-	glm::vec3 emmision;
-	glm::vec3 diffuse;
-	glm::vec3 specular;
-	GLfloat shininess;
-
-	Image *_ambientTexture;
-	Image *_diffuseTexture;
-	Image *_specularTexture;
-
-
-	vec3 __getTextureColor(Image* texture, vec2& uv);
+	Image* _meshAmbientTexture;
+	Image* _meshDiffuseTexture;
+	Image* _meshSpecularTexture;
 
 
 public:
@@ -52,23 +41,27 @@ public:
 
 	Mesh(vector<Vertex>& vertices,
 			vector<unsigned int>& indices,
-			MeshProperties& properties,
+			ObjectProperties& properties,
 			Image *ambientTexture,
 			Image *diffuseTexture,
-			Image *specualrTexture);
+			Image *specualrTexture,
+			Image *generalTexture
+
+			/*const Model* const* - TODO */);
 
 
 	virtual ~Mesh();
 
-
-	bool intersectsRay(const Ray& r, GLfloat* dist, vec3* point, vec3* normal, vec2* texCoords, MeshProperties* properties);
+	virtual bool intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties);
+	virtual bool intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties) const;
 
 
 	vec3 getAmbientTextureColor(vec2& uv);
 	vec3 getDiffuseTextureColor(vec2& uv);
 	vec3 getSpecularTextureColor(vec2& uv);
 
-	vector<Vertex>& getVertices() { return _vertices; }
+	const vector<Vertex>& getVertices() const { return _vertices; }
+	const vector<Vertex>& getVertices() { return const_cast<vector<Vertex>&>(static_cast<const Mesh &>(*this).getVertices()); }
 
 
 private:
@@ -76,8 +69,7 @@ private:
 
 	void __triangulate(vector<Vertex> vertices, vector<unsigned int> indices);
 
-	//    void __computeBoundingBox(vector<Vertex>& vertices);
-	//    void __computeBoundingVolume(vector<Vertex>& vertices);
-
 };
+
+
 #endif

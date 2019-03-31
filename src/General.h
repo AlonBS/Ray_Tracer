@@ -19,6 +19,37 @@
 using namespace glm;
 using namespace std;
 
+typedef struct ObjectProperties {
+
+	vec3 _ambient;
+	vec3 _emission;
+	vec3 _diffuse;
+	vec3 _specular;
+	GLfloat _shininess;
+
+}ObjectProperties;
+
+
+typedef struct ObjectTransforms {
+
+	mat4 _transform;
+	mat4 _invTransform;	  	 // We compute it once, instead of each intersection test
+	mat3 _invTransposeTrans; // For normals transforms - notice 3x3
+
+}ObjectTransforms;
+
+
+typedef struct ObjectTexColors {
+
+
+	vec3 _ambientTexColor;
+	vec3 _diffuseTexColor;
+	vec3 _specularTexColor;
+
+
+}ObjectTexColors;
+
+
 struct Vertex {
     // position
     glm::vec3 Position;
@@ -31,6 +62,20 @@ struct Vertex {
 //    // bitangent
 //    glm::vec3 Bitangent;
 };
+
+
+// TODO - CHANGE
+typedef struct Intersection {
+
+	bool isValid;
+
+	vec3 point;
+	vec3 normal;
+	ObjectTexColors texColors;
+
+	ObjectProperties properties; // The object's properties at intersection
+
+}Intersection;
 
 
 typedef struct RayTracerStats {
