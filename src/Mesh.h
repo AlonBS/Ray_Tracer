@@ -45,10 +45,7 @@ public:
 			Image *ambientTexture,
 			Image *diffuseTexture,
 			Image *specualrTexture,
-			Image *generalTexture
-
-			/*const Model* const* - TODO */);
-
+			Image *generalTexture);
 
 	virtual ~Mesh();
 

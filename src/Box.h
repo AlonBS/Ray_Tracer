@@ -27,13 +27,14 @@ private:
 public:
 
 
-	Box()
-	: Object()
+	Box(const ObjectProperties& properties, const ObjectTransforms& transforms)
+	: Object(properties, transforms)
 	{
 
 	}
-	Box(vec3 & minBound, vec3& maxBound)
-	: Object()
+	Box(const ObjectProperties& properties, const ObjectTransforms& transforms,
+		vec3 & minBound, vec3& maxBound)
+	: Object(properties, transforms)
 	{
 		bounds[0] = {minBound};
 		bounds[1] = {maxBound};

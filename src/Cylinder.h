@@ -26,12 +26,14 @@ private:
 	vec3 _normalAt(const vec3& point, bool minCapIntersect, bool maxCapIntersect);
 
 
+
 public:
 
-	Cylinder(const glm::vec3 & center, GLfloat& height, GLfloat &radius)
-	: Object(), center(center), minCap(-height/2.0f), maxCap(height/2.0f), radius(radius)
+	Cylinder(const ObjectProperties& properties, const ObjectTransforms& transforms,
+			 const glm::vec3 & center, GLfloat& height, GLfloat &radius)
+	: Object(properties, transforms),
+	  center(center), minCap(-height/2.0f), maxCap(height/2.0f), radius(radius)
 	{
-
 	}
 	virtual ~Cylinder() {}
 
@@ -39,7 +41,8 @@ public:
 
 	virtual void print() const;
 
-	void computeBoundingBox();
+	virtual void computeBoundingBox();
+
 };
 
 #endif /* CYLINDER_H */

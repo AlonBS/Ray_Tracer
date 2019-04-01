@@ -43,8 +43,10 @@ private:
 
 public:
 
-	Plane(enum TexturePattern pattern)
-	: Object(), P(vec3(0,0,0)), N(vec3(0,1,0)), texturePattern(pattern)
+	Plane(const ObjectProperties& properties, const ObjectTransforms& transforms,
+		  enum TexturePattern pattern)
+	: Object(properties, transforms),
+	  P(vec3(0,0,0)), N(vec3(0,1,0)), texturePattern(pattern)
 	{
 	}
 

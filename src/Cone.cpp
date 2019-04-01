@@ -101,13 +101,12 @@ bool Cone::intersectsRay(const Ray& r, GLfloat* dist, vec3* point, vec3* normal,
 			t_min = t4;
 			maxCapIntersection = true;
 		}
-		// TODO - fix issue when rendering cylinder parallel to the camera view
 		ip  = tr.origin + t_min * tr.direction;
 	}
 
 	// This is the normal at intersection point. (The Cone is aligned with the y-axis)
 	vec3 n = _normalAt(ip, minCapIntersection, maxCapIntersection);
-	n = normalize(vec3(mat3(this->invTransposeTrans()) * n));
+	n = normalize(this->invTransposeTrans() * n);
 
 	// M * p - to transform point back
 	ip2 = ip; // for texture - we need the non transformed position

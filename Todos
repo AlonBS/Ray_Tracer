@@ -28,38 +28,38 @@ Major Topics:
 
 TODOs:
 
-- Add Wall and Wextra flags and fix all warnings. (DONE)
-- Remove Unused Variables. (DONE)
-- Add supported files format for result image. (DONE)
+- Add Wall and Wextra flags and fix all warnings. (Done)
+- Remove Unused Variables. (Done)
+- Add supported files format for result image. (Done)
 - Fix unknown command maxvertx (Done)
 - Check General texture from primitives and meshes not working. (Done)
 - Check valgrind Issues (Done - Problem with linking Freeimage (31 blocks) 
-- Check meshes textures memory allocation and free. (DONE)
+- Check meshes textures memory allocation and free. (Done)
 - Test all transformations on objects - (Done)
 - Fix stupid readme at github (Done)
 - Fix texture on triangles not from model (Done)
-- Fix texture on a cone shorter than double (DONE)
+- Fix texture on a cone shorter than double (Done)
 - Fix general texture on object (Done)
-- Add the option to insert colors in RGB values instead of 0-1 in scenes. (DONE)
+- Add the option to insert colors in RGB values instead of 0-1 in scenes. (Done)
+- Test normal transformation when creating meshes of object (Done)
+- Fix mesh properties multiply operator when value is not given (Done) 
+- FIx the applyObjectProps idiom - also add Props and transforms to primitives in Object constructor. and change the "calc bounding box public shit" (Done)
+- Make sure specular and diffuse lighting also work on transformed object (Done)
+- Insert bounding-box intersection op (Done)
+- fix stats (Done)
 
-
-- Test normal transformation when creating meshes of object (PRIORITY 1!!!)
 - Move to unique ptrs
 - Ipmlemnt const mechanisms 
 - Fix Vertices in Mesh class - (Copy of Vertex)
 - Add textures generation
-- Fix mesh properties multiply operator when value is not given (default) 
 - Fix folder structure and fix dependecy within scene to textures and models
-- FIx the applyObjectProps idiom - also add Props and transforms to primitives in Object constructor. and change the "calc bounding box public shit"
 - Fix consts shits
 - Stop recursion of light contribution is minor. 
 - Fix textures when applying transformations. 
 - Fix todos!
-- Consider Normal transformation when adding normals to meshes. (Model.cpp)
 - Interpolate normals in triangles. (Triangle.cpp)
-- Make sure specular and diffuse lighting also work on transformed object
-- Transform normals for mesh objects
-- Insert bounding-box intersection op.
+
+
 - Consider adding more primitives : Torus, disc and more. 
 
 

@@ -73,7 +73,7 @@ bool Sphere::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* norma
 	// The normal at intersection point (to the canonical sphere)
 	vec3 n = vec3(intersection_point - center);
 	// The normal transformation fix
-	n = normalize(vec3(mat3(this->invTransposeTrans()) * n));
+	n = normalize(this->invTransposeTrans() * n);
 
 	// M * p - to transform point back
 	intersection_point = vec3(this->transform() * vec4(intersection_point, 1.0f));

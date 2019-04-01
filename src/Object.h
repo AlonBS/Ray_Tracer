@@ -27,6 +27,8 @@ private:
 	Image *_diffuseTexture;
 	Image *_speularTexture;
 
+
+
 protected:
 
 
@@ -37,10 +39,13 @@ protected:
 
 	AABB* bbox;
 
+
+
 public:
 
 
 	Object();
+	Object(const ObjectProperties& properties, const ObjectTransforms& transforms);
 	virtual ~Object();
 
 	void setTexture(Image *texture);
@@ -54,17 +59,11 @@ public:
 
 	virtual bool intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties) = 0;
 	bool bBoxIntersectsRay(const Ray& tr, GLfloat* t_near);
-
 	virtual void computeBoundingBox() { this->bbox = nullptr; }
 
 
-	auto properties() -> ObjectProperties& { return _properties; };
-	auto ambient () -> vec3& { return _properties._ambient; }
-	auto emission() -> vec3& { return _properties._emission; }
-	auto diffuse () -> vec3& { return _properties._diffuse; }
-	auto specular() -> vec3& { return _properties._specular; }
-	auto shininess() -> GLfloat& { return _properties._shininess; }
 
+	auto properties() -> ObjectProperties& { return _properties; };
 	auto transform() -> mat4& { return _transforms._transform; }
 	auto invTransform() -> mat4& { return _transforms._invTransform; }
 	auto invTransposeTrans() -> mat3& { return _transforms._invTransposeTrans; }

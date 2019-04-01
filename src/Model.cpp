@@ -122,8 +122,7 @@ Model::processMesh(aiMesh *mesh, const aiScene *scene)
 			vector.x = mesh->mNormals[i].x;
 			vector.y = mesh->mNormals[i].y;
 			vector.z = mesh->mNormals[i].z;
-			//vertex.Normal = _invTransposeTrans * vector; //TODO - consider
-			vertex.Normal = vector;
+			vertex.Normal = normalize(_objectTransforms._invTransposeTrans * vector);
 		}
 		else {
 			vertex.Normal = glm::vec3(0.0f, 0.0f, 0.0f);

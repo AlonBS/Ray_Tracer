@@ -7,9 +7,10 @@
 
 #include "Triangle.h"
 
-Triangle::Triangle(vec3& va, vec3& vb, vec3& vc)
+Triangle::Triangle(ObjectProperties& op, vec3& va, vec3& vb, vec3& vc)
 : Object(), A(va), B(vb), C(vc)
 {
+	Object::_properties = op;
 	N = normalize(cross(C-B,A-B)); // Compute the face normal
 	AN = vec3(0.0f, 0.0f, 0.0f);
 	BN = vec3(0.0f, 0.0f, 0.0f);
@@ -20,9 +21,10 @@ Triangle::Triangle(vec3& va, vec3& vb, vec3& vc)
 }
 
 
-Triangle::Triangle(vec3& va, vec3& vb, vec3& vc, vec2& auv, vec2& buv, vec2& cuv)
+Triangle::Triangle(ObjectProperties& op, vec3& va, vec3& vb, vec3& vc, vec2& auv, vec2& buv, vec2& cuv)
 : Object(), A(va), B(vb), C(vc), Auv(auv), Buv(buv), Cuv(cuv)
 {
+	Object::_properties = op;
 	N = normalize(cross(C-B,A-B)); // Compute the face normal
 	AN = vec3(0.0f, 0.0f, 0.0f);
 	BN = vec3(0.0f, 0.0f, 0.0f);
@@ -32,9 +34,10 @@ Triangle::Triangle(vec3& va, vec3& vb, vec3& vc, vec2& auv, vec2& buv, vec2& cuv
 
 
 
-Triangle::Triangle(vec3& va, vec3& vb, vec3& vc, vec3& vaNorm, vec3& vbNorm, vec3& vcNorm)
+Triangle::Triangle(ObjectProperties& op, vec3& va, vec3& vb, vec3& vc, vec3& vaNorm, vec3& vbNorm, vec3& vcNorm)
 : Object(), A(va), B(vb), C(vc), AN(vaNorm), BN(vbNorm), CN(vcNorm)
 {
+	Object::_properties = op;
 	N = normalize(cross(C-B,A-B)); // Compute the face normal
 
 }

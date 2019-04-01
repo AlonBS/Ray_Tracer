@@ -28,7 +28,6 @@ Ray::Ray(vec3& origin, vec3& direction)
 :origin(origin), direction(normalize(direction))
 {
 	_computeInverse();
-	// TODO - consider changing origin a bit - due to floating point errors
 }
 
 Ray::Ray(const Ray& otherRay)
@@ -39,7 +38,6 @@ Ray::Ray(const Ray& otherRay)
 
 
 Ray::~Ray() {
-	// TODO Auto-generated destructor stub
 }
 
 

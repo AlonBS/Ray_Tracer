@@ -310,6 +310,12 @@ The result image can be found in "./Rendered_Scenes/ExampleSphere_result.png
 Version History:
 =================
 
+3.1:
+- Fixed normal were not transformed for models as they should have. 
+- Changed object constructor so now it required transformations and properties upon creation.
+- Fixed an issue with valgrind complaining about uninitialized value that may cause problems when switching between rendering threads. 
+
+
 3.0:
 -----
 - Full Support in Bounding Volume Hierarchies. The implementation is based on Kay and Kajiya (1986) and includes slabs, extents, and octrees for scene subsurface divisions.

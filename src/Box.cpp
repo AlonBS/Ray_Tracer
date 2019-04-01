@@ -25,7 +25,7 @@ bool Box::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, 
 	ip  = tr.origin + tmin * tr.direction;
 	n = _normalAt(ip);
 	// Normal transformation
-	n = normalize(vec3(mat3(this->invTransposeTrans()) * n));
+	n = normalize(this->invTransposeTrans() * n);
 
 	// M * p - to transform point back
 	ip2 = ip;

@@ -208,24 +208,20 @@ SceneParser::readValues(stringstream &s, const int numOfVals, GLfloat* values)
 }
 
 
-void SceneParser::applyPropsToObject(Object* object, mat4& objectTransformation, bool isTriangle)
+void SceneParser::fillObjectInfo(ObjectProperties* op, ObjectTransforms* ot, mat4* uniqueTrans)
 {
-	object->ambient() = ambient;
-	object->emission() = emission;
-	object->diffuse() = diffuse;
-	object->specular() = specular;
-	object->shininess() = shininess;
-	if (!isTriangle) { // Triangles are applied with the transformation matrix, so these aren't needed */
-		object->transform() = objectTransformation;
-		object->invTransform() = inverse(objectTransformation);
-		object->invTransposeTrans() = mat3(transpose(object->invTransform()));
+	op->_ambient = ambient;
+	op->_emission = emission;
+	op->_diffuse = diffuse;
+	op->_specular = specular;
+	op->_shininess = shininess;
+
+	if (ot) { // Not all objects need this
+		ot->_transform = (uniqueTrans) ? *uniqueTrans : transformsStack.top();
+		ot->_invTransform = inverse(ot->_transform);
+		ot->_invTransposeTrans = mat3(transpose(ot->_invTransform));
 	}
 
-	if (textureIsBound) {
-		object->setTexture(boundTexture);
-	}
-	object->computeBoundingBox();
-	scene->addObject(object);
 }
 
 
@@ -384,10 +380,18 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 
 		// Notice we don't change the top of the stack here, so this won't affect other objects
 		mat4 objectTransformation = objectTranslation * transformsStack.top(); // yes - left multiplied!
-
 		GLfloat radius = values[3];
-		Object *sphere = new Sphere(center, radius);
-		applyPropsToObject(sphere, objectTransformation);
+
+		ObjectProperties op{};
+		ObjectTransforms ot{};
+		fillObjectInfo(&op, &ot, &objectTransformation);
+
+		Object *sphere = new Sphere(op, ot, center, radius);
+		if (textureIsBound) {
+			sphere->setTexture(boundTexture);
+		}
+		sphere->computeBoundingBox();
+		scene->addObject(sphere);
 	}
 
 	else if (cmd == Commands.cylinder) {
@@ -398,16 +402,33 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 
 		GLfloat height = values[3];
 		GLfloat radius = values[4];
-		Object *cylinder = new Cylinder(center, height, radius);
-		applyPropsToObject(cylinder, objectTransformation);
+
+		ObjectProperties op{};
+		ObjectTransforms ot{};
+		fillObjectInfo(&op, &ot, &objectTransformation);
+
+		Object *cylinder = new Cylinder(op, ot, center, height, radius);
+		if (textureIsBound) {
+			cylinder->setTexture(boundTexture);
+		}
+		cylinder->computeBoundingBox();
+		scene->addObject(cylinder);
 	}
 
 	else if (cmd == Commands.box) {
 		readValues(s, 6, values);
 		vec3 minBound = vec3(values[0], values[1], values[2]);
 		vec3 maxBound = vec3(values[3], values[4], values[5]);
-		Object *box = new Box(minBound, maxBound);
-		applyPropsToObject(box, transformsStack.top());
+
+		ObjectProperties op{};
+		ObjectTransforms ot{};
+		fillObjectInfo(&op, &ot);
+
+		Object *box = new Box(op, ot, minBound, maxBound);
+		if (textureIsBound) {
+			box->setTexture(boundTexture);
+		}
+		scene->addObject(box);
 	}
 
 
@@ -419,8 +440,17 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 
 		GLfloat minCap = values[3];
 		GLfloat maxCap = values[4];
-		Object *cone = new Cone(center, minCap, maxCap);
-		applyPropsToObject(cone, objectTransformation);
+
+		ObjectProperties op{};
+		ObjectTransforms ot{};
+		fillObjectInfo(&op, &ot, &objectTransformation);
+
+		Object *cone = new Cone(op, ot, center, minCap, maxCap);
+		if (textureIsBound) {
+			cone->setTexture(boundTexture);
+		}
+		cone->computeBoundingBox();
+		scene->addObject(cone);
 	}
 
 	else if (cmd == Commands.plane) {
@@ -445,8 +475,15 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 			}
 		}
 
-		Object *plane = new Plane(tp);
-		applyPropsToObject(plane, transformsStack.top());
+		ObjectProperties op{};
+		ObjectTransforms ot{};
+		fillObjectInfo(&op, &ot);
+
+		Object *plane = new Plane(op, ot, tp);
+		if (textureIsBound) {
+			plane->setTexture(boundTexture);
+		}
+		scene->addObject(plane);
 	}
 
 
@@ -483,15 +520,20 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		vec3 A = vec3 (transformsStack.top() * vec4(vertices[values[0]], 1.0f));
 		vec3 B = vec3 (transformsStack.top() * vec4(vertices[values[1]], 1.0f));
 		vec3 C = vec3 (transformsStack.top() * vec4(vertices[values[2]], 1.0f));
-		Object *triangle = new Triangle(A, B, C);
+
+		ObjectProperties op{};
+		fillObjectInfo(&op, nullptr);
+		Object *triangle = new Triangle(op, A, B, C);
+		scene->addObject(triangle);
 //		applyPropsToObject(triangle, true);
 	}
 
 	else if (cmd == Commands.triNormal) {
 		readValues(s, 3, values);
-		// TODO - need to transform normals too ?
-		//TODO - transform !! )no
-		Object *triangle = new Triangle(vertices[values[0] * 2],
+		ObjectProperties op{};
+		fillObjectInfo(&op, nullptr);
+		Object *triangle = new Triangle(op,
+				                        vertices[values[0] * 2],
 										vertices[values[1] * 2],
 										vertices[values[2] * 2],
 										vertices[values[0] * 2 - 1],
@@ -513,8 +555,14 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		vec2 Buv = vec2(verticesTexT[values[1]]);
 		vec2 Cuv = vec2(verticesTexT[values[2]]);
 
-		Object *triangle = new Triangle(A, B, C, Auv, Buv, Cuv);
-		applyPropsToObject(triangle, transformsStack.top(), true);
+		ObjectProperties op{};
+		fillObjectInfo(&op, nullptr);
+
+		Object *triangle = new Triangle(op, A, B, C, Auv, Buv, Cuv);
+		if (textureIsBound) {
+			triangle->setTexture(boundTexture);
+		}
+		scene->addObject(triangle);
 	}
 
 	else if (cmd == Commands.texture) {
@@ -546,36 +594,9 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		string modelFile;
 		s >> modelFile;
 
-		ObjectProperties op = {
-				._ambient = ambient,
-				._emission = emission,
-				._diffuse = diffuse,
-				._specular = specular,
-				._shininess = shininess
-		};
-
-		mat4 transform = transformsStack.top();
-		mat4 invTransform = inverse(transform);
-		mat3 normalsTransform = mat3(transpose(inverse(transform)));
-
-		ObjectTransforms ot = {
-				._transform = transform,
-				._invTransform = invTransform,
-				._invTransposeTrans = normalsTransform
-		};
-
-//		Model *model = new Model();
-//		model->ambient() = ambient;
-//		model->emission() = emission;
-//		model->diffuse() = diffuse;
-//		model->specular() = specular;
-//		model->shininess() = shininess;
-//		model->transform() = transformsStack.top();
-//		model->invTransform() = inverse(model->transform());
-//		model->invTransposeTrans() = mat3(transpose(model->invTransform()));
-//		if (textureIsBound) {
-//			model->setTexture(boundTexture);
-//		}
+		ObjectProperties op;
+		ObjectTransforms ot;
+		fillObjectInfo(&op, &ot);
 
 		vector<Mesh*> modelMeshes{};
 		vector<Image*> modelTextures{};
@@ -583,7 +604,6 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 
 		scene->addTextures(modelTextures);
 		scene->addMeshes(modelMeshes);
-//		model->loadModel(modelFile); // This must be called after all properties are set - TODO - I hate this
 	}
 }
 
@@ -624,6 +644,8 @@ void
 SceneParser::handleLightsCommand(stringstream& s, string& cmd)
 {
 	if (cmd == Commands.directional) {
+
+		//TODO - check transformation
 		readValues(s, 6, values);
 		vec3 dir = vec3(transformsStack.top() * vec4(values[0], values[1], values[2], 0.0f));
 		vec3 color = normColor(vec3(values[3], values[4], values[5]));
@@ -634,7 +656,6 @@ SceneParser::handleLightsCommand(stringstream& s, string& cmd)
 
 	else if (cmd == Commands.point) {
 		readValues(s, 6, values);
-		//TODO CHECK
 		vec3 pos = vec3(transformsStack.top() * vec4(values[0], values[1], values[2], 1.0f));
 		vec3 color = normColor(vec3(values[3], values[4], values[5]));
 		PointLight *pointLight = new PointLight(color, pos);

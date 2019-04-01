@@ -28,11 +28,12 @@ private:
 
 	vec3 _normalAt(const vec3& point, bool minCapIntersect, bool maxCapIntersect);
 
-
 public:
 
-	Cone(const glm::vec3 & center, GLfloat& minCap, GLfloat& maxCap)
-	: Object(), center(center), minCap(minCap), maxCap(maxCap), height(maxCap - minCap)
+	Cone(const ObjectProperties& properties, const ObjectTransforms& transforms,
+		 const glm::vec3 & center, GLfloat& minCap, GLfloat& maxCap)
+	: Object(properties, transforms),
+	  center(center), minCap(minCap), maxCap(maxCap), height(maxCap - minCap)
 	{
 //		radius = sqrt(glm::max(abs(maxCap), abs(minCap)));
 		radius = glm::max(abs(maxCap), abs(minCap)); // TODO - consider
@@ -44,7 +45,9 @@ public:
 
 	virtual void print() const;
 
-	void computeBoundingBox();
+	virtual void computeBoundingBox();
+
+
 };
 
 #endif /* CONE_H */

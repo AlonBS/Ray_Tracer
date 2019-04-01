@@ -9,7 +9,9 @@
 
 using namespace glm;
 
-Object::Object()
+
+Object::Object(const ObjectProperties& properties, const ObjectTransforms& transforms)
+: _properties(properties), _transforms(transforms)
 {
 	_ambientTexture = nullptr;
 	_diffuseTexture = nullptr;
@@ -17,6 +19,22 @@ Object::Object()
 
 	bbox = nullptr;
 }
+
+
+
+Object::Object()
+{
+	_properties = {};
+	_transforms = {};
+
+	_ambientTexture = nullptr;
+	_diffuseTexture = nullptr;
+	_speularTexture = nullptr;
+
+	bbox = nullptr;
+}
+
+
 
 Object::~Object() {
 	if (bbox) {

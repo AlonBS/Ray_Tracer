@@ -28,8 +28,10 @@ private:
 
 public:
 
-	Sphere(const glm::vec3 & center, GLfloat &radius)
-	: Object(), center(center), radius(radius)
+	Sphere(const ObjectProperties& properties, const ObjectTransforms& transforms,
+		   const glm::vec3 & center, GLfloat &radius)
+	: Object(properties, transforms),
+	  center(center), radius(radius)
 	{
 	}
 	virtual ~Sphere() {	}

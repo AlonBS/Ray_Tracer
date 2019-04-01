@@ -28,7 +28,7 @@ bool Plane::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal
 	ip  = tr.origin + t*tr.direction;
 	n = N;
 	// Normal transformation
-	n = normalize(vec3(mat3(this->invTransposeTrans()) * n));
+	n = normalize(this->invTransposeTrans() * n);
 
 	// M * p - to transform point back
 	ip2 = ip;

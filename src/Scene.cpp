@@ -8,15 +8,10 @@
 #include "Scene.h"
 
 Scene::Scene() {
-	// TODO Auto-generated constructor stub
 
 }
 
 Scene::~Scene() {
-
-//	for (auto* bv : _boundingVolumes) {
-//		delete bv;
-//	}
 
 	for (auto* o : _objects) {
 		delete o;
@@ -24,8 +19,8 @@ Scene::~Scene() {
 
 	// TODO - fix
 	for (auto* m : _meshes) {
-			delete m;
-		}
+		delete m;
+	}
 
 	for (auto* t : _textures) {
 		delete t;
@@ -52,7 +47,6 @@ Scene::~Scene() {
 
 void Scene::constructAccelerationStructures()
 {
-	// TODO - this will be update with Oct-tree on next stages
 	bvh = new BVH(_meshes);
 }
 
