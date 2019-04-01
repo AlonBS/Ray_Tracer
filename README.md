@@ -357,6 +357,7 @@ Version History:
 - Small refactor to scene parser when creating new objects. 
 
 2.0:
+-----
 - Fixed bugs with intersection at caps for cone and cylinder that were calculated wrong.
 - Fixed bug with texture for those primitives, also applied at cone.
 - Fixed a bug with edge values of texture (0 or 1) tend not to show properly. 
@@ -405,6 +406,7 @@ Version History:
 - Moved to a separate git and added readme and instructions. 
 
 1.0:
+-----
 - Added mesh support
 
 0.9:
