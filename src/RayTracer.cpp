@@ -239,6 +239,35 @@ vec3 RayTracer::computeLight(Scene& scene, Ray& r, Intersection& hit)
 	}
 
 
+	// Add area lights
+	for (AreaLight* p : scene.getAreaLights()) {
+
+		for (vec3& pos : p->_positions) {
+
+			srDir = normalize(pos - hit.point);
+			srOrigin = hit.point + 10 * EPSILON * srDir; // Move a little to avoid floating point errors
+			shadowRay = Ray(srOrigin, srDir);
+			distToLight = length(pos - hit.point);
+
+			if (isVisibleToLight(scene, shadowRay, distToLight)) {
+
+				halfAng = normalize(srDir + eyeDir);
+
+				tempColor = __blinn_phong(hit.properties, hit.texColors, p->_color, srDir, hit.normal, halfAng);
+				// take attenuation into account
+				GLfloat atten = 1 / (scene.attenuation().constant + scene.attenuation().linear * distToLight + scene.attenuation().quadratic * distToLight * distToLight);
+				tempColor *= atten;
+				tempColor /= p->_positions.size();
+				color += tempColor;
+			}
+
+		}
+
+
+	}
+
+
+
 	for (DirectionalLight* p : scene.getDirectionalLights()) {
 
 		srDir = normalize(p->_direction);

@@ -10,6 +10,7 @@
 
 #include <glm/glm.hpp>
 #include <GL/glew.h>
+#include <vector>
 
 using namespace glm;
 
@@ -49,6 +50,20 @@ public:
 
 	DirectionalLight(vec3& color, vec3& dir);
 	virtual ~DirectionalLight() {}
+};
+
+
+class AreaLight : public Light {
+
+public:
+	vec3 _center;
+	GLfloat _radius;
+
+	std::vector<vec3> _positions;
+
+
+	AreaLight(vec3& color, vec3& _center, GLfloat& radius, GLuint samples, bool randomSamples=false);
+	virtual ~AreaLight() {}
 };
 
 

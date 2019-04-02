@@ -34,13 +34,22 @@ typedef enum CommandType {
 }CommandType;
 
 
+typedef struct AdditionalParams
+{
+	bool hardShadows;
+
+}AdditionalParams;
+
+
 class SceneParser {
 
 public:
 
-	static Scene* readFile(const char* fileName);
+	static Scene* readFile(const AdditionalParams& params, const char* fileName);
 
 private:
+
+	static AdditionalParams additionalParams;
 
 	static GLint lineNumber;
 

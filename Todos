@@ -2,18 +2,18 @@ This document describes the major topic I wish to implemet within this project, 
 
 
 Major Topics:
-1) Update README with instructions to install. Also add command line options with help menus. Update regularily as features are added. (DONE)
+1) Update README with instructions to install. Also add command line options with help menus. Update regularily as features are added. (Done)
 1b) Add command line parsing. (Done)
 2) Add examples of scenes with keywords. (This is based on EDX, but includes new keywords for added features). (Done)
 2b) Change to singleton patterns for scenemanager, sceneparser and raytracer - (Aborted)
 2c) Add better error handling (within file parser, as well as program itself) (Postponed)
 2d) Add option to usage non multi-threaded rendering - for debug purposes mainly. (Done)
 3) Add more primitive objects - Cyllinder etc. Add scenes dipicting those images. (Done)
-3b) Add bounding box for better performecnce
+3b) Add bounding box for better performecnce (Done)
 4) Shadows - support soft shadows
 5) Support reflections and refractions. 
-6) Support meshes
-7) Space partitioning for better performecnce more advances technices. 
+6) Support meshes (Done)
+7) Space partitioning for better performecnce more advances technices (Done)
 8) Add textures to all objects and primitives. (Almost Done)
 8b) add textures generation
 9) Support anti-aliasing
@@ -23,6 +23,7 @@ Major Topics:
 13) Lighing Models: Ray Traceing vs Monte-Carlo vs Path-tracing vs Photon mapping - and make them available to use interchangeably.
 14) Allow GPU rendering. 
 15) Support motion blur
+16) Add Sky boxes
 
 
 

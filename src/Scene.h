@@ -31,6 +31,7 @@ private:
 
 	std::vector<PointLight*>  		_pointLights;
 	std::vector<DirectionalLight*>  _directionalLights;
+	std::vector<AreaLight*>  		_areaLights;
 
 	Attenuation_t _attenuation;
 
@@ -84,6 +85,9 @@ public:
 
 	void addDirectionalLight(DirectionalLight *light) { _directionalLights.push_back(light); }
 	std::vector<DirectionalLight*>& getDirectionalLights() { return _directionalLights; }
+
+	void addAreaLight(AreaLight *light) { _areaLights.push_back(light); }
+	std::vector<AreaLight*>& getAreaLights() { return _areaLights; }
 
 	Attenuation_t& attenuation() { return _attenuation; }
 

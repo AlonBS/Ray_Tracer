@@ -34,6 +34,10 @@ Scene::~Scene() {
 		delete d;
 	}
 
+	for (auto* a : _areaLights) {
+		delete a;
+	}
+
 
 	//_boundingVolumes.clear();
 	_objects.clear();

@@ -16,7 +16,8 @@
 #define BOOST_FILESYSTEM_VERSION 3
 #define BOOST_FILESYSTEM_NO_DEPRECATED
 #define FILES_EXTENSION ".rt"
-#define DEFUALT_RESULT_FORMAT ".png"
+#define DEFAULT_RESULT_FORMAT ".png"
+#define DEFAULT_SOFT_SHADOWS "on"
 
 #define CURRENT_VERSION "3.1"
 
@@ -32,6 +33,10 @@ bool singleThreaded = false;
 string resultFormat;
 fs::path outputDirectory;
 bool generateStats = false;
+
+AdditionalParams ap = {
+	.hardShadows = false
+};
 
 
 // return the filenames of all files that have the specified extension
@@ -65,9 +70,10 @@ static void parse_args(int argc, char *argv[], vector<fs::path>& scenes)
 			("version,v", "Current Version of the program")
 			("input,i", po::value<string>(), "The path to a scene file, or scenes directory following the syntax specific within README file. Applies only to direct directory. No recursive sub-directories search is performed.")
 			("output,o", po::value<string>(), "Optional - The directory where to save the results. If not specified, results will be saved in the same directory of input files.")
-			("format", po::value<string>()->default_value(DEFUALT_RESULT_FORMAT), "Optional - The file format in which scenes result will be saved. Currently supported types are: png, jpeg, jpg, bmp, tiff.")
+			("format", po::value<string>()->default_value(DEFAULT_RESULT_FORMAT), "Optional - The file format in which scenes result will be saved. Currently supported types are: png, jpeg, jpg, bmp, tiff.")
 			("single-thread,s", po::bool_switch(&singleThreaded), "Flag to force single thread rendering. Default behavior is multi-threaded.")
 			("stats", po::bool_switch(&generateStats), "Generate and print statistics about each scene rendered.")
+			("hard-shadows", po::bool_switch(&ap.hardShadows), "Indicate whether hard shadows should be simulated. By default, soft shadows are simulated. Use this to improve performance. Note that soft shadows only appear if area lights are used. If this flag is true then hard shadows will be simulated, even if area lights are present.")
 		;
 
 
@@ -152,7 +158,7 @@ static void render_scene(string fileName)
 {
 
 
-	Scene *scene = SceneParser::readFile(fileName.c_str());
+	Scene *scene = SceneParser::readFile(ap, fileName.c_str());
 	if (!scene) {
 		cerr << "Scene: " << fileName << " was not rendered." << endl;
 		return;
@@ -236,4 +242,6 @@ int main(int argc, char *argv[])
 	FreeImage_DeInitialise();
 	return 0;
 }
+
+
 

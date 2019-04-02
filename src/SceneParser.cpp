@@ -71,6 +71,7 @@ struct Commands {
 	// Lights
 	const string directional   = "directional";
 	const string point         = "point";
+	const string area          = "area";
 	const string attenuation   = "attenuation";
 
 	// Materials
@@ -85,6 +86,8 @@ struct Commands {
 
 /////////////////////////////////////INIT STATIC MEMBERS ///////////////////////////////////////////////////
 
+AdditionalParams SceneParser::additionalParams{};
+
 set<string> SceneParser::general{Commands.size, Commands.maxdepth};
 string 	    SceneParser::camera = Commands.camera;
 set<string> SceneParser::geometry{Commands.sphere, Commands.cylinder, Commands.box, Commands.cone,
@@ -94,7 +97,7 @@ set<string> SceneParser::geometry{Commands.sphere, Commands.cylinder, Commands.b
 								  Commands.model};
 set<string> SceneParser::transformations {Commands.translate, Commands.rotate, Commands.scale,
 										  Commands.pushTransform, Commands.popTransform};
-set<string> SceneParser::lights {Commands.directional, Commands.point, Commands.attenuation};
+set<string> SceneParser::lights {Commands.directional, Commands.point, Commands.area, Commands.attenuation};
 set<string> SceneParser::materials {Commands.ambient, Commands.diffuse, Commands.specular, Commands.shininess, Commands.emission};
 
 
@@ -242,12 +245,11 @@ vec3 SceneParser::normColor(vec3 c)
 
 
 Scene*
-SceneParser::readFile(const char* fileName)
+SceneParser::readFile(const AdditionalParams& params, const char* fileName)
 {
+
 	string str, cmd;
 	ifstream in;
-
-
 
 
 	in.open(fileName);
@@ -257,6 +259,7 @@ SceneParser::readFile(const char* fileName)
 		return nullptr;
 	}
 
+	additionalParams = params;
 	scene = new Scene();
 
 	// Default transform
@@ -660,6 +663,23 @@ SceneParser::handleLightsCommand(stringstream& s, string& cmd)
 		vec3 color = normColor(vec3(values[3], values[4], values[5]));
 		PointLight *pointLight = new PointLight(color, pos);
 		scene->addPointLight(pointLight);
+	}
+
+	else if (cmd == Commands.area) {
+		readValues(s, 7, values);
+		vec3 center = vec3(transformsStack.top() * vec4(values[0], values[1], values[2], 1.0f));
+		vec3 color = normColor(vec3(values[3], values[4], values[5]));
+
+		GLfloat radius = values[6]; // TODO - consider how Trans affect this.
+		if (additionalParams.hardShadows) {
+			PointLight *pointLight = new PointLight(color, center);
+			scene->addPointLight(pointLight);
+		}
+		else {
+			AreaLight *areaLight = new AreaLight(color, center, radius, 16, true);
+			scene->addAreaLight(areaLight);
+		}
+
 	}
 
 	else if (cmd == Commands.attenuation) {
