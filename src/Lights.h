@@ -38,7 +38,7 @@ class PointLight : public Light {
 public:
 	vec3 _position;
 
-	PointLight(vec3& color, vec3& pos);
+	PointLight(vec3& color, vec3& pos, mat4 & transform);
 	virtual ~PointLight() {}
 };
 
@@ -48,7 +48,7 @@ public:
 	vec3 _direction;
 
 
-	DirectionalLight(vec3& color, vec3& dir);
+	DirectionalLight(vec3& color, vec3& dir, mat4& transform);
 	virtual ~DirectionalLight() {}
 };
 
@@ -62,7 +62,7 @@ public:
 	std::vector<vec3> _positions;
 
 
-	AreaLight(vec3& color, vec3& _center, GLfloat& radius, GLuint samples, bool randomSamples=false);
+	AreaLight(vec3& color, vec3& _center, GLfloat& radius, mat4& transform, GLuint samples, bool smartRandom=true);
 	virtual ~AreaLight() {}
 };
 

@@ -203,6 +203,8 @@ static void render_scene(string fileName)
 
 int main(int argc, char *argv[])
 {
+	//srand(time(NULL));
+
 	vector<fs::path> files{};
 	parse_args(argc, argv, files);
 

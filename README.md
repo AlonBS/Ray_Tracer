@@ -17,6 +17,7 @@ Current list of features supported:
 - Ray tracing accelerations using bounding box and bounding volume (Kay and Kajiya 1986)
 - BVH implementation to further accelerate rendering (Kay and Kajiya 1986)
 - Statistics about rendering
+- Soft shadows and area lights. 
 
 
 
@@ -52,6 +53,13 @@ Usage:
 		                  behavior is multi-threaded.
 	  --stats                 Generate and print statistics about each scene 
                     		  rendered.
+	  --hard-shadows          Indicate whether hard shadows should be simulated. By
+	                          default, soft shadows are simulated. Use this to 
+	                          improve performance. Note that soft shadows only 
+	                          appear if area lights are used. If this flag is true 
+	                          then hard shadows will be simulated, even if area 
+	                          lights are present.
+
 
 	Other values are specified within each scene separately. 
 
@@ -201,6 +209,11 @@ Colors can also be expressed in [0-225] RGB format. For value 1, it is assumed t
 		Color valus should range between 0 to 1.
 	point <pos_v3> <color_v3> - Creates a point light at the position <pos> with color <color>. Colors should range
 		between 0 to 1.
+	area <pos_v3> <color_v3> <radius_f> - Creates an area light (simulated as a 2D-disc), at the given position, with the
+		given color, and at the given radius. By defualt, the disc it perpendicular to the Y axis, and the user should
+		use the various transforms in order to achieve any kind of area light. 
+		Note: Currently, the number of samples, and the randomeness when generation the point is not visible to the user - this 
+		might change on next stages. 
 	attenuation <constant_f> <linear_f> <quadratic_f> - Sets the constant, linear and quadratic coefficients in the
 		attenuation equation:
 			Atten = 1 / (K_c + (K_l*d) + (K_q*d^2)) where:
@@ -309,6 +322,12 @@ The result image can be found in "./Rendered_Scenes/ExampleSphere_result.png
 
 Version History:
 =================
+
+3.2: 
+- Added soft shadows simulation. This can be achieved using area lights which were added also.
+- soft shadows won't be displayed if area lights are not present within the scene. 
+- Added the ability to simulate hard-shadows regardless if area lights are present in the scene: use the "hard-shadows" flag to achieve this. This will speed performance, but will reduce quality obviously.
+- Fixed bugs when transform point and directional lights. 
 
 3.1:
 - Fixed normal were not transformed for models as they should have. 

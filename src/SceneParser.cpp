@@ -650,33 +650,44 @@ SceneParser::handleLightsCommand(stringstream& s, string& cmd)
 
 		//TODO - check transformation
 		readValues(s, 6, values);
-		vec3 dir = vec3(transformsStack.top() * vec4(values[0], values[1], values[2], 0.0f));
+		vec3 dir = vec3(values[0], values[1], values[2]);
 		vec3 color = normColor(vec3(values[3], values[4], values[5]));
-		DirectionalLight *dirLight = new DirectionalLight(color, dir);
+		DirectionalLight *dirLight = new DirectionalLight(color, dir, transformsStack.top());
 
 		scene->addDirectionalLight(dirLight);
 	}
 
 	else if (cmd == Commands.point) {
 		readValues(s, 6, values);
-		vec3 pos = vec3(transformsStack.top() * vec4(values[0], values[1], values[2], 1.0f));
+
+//		vec3 pos = vec3(0, 0, 0);
+//		mat4 lightTranslation = glm::translate(mat4(1.0), vec3(values[0], values[1], values[2]));
+//		mat4 lightTransformation = lightTranslation * transformsStack.top(); // yes - left multiplied! - see note at sphere
+
+		vec3 pos = vec3(values[0], values[1], values[2]);
 		vec3 color = normColor(vec3(values[3], values[4], values[5]));
-		PointLight *pointLight = new PointLight(color, pos);
+		PointLight *pointLight = new PointLight(color, pos, transformsStack.top());
 		scene->addPointLight(pointLight);
 	}
 
 	else if (cmd == Commands.area) {
 		readValues(s, 7, values);
-		vec3 center = vec3(transformsStack.top() * vec4(values[0], values[1], values[2], 1.0f));
+		vec3 center = vec3(values[0], values[1], values[2]);
 		vec3 color = normColor(vec3(values[3], values[4], values[5]));
+		GLfloat radius = values[6];
 
-		GLfloat radius = values[6]; // TODO - consider how Trans affect this.
 		if (additionalParams.hardShadows) {
-			PointLight *pointLight = new PointLight(color, center);
+			PointLight *pointLight = new PointLight(color, center, transformsStack.top());
 			scene->addPointLight(pointLight);
 		}
 		else {
-			AreaLight *areaLight = new AreaLight(color, center, radius, 16, true);
+
+			vec3 pos = vec3(0, 0, 0);
+			mat4 lightTranslation = glm::translate(mat4(1.0), center);
+			mat4 lightTransformation = lightTranslation * transformsStack.top(); // yes - left multiplied! - see note at sphere
+
+			AreaLight *areaLight = new AreaLight(color, pos, radius, lightTransformation, 16);
+//			AreaLight *areaLight = new AreaLight(color, center, radius, transformsStack.top(), 16);
 			scene->addAreaLight(areaLight);
 		}
 
