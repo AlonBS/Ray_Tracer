@@ -328,6 +328,9 @@ Version History:
 - soft shadows won't be displayed if area lights are not present within the scene. 
 - Added the ability to simulate hard-shadows regardless if area lights are present in the scene: use the "hard-shadows" flag to achieve this. This will speed performance, but will reduce quality obviously.
 - Fixed bugs when transform point and directional lights. 
+- Added simple example with soft shadows. Note that 'Plane' object currently has a bug which causes black pixels on the bottom left of the screen - which will be fixed on next version.
+- Also added previous scenes with soft shadows for comparison. From now on, scenes will be rendered with soft shadows by default. 
+- Small fix to "indoor-plant" object using blender, to get rid of stupid mistake there. also created a smaller model to accelerate scene rendering (full object takes almost 35 minutes to render i7 8700)
 
 3.1:
 - Fixed normal were not transformed for models as they should have. 

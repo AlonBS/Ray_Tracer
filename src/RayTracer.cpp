@@ -238,7 +238,6 @@ vec3 RayTracer::computeLight(Scene& scene, Ray& r, Intersection& hit)
 		}
 	}
 
-
 	// Add area lights
 	for (AreaLight* p : scene.getAreaLights()) {
 
@@ -265,7 +264,6 @@ vec3 RayTracer::computeLight(Scene& scene, Ray& r, Intersection& hit)
 
 
 	}
-
 
 
 	for (DirectionalLight* p : scene.getDirectionalLights()) {

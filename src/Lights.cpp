@@ -48,9 +48,7 @@ AreaLight::AreaLight(vec3& color,
 					 bool smartRandom)
 : Light(color), _center(center), _radius(radius)
 {
-	// TODO - REMOVE
 	smartRandom = false;
-
 	_positions.push_back(center);
 
 	// First we create a disk that is on XY plane, and then we transform the dots.
@@ -70,7 +68,7 @@ AreaLight::AreaLight(vec3& color,
 		}
 
 		else {
-			vec2 xz = diskRand(_radius);
+			vec2 xz = diskRand(sqrt(_radius));
 			_positions.push_back(vec3(xz.x , 0, xz.y));
 		}
 	}
@@ -78,7 +76,6 @@ AreaLight::AreaLight(vec3& color,
 	// Apply transforms
 	for (vec3& pos : _positions) {
 		pos = vec3 (transform * vec4(pos, 1.0f));
-		printVec3("POs", pos);
 	}
 }
 
