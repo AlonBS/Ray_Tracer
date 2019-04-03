@@ -24,10 +24,9 @@ Light::Light(vec3& color)
 PointLight::PointLight(vec3& color, vec3& pos, mat4& transform)
 : Light(color)
 {
-	printVec3("POSSS 1", pos);
-	printMat4("TRANS", transform);
+//	printMat4("TRA", transform);
 	_position = vec3(transform * vec4(pos, 1.0f));
-	printVec3("POSSS 2", _position);
+//	printVec3("POS", _position);
 }
 
 
@@ -77,7 +76,7 @@ AreaLight::AreaLight(vec3& color,
 	}
 
 	// Apply transforms
-	for (vec3 pos : _positions) {
+	for (vec3& pos : _positions) {
 		pos = vec3 (transform * vec4(pos, 1.0f));
 		printVec3("POs", pos);
 	}
