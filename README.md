@@ -323,6 +323,9 @@ The result image can be found in "./Rendered_Scenes/ExampleSphere_result.png
 Version History:
 =================
 
+3.4:
+
+
 3.3:
 - Fixed dead pixels when rendering scenes with plane at large distance.
 - Recursion max depth is 5, and it will be stopped if contribution to light become negilgent. 

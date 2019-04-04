@@ -56,10 +56,12 @@ pushTransform
 	bindTexture 1
 #	diffuse 0.3 0.3 0.3 
 #	specular 0.0 0.0 0.0
-	translate 0 1 -2
-	sphere -0.5 1 -.65 1.5
-#	scale 3 3 3
-#	model ./3ds/cube/cube.obj
+	translate 0 1 8
+	scale 0.1 0.1 0.1
+#	sphere -0.5 1 -.65 1.5
+
+
+	model ./3ds/car1/car1.obj
 	unbindTexture
 #
 popTransform
