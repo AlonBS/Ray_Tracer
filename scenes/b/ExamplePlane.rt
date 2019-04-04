@@ -1,26 +1,32 @@
 
 # Plane Scene - An example scene to show the syntax and usage 
 
-size 1270 720 
-camera 0 7 10 0 0 0 0 1 0 45
+size 1280 720 
+camera 0 1 13 0 0 0 0 1 0 45
 
 attenuation 1 0.0 0.0
 
-maxDepth 2
+maxDepth 3
 
 texture ./scenes/a/wood.jpg
-texture ./scenes/a/bricks.jpg
+texture ./scenes/a/earth.png
 texture ./scenes/a/marble_1.jpg
 
 
 #directional 1 -1 0 1 0 0 
 area 1 7 5 1 1 1 1
-#point -1 7 5 0 0 1
+#point -1 7 5 1 1 1
+
+vertexTex +8 0 +8 1 1
+vertexTex +8 0 -8 0 1
+vertexTex -8 0 +8 1 0
+vertexTex -8 0 -8 0 0 
+
 
 pushTransform
 
 	bindTexture 2
-	ambient 0.2 0.2 0.2
+	ambient 0.1 0.1 0.1
 	diffuse 0.3 0.3 0.3
 	specular 0.2 0.2 0.2
 	shininess 16
@@ -30,11 +36,11 @@ pushTransform
 	unbindTexture
 
 	pushTransform
-		bindTexture 1
+		bindTexture 0
 		ambient 0.2 0.2 0.2
 		specular 0 0 0 
 		translate 0 0 -10
-		rotate 1 0 0 90
+		rotate 1 0 1 90
 		plane R
 		unbindTexture
 	popTransform
@@ -47,20 +53,14 @@ popTransform
 
 pushTransform
 	# The indentation is for better readability 
-#	bindTexture 0
-	ambient 0.2 0.2 0.2 
-	diffuse 0.3 0.3 0.3 
+	bindTexture 1
+#	diffuse 0.3 0.3 0.3 
 #	specular 0.0 0.0 0.0
-#	translate -1 3 -2
-#	sphere -0.5 1 -2.65 1.5
-#	translate 0 2 5
-	#rotate 0 1 0 30
-
-	translate 0 0 3
-	scale 0.5 0.5 0.5
-	#rotate 1 0 0
-	model ./3ds/indoor_plant/indoor_plant_small.obj
-#	unbindTexture
+	translate 0 1 -2
+	sphere -0.5 1 -.65 1.5
+#	scale 3 3 3
+#	model ./3ds/cube/cube.obj
+	unbindTexture
 #
 popTransform
 

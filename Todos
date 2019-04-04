@@ -10,7 +10,7 @@ Major Topics:
 2d) Add option to usage non multi-threaded rendering - for debug purposes mainly. (Done)
 3) Add more primitive objects - Cyllinder etc. Add scenes dipicting those images. (Done)
 3b) Add bounding box for better performecnce (Done)
-4) Shadows - support soft shadows
+4) Shadows - support soft shadows (Done)
 5) Support reflections and refractions. 
 6) Support meshes (Done)
 7) Space partitioning for better performecnce more advances technices (Done)
@@ -48,6 +48,7 @@ TODOs:
 - Make sure specular and diffuse lighting also work on transformed object (Done)
 - Insert bounding-box intersection op (Done)
 - fix stats (Done)
+- Stop recursion of light contribution is minor (Done)
 
 - Move to unique ptrs
 - Ipmlemnt const mechanisms 
@@ -55,7 +56,6 @@ TODOs:
 - Add textures generation
 - Fix folder structure and fix dependecy within scene to textures and models
 - Fix consts shits
-- Stop recursion of light contribution is minor. 
 - Fix textures when applying transformations. 
 - Fix todos!
 - Interpolate normals in triangles. (Triangle.cpp)

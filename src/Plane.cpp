@@ -16,12 +16,12 @@ bool Plane::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal
 	++rayTracerStats.numOfIntersectTests;
 
 	GLfloat nDotD = glm::dot(N, tr.direction);
-	if (abs(nDotD) < 0.001f) { /* Ray and plane are parallel - no intersection */
+	if (abs(nDotD) < EPSILON) { /* Ray and plane are parallel - no intersection */
 		return false;
 	}
 
 	t = glm::dot(N, P-tr.origin) / nDotD;
-	if (t < 0) { /* Intersection is behind the eye point */
+	if (t < EPSILON) { /* Intersection is behind the eye point */
 		return false;
 	}
 

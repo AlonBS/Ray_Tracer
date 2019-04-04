@@ -323,6 +323,10 @@ The result image can be found in "./Rendered_Scenes/ExampleSphere_result.png
 Version History:
 =================
 
+3.3:
+- Fixed dead pixels when rendering scenes with plane at large distance.
+- Recursion max depth is 5, and it will be stopped if contribution to light become negilgent. 
+
 3.2: 
 - Added soft shadows simulation. This can be achieved using area lights which were added also.
 - soft shadows won't be displayed if area lights are not present within the scene. 

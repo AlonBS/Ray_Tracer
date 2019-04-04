@@ -120,6 +120,11 @@ vec3 RayTracer::recursiveRayTrace(Scene& scene, Ray & ray, GLuint depth)
 	}
 
 	color = computeLight(scene, ray, hit);
+	// If color contribution is already very small, we stop the recursion.
+	if (epsilonCompareVec3(color, NEGLIGENT_CONRIBUTION)) {
+		return color;
+	}
+
 
 	vec3 reflectedRayOrigin = hit.point;
 	vec3 reflectedRayDir = glm::reflect(ray.direction, hit.normal);
@@ -127,7 +132,6 @@ vec3 RayTracer::recursiveRayTrace(Scene& scene, Ray & ray, GLuint depth)
 	Ray reflectedRay(reflectedRayOrigin , reflectedRayDir);
 
 	return color + hit.properties._specular * recursiveRayTrace(scene, reflectedRay, --depth);
-
 }
 
 
@@ -216,7 +220,6 @@ vec3 RayTracer::computeLight(Scene& scene, Ray& r, Intersection& hit)
 
 	// The 'eye' direction is where the current ray was shot from, and hit.
 	eyeDir = normalize(r.origin - hit.point);
-
 
 	// Add point lights
 	for (PointLight* p : scene.getPointLights()) {

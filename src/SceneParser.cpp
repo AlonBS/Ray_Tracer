@@ -345,7 +345,7 @@ SceneParser::handleGeneralCommand(stringstream& s, string& cmd)
 	} else if (cmd == Commands.maxdepth) {
 
 		readValues(s, 1, values);
-		scene->maxDepth() = values[0];
+		scene->maxDepth() = (GLuint) glm::min(MAX_RECURSION_DEPTH, values[0]);
 
 	}
 
