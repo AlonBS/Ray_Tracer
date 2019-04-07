@@ -28,10 +28,6 @@
 
 using namespace std;
 
-#define RECURSION_DEFAULT_DEPTH 2
-
-
-
 
 struct Commands {
 
@@ -75,6 +71,7 @@ struct Commands {
 	const string attenuation   = "attenuation";
 
 	// Materials
+	const string clearProps    = "clearProps";
 	const string ambient       = "ambient"; // As this is per object - and not per scene
 	const string diffuse       = "diffuse";
 	const string specular      = "specular";
@@ -101,7 +98,7 @@ set<string> SceneParser::geometry{Commands.sphere, Commands.cylinder, Commands.b
 set<string> SceneParser::transformations {Commands.translate, Commands.rotate, Commands.scale,
 										  Commands.pushTransform, Commands.popTransform};
 set<string> SceneParser::lights {Commands.directional, Commands.point, Commands.area, Commands.attenuation};
-set<string> SceneParser::materials {Commands.ambient, Commands.diffuse, Commands.specular,
+set<string> SceneParser::materials {Commands.clearProps, Commands.ambient, Commands.diffuse, Commands.specular,
 									Commands.shininess, Commands.emission,
 									Commands.reflection, Commands.transparency, Commands.refIndex};
 
@@ -213,7 +210,7 @@ SceneParser::readValues(stringstream &s, const int numOfVals, GLfloat* values)
 	for (int i = 0; i < numOfVals; ++i) {
 		s >> values[i];
 		if (s.fail()) {
-			cout << "Failed reading value " << i << " will skip\n";
+			cout << "\t[E]\t Line: " << lineNumber << " - failed reading values, and line will be ignored. Check syntax." << endl;
 			return false;
 		}
 	}
@@ -354,9 +351,11 @@ SceneParser::readFile(const AdditionalParams& params, const char* fileName)
 	textureIsBound = false;
 	clearObjectProps();
 	transformsStack = {};
-	attenuation.constant = 1.0f;
-	attenuation.linear = 0.0f;
-	attenuation.quadratic = 0.0f;
+	attenuation = Attenuation{
+		.constant = 1.0f,
+		.linear = 0.0f,
+		.quadratic = 0.0f
+	};
 	maxDepth = RECURSION_DEFAULT_DEPTH;
 
 	return scene;
@@ -729,13 +728,16 @@ SceneParser::handleLightsCommand(stringstream& s, string& cmd)
 
 		scene->attenuation() = atten;
 	}
-
 }
 
 
 void
 SceneParser::handleMaterialsCommand(stringstream& s, string& cmd)
 {
+	if (cmd == Commands.clearProps) {
+		clearObjectProps();
+	}
+
 	if (cmd == Commands.ambient) {
 		readValues(s, 3, values);
 		ambient = normColor(vec3(values[0], values[1], values[2]));

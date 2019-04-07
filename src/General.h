@@ -101,6 +101,9 @@ void clearStats();
 //const GLfloat EPSILON  = 0.00000000001f;
 const GLfloat EPSILON  = 0.0001f;
 const GLfloat MAX_RECURSION_DEPTH = 5.f;
+const GLfloat RECURSION_DEFAULT_DEPTH = 2.f;
+
+
 //const GLfloat INFINITY = FLT_MAX;
 const GLfloat PI = 3.1415926f;
 const vec3 COLOR_WHITE = vec3(1.0f, 1.0f, 1.0f);

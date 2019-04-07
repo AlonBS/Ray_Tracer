@@ -323,7 +323,11 @@ The result image can be found in "./Rendered_Scenes/ExampleSphere_result.png
 Version History:
 =================
 
-3.4:
+3.5:
+- Added relection / refreaction
+- added "clearProps" key word
+- Fixed a bug when rendering multiple scenes were not all values were cleared
+- improved error handling a bit
 
 
 3.3:

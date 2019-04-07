@@ -7,11 +7,16 @@ ObjectProperties operator*(const MeshProperties& mp, const ObjectProperties& op)
 {
 	ObjectProperties ret =
 	{
-			._ambient   = mp._ambient   * op._ambient,
-			._emission  = mp._emission  * op._emission,
-			._diffuse   = mp._diffuse   * op._diffuse,
-			._specular  = mp._specular  * op._specular,
-			._shininess = mp._shininess * op._shininess
+			._ambient         = mp._ambient   * op._ambient,
+			._emission        = mp._emission  * op._emission,
+			._diffuse         = mp._diffuse   * op._diffuse,
+			._specular        = mp._specular  * op._specular,
+			._shininess       = mp._shininess * op._shininess,
+
+			//TODO - add these properties per mesh
+			._reflection      = 1.f * op._reflection,
+			._transparency    = 1.f * op._transparency,
+			._refractionIndex = 1.f * op._refractionIndex
 	};
 	return ret;
 }

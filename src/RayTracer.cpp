@@ -397,7 +397,7 @@ RayTracer::calculateRefractions(Scene& scene,
 
 	GLfloat nDotD = dot(hit.normal, ray.direction);
 
-	if (nDotD > 0 && nDotD < 1) { // Going out of the object
+	if (nDotD > EPSILON) { // Going out of the object
 		eta = 1 / eta;
 		n = -n;
 	}
@@ -415,6 +415,6 @@ RayTracer::calculateRefractions(Scene& scene,
 	refractedRayOrigin = refractedRayOrigin + EPSILON * refractedRayDir;
 	Ray refractedRay(refractedRayOrigin , refractedRayDir);
 
-	return hit.properties._refractionIndex * recursiveRayTrace(scene, refractedRay, --depth);
+	return hit.properties._transparency * recursiveRayTrace(scene, refractedRay, --depth);
 }
 
