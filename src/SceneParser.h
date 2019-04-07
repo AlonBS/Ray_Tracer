@@ -79,6 +79,7 @@ private:
 	static void fillObjectInfo(ObjectProperties* op, ObjectTransforms* ot, mat4* uniqueTrans=nullptr);
 
 	static vec3 normColor(vec3 c);
+	static void clearObjectProps();
 
 	static void handleGeneralCommand(stringstream&, string&);
 	static void handleCameraCommand(stringstream&, string&);

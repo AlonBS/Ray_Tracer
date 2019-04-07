@@ -256,6 +256,19 @@ vec3 SceneParser::normColor(vec3 c)
 }
 
 
+void SceneParser::clearObjectProps()
+{
+	ambient  = vec3(0.2f, 0.2f, 0.2f);
+	diffuse  = vec3(0.0f, 0.0f, 0.0f);
+	specular = vec3(0.0f, 0.0f, 0.0f);
+	emission = vec3(0.0f, 0.0f, 0.0f);
+	shininess = 0.0f;
+	reflection = vec3(0.0f, 0.0f, 0.0f);
+	transparency = vec3(0.0f, 0.0f, 0.0f);
+	refIndex = 0.0f;
+}
+
+
 
 Scene*
 SceneParser::readFile(const AdditionalParams& params, const char* fileName)
@@ -339,7 +352,12 @@ SceneParser::readFile(const AdditionalParams& params, const char* fileName)
 	verticesTexT.clear();
 	boundTexture = nullptr;
 	textureIsBound = false;
-
+	clearObjectProps();
+	transformsStack = {};
+	attenuation.constant = 1.0f;
+	attenuation.linear = 0.0f;
+	attenuation.quadratic = 0.0f;
+	maxDepth = RECURSION_DEFAULT_DEPTH;
 
 	return scene;
 }
