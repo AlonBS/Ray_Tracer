@@ -27,6 +27,10 @@ typedef struct ObjectProperties {
 	vec3 _specular;
 	GLfloat _shininess;
 
+	vec3 _reflection;
+	vec3 _transparency;
+	GLfloat _refractionIndex;
+
 }ObjectProperties;
 
 
@@ -101,8 +105,10 @@ const GLfloat MAX_RECURSION_DEPTH = 5.f;
 const GLfloat PI = 3.1415926f;
 const vec3 COLOR_WHITE = vec3(1.0f, 1.0f, 1.0f);
 const vec3 COLOR_BLACK = vec3(0.0f, 0.0f, 0.0f);
+const vec3 NO_DIRECTION = COLOR_BLACK;
 
-const vec3 NEGLIGENT_CONRIBUTION = vec3(10 * EPSILON, 10 * EPSILON, 10 * EPSILON);
+const vec3 NEGLIGENT_CONTRIBUTION = vec3(10 * EPSILON, 10 * EPSILON, 10 * EPSILON);
+const vec3 FULL_CONTRIBUTION = vec3(1.0f, 1.0f, 1.0f);
 
 
 inline void

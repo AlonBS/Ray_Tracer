@@ -80,6 +80,9 @@ struct Commands {
 	const string specular      = "specular";
 	const string shininess     = "shininess";
 	const string emission      = "emission";
+	const string reflection    = "reflection";
+	const string transparency  = "transparency";
+	const string refIndex      = "refIndex";
 
 }Commands;
 
@@ -98,7 +101,11 @@ set<string> SceneParser::geometry{Commands.sphere, Commands.cylinder, Commands.b
 set<string> SceneParser::transformations {Commands.translate, Commands.rotate, Commands.scale,
 										  Commands.pushTransform, Commands.popTransform};
 set<string> SceneParser::lights {Commands.directional, Commands.point, Commands.area, Commands.attenuation};
-set<string> SceneParser::materials {Commands.ambient, Commands.diffuse, Commands.specular, Commands.shininess, Commands.emission};
+set<string> SceneParser::materials {Commands.ambient, Commands.diffuse, Commands.specular,
+									Commands.shininess, Commands.emission,
+									Commands.reflection, Commands.transparency, Commands.refIndex};
+
+GLfloat SceneParser::values[MAX_POSSIBLE_VALUES] = {};
 
 
 vec3 SceneParser::ambient  = vec3(0.2f, 0.2f, 0.2f);
@@ -106,7 +113,10 @@ vec3 SceneParser::diffuse  = vec3(0.0f, 0.0f, 0.0f);
 vec3 SceneParser::specular = vec3(0.0f, 0.0f, 0.0f);
 vec3 SceneParser::emission = vec3(0.0f, 0.0f, 0.0f);
 GLfloat SceneParser::shininess = 0.0f;
-GLfloat SceneParser::values[MAX_POSSIBLE_VALUES] = {};
+vec3 SceneParser::reflection = vec3(0.0f, 0.0f, 0.0f);
+vec3 SceneParser::transparency = vec3(0.0f, 0.0f, 0.0f);
+GLfloat SceneParser::refIndex = 0.0f;
+
 
 Attenuation SceneParser::attenuation = { .constant = 1.0f, .linear = 0.0f, .quadratic = 0.0f};
 GLuint 		SceneParser::maxDepth = RECURSION_DEFAULT_DEPTH;
@@ -218,6 +228,9 @@ void SceneParser::fillObjectInfo(ObjectProperties* op, ObjectTransforms* ot, mat
 	op->_diffuse = diffuse;
 	op->_specular = specular;
 	op->_shininess = shininess;
+	op->_reflection = reflection;
+	op->_transparency = transparency;
+	op->_refractionIndex = refIndex;
 
 	if (ot) { // Not all objects need this
 		ot->_transform = (uniqueTrans) ? *uniqueTrans : transformsStack.top();
@@ -729,6 +742,21 @@ SceneParser::handleMaterialsCommand(stringstream& s, string& cmd)
 	else if (cmd == Commands.shininess) {
 		readValues(s, 1, values);
 		shininess = values[0];
+	}
+
+	else if (cmd == Commands.reflection) {
+		readValues(s, 3, values);
+		reflection = normColor(vec3(values[0], values[1], values[2]));
+	}
+
+	else if (cmd == Commands.transparency) {
+		readValues(s, 3, values);
+		transparency = normColor(vec3(values[0], values[1], values[2]));
+	}
+
+	else if (cmd == Commands.refIndex) {
+		readValues(s, 1, values);
+		refIndex = values[0];
 	}
 
 }

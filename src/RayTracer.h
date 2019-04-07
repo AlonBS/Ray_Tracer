@@ -54,6 +54,10 @@ private:
 					   const vec3& normal,
 					   const vec3& halfAng);
 
+
+	vec3 calculateReflections(Scene& scene, Ray& ray, Intersection& hit, GLuint depth);
+	vec3 calculateRefractions(Scene& scene, Ray& ray, Intersection& hit, GLuint depth);
+
 };
 
 
