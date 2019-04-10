@@ -36,7 +36,7 @@ pushTransform
 	shininess 16
 	scale 3 3 3
 	#rotate 0 1 0 90
-	plane MR
+	plain MR
 	unbindTexture
 
 	pushTransform
@@ -45,7 +45,7 @@ pushTransform
 		specular 0 0 0 
 		translate 0 0 -10
 		rotate 1 0 1 90
-		plane R
+		plain R
 		unbindTexture
 	popTransform
 

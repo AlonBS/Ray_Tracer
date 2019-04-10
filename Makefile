@@ -24,7 +24,7 @@ SRCS      = $(SRC_DIR)/main.cpp \
             $(SRC_DIR)/Cylinder.cpp \
             $(SRC_DIR)/Box.cpp \
             $(SRC_DIR)/Cone.cpp \
-            $(SRC_DIR)/Plane.cpp \
+            $(SRC_DIR)/Plain.cpp \
             $(SRC_DIR)/AABB.cpp \
             $(SRC_DIR)/BVH.cpp \
 

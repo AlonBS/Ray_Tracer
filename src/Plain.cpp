@@ -1,11 +1,11 @@
 
-#include "Plane.h"
+#include "Plain.h"
 
 
 using namespace glm;
 
 
-bool Plane::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties)
+bool Plain::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties)
 {
 
 	GLfloat t = INFINITY;
@@ -16,7 +16,7 @@ bool Plane::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal
 	++rayTracerStats.numOfIntersectTests;
 
 	GLfloat nDotD = glm::dot(N, tr.direction);
-	if (abs(nDotD) < EPSILON) { /* Ray and plane are parallel - no intersection */
+	if (abs(nDotD) < EPSILON) { /* Ray and plain are parallel - no intersection */
 		return false;
 	}
 
@@ -60,7 +60,7 @@ bool Plane::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal
 }
 
 
-vec2 Plane::_textureAt(const vec3& point)
+vec2 Plain::_textureAt(const vec3& point)
 {
 	vec2 uv {};
 
@@ -101,7 +101,7 @@ vec2 Plane::_textureAt(const vec3& point)
 }
 
 
-void Plane::print() const
+void Plain::print() const
 {
 	std::cout << "Point: ("<< P.x << "," << P.y << "," << P.z << ")" << endl;
 	std::cout << "Normal: ("<< N.x << "," << N.y << "," << N.z << ")" << endl;

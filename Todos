@@ -18,12 +18,19 @@ Major Topics:
 8b) add textures generation
 9) Support anti-aliasing
 10) Depth of field
-11) More shading - more on softshadow, glossy effects, subsurface scattering
+11) More shading:
+	a) more soft shadows.
+	b) glossy effects and glossy reflections
+	c) subsurface scattering
+	d) motion blur
+	e) normals interpolations for meshes and triangels
+	f) BRDF
+	g) refractive mediums lights attenuations
+	h) refractive surfaces shadows handling 
 12) Monte-Carlo
 13) Lighing Models: Ray Traceing vs Monte-Carlo vs Path-tracing vs Photon mapping - and make them available to use interchangeably.
 14) Allow GPU rendering. 
-15) Support motion blur
-16) Add Sky boxes
+15) Add Sky boxes
 
 
 

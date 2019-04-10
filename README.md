@@ -4,7 +4,7 @@ Computer Graphics Ray Tracer (CPU) based on Edx CG-course.
 
 Current list of features supported:
 ====================================
-- Intersections with primitives: Triangles, Spheres, Cylinders, Boxes, Cones, Planes, ..., 
+- Intersections with primitives: Triangles, Spheres, Cylinders, Boxes, Cones, Plains, ..., 
 - Transformations: Scale, Rotation and translate. Also support transformations stacks (for transforms hierarchy) 
 - Blinn-Phong illumination module - including normals interpolation and attenuation.
 - Rendering of models comprised of multiple meshes with (partial) material properties. 
@@ -18,6 +18,7 @@ Current list of features supported:
 - BVH implementation to further accelerate rendering (Kay and Kajiya 1986)
 - Statistics about rendering
 - Soft shadows and area lights. 
+- Full support for reflections and refractions, including mix of the 2 using Fresnel equations. 
 
 
 
@@ -104,9 +105,9 @@ Primitives and Models:
 	cone <center_v3> <minCap_f> <maxCap_f> - Defines a cone centered around the center point, 
 		where maxCap and minCap define top and button caps of the cone. This means
 		that its fairly easy to decide wheather its a single cone (where maxCap or minCap == 0) or double cone, or inifinite etc.). It is 			assumed that maxCap > minCap.
-	plane <texture-pattern_e> - Creates a plane passing through the origin(0,0,0) and aligned as XZ plane (that is, with normal (0,1,0).
-		Ofcourse this can be tranformed like anyother object to achieve various types. Notice that this plane is infinite. 
-		texture-pattern will define how a texture should be applied to this plane, if indeed this is a textured plane. Options are:
+	plain <texture-pattern_e> - Creates a plain passing through the origin(0,0,0) and aligned as XZ plain (that is, with normal (0,1,0).
+		Ofcourse this can be tranformed like anyother object to achieve various types. Notice that this plain is infinite. 
+		texture-pattern will define how a texture should be applied to this plain, if indeed this is a textured plain. Options are:
 		"R" - Repeated pattern. (Only the fraction part of the intersection point will be taken)
 		"MR" (Default) - Mirrored repeated pattern. Same as before, but will be mirrored when integer part it odd.
 		"CE" - Clamp to edge. For values greater than 1 or smaller than 0, the value will be clamp to [0,1].
@@ -235,12 +236,16 @@ properties until they are overwritten. It's not mandatory to specify each value 
 Note: If complex object is created (using "model" command) - it can have it's own material properties, per part, in which
 case, the properties listed here will be multiplied with them. Making these values 'global' in that manner. 
 Colors can also be expressed in [0-225] RGB format. For value 1, it is assumed the the color component should be maximized. 
+Also note you can simply write: "white" or "black" for vec3(1.0f, 1.0f, 1.0f) and vec3(0.0f, 0.0f, 0.0f) respectively.
 
 	ambient <color_v3> - The ambient factor. Default vec3(0.2f, 0.2f, 0.2f)
 	diffuse  <color_v3> - The diffusive factor. Default vec3(0.0f, 0.0f, 0.0f)
 	specular  <color_v3> - The specular factor. Default vec3(0.2f, 0.2f, 0.2f)
 	shininess  <color_i> - The shininess factor. Default 0f
 	emission  <color_v3> - The emission factor. Default vec3(0.0f, 0.0f, 0.0f)
+	reflection <color_v3> - The amount of light that will be reflected from this surface.
+	refraction <color_v3> - The amout of light that will be refracted from this surface. 
+	refIndex <color_f> - The index of refraction. (See https://en.wikipedia.org/wiki/Refractive_index for common indecies)
 
 
 
@@ -324,10 +329,17 @@ Version History:
 =================
 
 3.5:
-- Added relection / refreaction
-- added "clearProps" key word
+-----
+- Full support in reflections and refractions, and the mixture of the two, using Frensel equations. To support this, the basic rendering function was changed, so that recursive ray tracing only happnes from reflective (and/or) refractive surfaces. The specular term that was used before as a reflection, surves only for the bling_phong lighing calculations, and not the recursive calculations. 
+the
+- This means that all previous scenes that features reflections had to be adjacted to get the previous results. If a surface is not reflective or refractive, then only bling_phong lighing will be taken into account. Note that this means the the recursion depth is only relevant for reflective / refractive surfaces. So no point in high depth if those surfaces aren't present. 
+- added "clearProps" key word to remove all material properties so they won't be passing threw other object if not wanted.
+- Also added the key words "black" and "white" to define the (0,0,0) and (1,1,1) colors respectively, so it will be a little easier to change the scene if needed. 
 - Fixed a bug when rendering multiple scenes were not all values were cleared
 - improved error handling a bit
+- Changed Plane.h/.cpp to Plain.h/.cpp (silly me)  (also changed the keyword spelling)
+- Readded the fixed scenes featuring the new reflections and refraction.
+- Added an example scene of reflection and refraction including frensel effect. See "ExampleAdvancedShading_1.rt". The scene looks very simple, but it actually shows nice effect. More complex scenes will be on later version when more shading techniques will be implemented. 
 
 
 3.3:

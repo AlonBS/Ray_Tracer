@@ -114,6 +114,13 @@ const vec3 NEGLIGENT_CONTRIBUTION = vec3(10 * EPSILON, 10 * EPSILON, 10 * EPSILO
 const vec3 FULL_CONTRIBUTION = vec3(1.0f, 1.0f, 1.0f);
 
 
+// Refractions indecies
+const GLfloat VOID_INDEX = 1.000f;
+const GLfloat AIR_INDEX = 1.0003f;
+const GLfloat WATER_INDEX = 1.333f;
+const GLfloat GLASS_INDEX = 1.52f;
+
+
 inline void
 printVec2(const string& name, const vec2& vec)
 {
@@ -141,7 +148,7 @@ printMat4(const string& name, const mat4& mat)
 }
 
 inline bool
-epsilonCompareVec3(const vec3& v1, const vec3& v2)
+equalToVec3(const vec3& v1, const vec3& v2)
 {
 	return glm::abs(v1.x - v2.x) < EPSILON &&
 		   glm::abs(v1.y - v2.y) < EPSILON &&

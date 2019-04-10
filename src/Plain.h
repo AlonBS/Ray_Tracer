@@ -5,8 +5,8 @@
  *      Author: alonbs
  */
 
-#ifndef PLANE_H
-#define PLANE_H
+#ifndef PLAIN_H
+#define PLAIN_H
 
 #include <GL/glew.h>
 #include <GL/glut.h>
@@ -25,9 +25,9 @@ enum TexturePattern {
 };
 
 /**
- * The plane is represented using a point P on the plane, and a Normal N to the plane.
+ * The plain is represented using a point P on the plane, and a Normal N to the plain.
  */
-class Plane: public Object {
+class Plain: public Object {
 
 private:
 
@@ -43,18 +43,18 @@ private:
 
 public:
 
-	Plane(const ObjectProperties& properties, const ObjectTransforms& transforms,
+	Plain(const ObjectProperties& properties, const ObjectTransforms& transforms,
 		  enum TexturePattern pattern)
 	: Object(properties, transforms),
 	  P(vec3(0,0,0)), N(vec3(0,1,0)), texturePattern(pattern)
 	{
 	}
 
-	virtual ~Plane() {}
+	virtual ~Plain() {}
 
 	virtual bool intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties);
 
 	virtual void print() const;
 };
 
-#endif /* PLANE_H */
+#endif /* PLAIN_H */

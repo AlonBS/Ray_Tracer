@@ -66,8 +66,7 @@ public:
 		GLfloat hh = height / 2;
 
 		GLfloat alpha = tan(fovX * 0.5f ) * ( (i - hw) / hw );
-		GLfloat beta  = tan(fovY * 0.5f ) * ( (hh - j) / hh ); // This is not a mistake - this is so FreeImage works a little different
-//		GLfloat beta  = tan(fovY * 0.5f ) * ( (i - hh) / hh ); // This is not a mistake - this is so FreeImage works a little different
+		GLfloat beta  = tan(fovY * 0.5f ) * ( (hh - j) / hh );
 
 		vec3 origin = eyeInit;
 		vec3 direction = alpha*u + beta*v - w;

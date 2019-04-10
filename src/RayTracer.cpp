@@ -104,9 +104,6 @@ Image* RayTracer::rayTraceST(Scene& scene)
 vec3 RayTracer::recursiveRayTrace(Scene& scene, Ray & ray, GLuint depth)
 {
 	vec3 color = COLOR_BLACK;
-	vec3 reflectionColor = COLOR_BLACK;
-	vec3 refractionColor = COLOR_BLACK;
-
 
 	++rayTracerStats.numOfRays;
 
@@ -118,7 +115,6 @@ vec3 RayTracer::recursiveRayTrace(Scene& scene, Ray & ray, GLuint depth)
 	}
 
 
-
 	Intersection hit = intersectScene(scene, ray);
 	if (!hit.isValid) {
 		return COLOR_BLACK;
@@ -127,21 +123,15 @@ vec3 RayTracer::recursiveRayTrace(Scene& scene, Ray & ray, GLuint depth)
 	color = computeLight(scene, ray, hit);
 	// If color contribution is already very small, we stop the recursion.
 	// Alternatively, if color is already maxed-out -no point in adding values that will later be clamped.
-	if (epsilonCompareVec3(color, NEGLIGENT_CONTRIBUTION) ||
-		epsilonCompareVec3(color, FULL_CONTRIBUTION)) {
+	if (equalToVec3(color, NEGLIGENT_CONTRIBUTION) ||
+		equalToVec3(color, FULL_CONTRIBUTION)) {
 		return color;
 	}
 
 
-	reflectionColor = calculateReflections(scene, ray, hit, depth);
-	refractionColor = calculateRefractions(scene, ray, hit, depth);
-
-	// TODO - Apply frensel law
-	color += reflectionColor + refractionColor;
+	color += calculateReflrectionsNRefractions(scene, ray, hit, depth);
 
 	return color;
-
-	//return color + hit.properties._specular * recursiveRayTrace(scene, reflectedRay, --depth);
 }
 
 
@@ -231,6 +221,16 @@ vec3 RayTracer::computeLight(Scene& scene, Ray& r, Intersection& hit)
 	// The 'eye' direction is where the current ray was shot from, and hit.
 	eyeDir = normalize(r.origin - hit.point);
 
+	//Ambient & Emission - regardless of lights
+	color += hit.properties._ambient * hit.texColors._ambientTexColor +
+			 hit.properties._emission * hit.texColors._ambientTexColor; // TODO Currently - ambient texture == emission texture
+
+
+	if (equalToVec3(hit.properties._diffuse, NEGLIGENT_CONTRIBUTION) ||
+		equalToVec3(hit.properties._specular, NEGLIGENT_CONTRIBUTION) ) {
+		return color;
+	}
+
 	// Add point lights
 	for (PointLight* p : scene.getPointLights()) {
 
@@ -296,10 +296,6 @@ vec3 RayTracer::computeLight(Scene& scene, Ray& r, Intersection& hit)
 		}
 	}
 
-
-	//Ambient & Emission - regardless of lights
-	color += hit.properties._ambient * hit.texColors._ambientTexColor +
-			 hit.properties._emission * hit.texColors._ambientTexColor; // TODO Currently - ambient texture == emission texture
 	return color;
 }
 
@@ -358,6 +354,68 @@ vec3 RayTracer::__blinn_phong(const ObjectProperties& objProps,
 }
 
 
+
+vec3
+RayTracer::calculateReflrectionsNRefractions(Scene& scene,
+											 Ray& ray,
+											 Intersection& hit,
+											 GLuint depth)
+{
+
+	vec3 reflectionColor = COLOR_BLACK;
+	vec3 refractionColor = COLOR_BLACK;
+
+	GLfloat kr = 1.f;
+
+	// object is refractive
+	if (!equalToVec3(hit.properties._transparency, COLOR_BLACK)){
+
+		kr = computeFrenselProportion(ray.direction, hit.normal, hit.properties._refractionIndex);
+
+		// Not total internal reflection
+		if (kr < 1.0f) {
+			refractionColor = calculateRefractions(scene, ray, hit, depth);
+		}
+
+	}
+
+	if (!equalToVec3(hit.properties._reflection, COLOR_BLACK)){
+
+		reflectionColor = calculateReflections(scene, ray, hit, depth);
+	}
+
+
+	return kr*reflectionColor + (1.f-kr)*refractionColor;
+
+}
+
+
+
+GLfloat
+RayTracer::computeFrenselProportion(const vec3& I, const vec3& N, const GLfloat& ior)
+{
+	GLfloat cosi = dot(I, N);
+	GLfloat etai = 1, etat = ior;
+	if (cosi > 0) {
+		std::swap(etai, etat);
+	}
+
+	// Compute sini using Snell's law
+	GLfloat sint = etai / etat * sqrtf(std::max(0.f, 1 - cosi*cosi));
+	// Total internal reflection
+	if (sint >= 1) {
+		return 1;
+	}
+	else {
+		GLfloat cost = sqrtf(std::max(0.f, 1 - sint*sint));
+		cosi = fabsf(cosi);
+		GLfloat Rs = ((etat*cosi) - (etai*cost)) / ((etat*cosi) + (etai*cost));
+		GLfloat Rp = ((etai*cosi) - (etat*cost)) / ((etai*cosi) + (etat*cost));
+		return (Rs*Rs + Rp*Rp) / 2;
+	}
+}
+
+
 vec3
 RayTracer::calculateReflections(Scene& scene,
 								Ray& ray,
@@ -365,7 +423,7 @@ RayTracer::calculateReflections(Scene& scene,
 								GLuint depth)
 {
 	// object is not reflective
-	if (epsilonCompareVec3(hit.properties._reflection, COLOR_BLACK)){
+	if (equalToVec3(hit.properties._reflection, COLOR_BLACK)){
 		return COLOR_BLACK;
 	}
 
@@ -386,30 +444,29 @@ RayTracer::calculateRefractions(Scene& scene,
 								GLuint depth)
 {
 	// object is not refractive
-	if (epsilonCompareVec3(hit.properties._transparency, COLOR_BLACK)){
+	if (equalToVec3(hit.properties._transparency, COLOR_BLACK)){
 		return COLOR_BLACK;
 	}
 
-
-	const GLfloat VOID_INDEX = 1.003f;
-	vec3 n = hit.normal;
-	GLfloat eta = VOID_INDEX / hit.properties._refractionIndex;
+	vec3 dir;
+	vec3 norm;
+	GLfloat eta;
 
 	GLfloat nDotD = dot(hit.normal, ray.direction);
 
 	if (nDotD > EPSILON) { // Going out of the object
-		eta = 1 / eta;
-		n = -n;
+		dir = ray.direction;
+		norm = -hit.normal;
+		eta = hit.properties._refractionIndex / VOID_INDEX;
+	}
+	else {
+		dir = ray.direction; // TODO - consier -ray.direction
+		norm = hit.normal;
+		eta = VOID_INDEX / hit.properties._refractionIndex;
 	}
 
 	vec3 refractedRayOrigin = hit.point;
-	vec3 refractedRayDir = glm::refract(ray.direction, n, eta);
-
-	// TODO - think - total internal reflection
-	if (epsilonCompareVec3(refractedRayDir, NO_DIRECTION)) {
-			 // TODO - think
-		return COLOR_BLACK;
-	}
+	vec3 refractedRayDir = glm::refract(dir, norm, eta);
 
 
 	refractedRayOrigin = refractedRayOrigin + EPSILON * refractedRayDir;

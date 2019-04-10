@@ -160,15 +160,15 @@ Model::processMesh(aiMesh *mesh, const aiScene *scene)
 		aiColor3D c (0.0f, 0.0f, 0.0f);
 		material->Get(AI_MATKEY_COLOR_AMBIENT, c);
 		properties._ambient = vec3(c.r, c.g, c.b);
-		if (epsilonCompareVec3(properties._ambient, COLOR_BLACK))
+		if (equalToVec3(properties._ambient, COLOR_BLACK))
 			properties._ambient = COLOR_WHITE;
 		material->Get(AI_MATKEY_COLOR_DIFFUSE, c);
 		properties._diffuse = vec3(c.r, c.g, c.b);
-		if (epsilonCompareVec3(properties._diffuse, COLOR_BLACK))
+		if (equalToVec3(properties._diffuse, COLOR_BLACK))
 			properties._diffuse = COLOR_WHITE;
 		material->Get(AI_MATKEY_COLOR_SPECULAR, c);
 		properties._specular = vec3(c.r, c.g, c.b);
-		if (epsilonCompareVec3(properties._specular, COLOR_BLACK))
+		if (equalToVec3(properties._specular, COLOR_BLACK))
 			properties._specular = COLOR_WHITE;
 		material->Get(AI_MATKEY_SHININESS, properties._shininess);
 		if (properties._shininess == 0.0f)

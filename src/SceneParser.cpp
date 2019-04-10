@@ -20,11 +20,10 @@
 #include "Cylinder.h"
 #include "Box.h"
 #include "Cone.h"
-#include "Plane.h"
-
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "Camera.hpp"
+#include "Plain.h"
 
 using namespace std;
 
@@ -43,7 +42,7 @@ struct Commands {
 	const string cylinder      = "cylinder";
 	const string box		   = "box";
 	const string cone		   = "cone";
-	const string plane		   = "plane";
+	const string plain		   = "plain";
 	const string maxVerts      = "maxVerts";
 	const string maxVertNorms  = "maxVertNorms";
 	const string vertex        = "vertex";
@@ -91,7 +90,7 @@ AdditionalParams SceneParser::additionalParams{};
 set<string> SceneParser::general{Commands.size, Commands.maxdepth};
 string 	    SceneParser::camera = Commands.camera;
 set<string> SceneParser::geometry{Commands.sphere, Commands.cylinder, Commands.box, Commands.cone,
-								  Commands.plane, Commands.maxVerts, Commands.maxVertNorms,
+								  Commands.plain, Commands.maxVerts, Commands.maxVertNorms,
 								  Commands.vertex, Commands.vertexNormal, Commands.vertexTex, Commands.tri,
 								  Commands.triNormal, Commands.triTex, Commands.texture, Commands.bindTexture, Commands.unbindTexture,
 								  Commands.model};
@@ -235,6 +234,26 @@ void SceneParser::fillObjectInfo(ObjectProperties* op, ObjectTransforms* ot, mat
 		ot->_invTransposeTrans = mat3(transpose(ot->_invTransform));
 	}
 
+}
+
+
+vec3
+SceneParser::readColor(stringstream& s)
+{
+	string c;
+	s >> c;
+	std::transform(c.begin(), c.end(), c.begin(), ::tolower);
+	if (c == "black") {
+		return vec3(0.0f, 0.0f, 0.0f);
+	}
+	if (c == "white") {
+		return vec3(1.0f, 1.0f, 1.0f);
+	}
+
+	readValues(s, 2, values);
+
+	GLfloat n1 = (GLfloat) strtod(c.c_str(), NULL);
+	return normColor(vec3(n1, values[0], values[1]));
 }
 
 
@@ -486,9 +505,9 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		scene->addObject(cone);
 	}
 
-	else if (cmd == Commands.plane) {
+	else if (cmd == Commands.plain) {
 
-		/* To achieve other planes - use transformations on this object */
+		/* To achieve other plains - use transformations on this object */
 
 		enum TexturePattern tp = MIRRORED_REPEAT;
 		if (boundTexture) {
@@ -503,7 +522,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 			else if (texturePattern == "CE")
 				tp = CLAMP_TO_EDGE;
 			else {
-				cout << "\t[W]\tLine: " << lineNumber << ". No, or invalid texture pattern was given for textured plane. Mirrored-Repeat was chosen. " << endl;
+				cout << "\t[W]\tLine: " << lineNumber << ". No, or invalid texture pattern was given for textured plain. Mirrored-Repeat was chosen. " << endl;
 				tp = MIRRORED_REPEAT;
 			}
 		}
@@ -512,11 +531,11 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		ObjectTransforms ot{};
 		fillObjectInfo(&op, &ot);
 
-		Object *plane = new Plane(op, ot, tp);
+		Object *plain = new Plain(op, ot, tp);
 		if (textureIsBound) {
-			plane->setTexture(boundTexture);
+			plain->setTexture(boundTexture);
 		}
-		scene->addObject(plane);
+		scene->addObject(plain);
 	}
 
 
@@ -731,6 +750,9 @@ SceneParser::handleLightsCommand(stringstream& s, string& cmd)
 }
 
 
+
+
+
 void
 SceneParser::handleMaterialsCommand(stringstream& s, string& cmd)
 {
@@ -739,24 +761,23 @@ SceneParser::handleMaterialsCommand(stringstream& s, string& cmd)
 	}
 
 	if (cmd == Commands.ambient) {
-		readValues(s, 3, values);
-		ambient = normColor(vec3(values[0], values[1], values[2]));
+
+		ambient = readColor(s);
 	}
 
 	else if (cmd == Commands.diffuse) {
-		readValues(s, 3, values);
-		diffuse = normColor(vec3(values[0], values[1], values[2]));
 
+		diffuse = readColor(s);
 	}
 
 	else if (cmd == Commands.specular) {
-		readValues(s, 3, values);
-		specular = normColor(vec3(values[0], values[1], values[2]));
+
+		specular = readColor(s);
 	}
 
 	else if (cmd == Commands.emission) {
-		readValues(s, 3, values);
-		emission = normColor(vec3(values[0], values[1], values[2]));
+
+		emission = readColor(s);
 	}
 
 	else if (cmd == Commands.shininess) {
@@ -765,13 +786,13 @@ SceneParser::handleMaterialsCommand(stringstream& s, string& cmd)
 	}
 
 	else if (cmd == Commands.reflection) {
-		readValues(s, 3, values);
-		reflection = normColor(vec3(values[0], values[1], values[2]));
+
+		reflection = readColor(s);
 	}
 
 	else if (cmd == Commands.transparency) {
-		readValues(s, 3, values);
-		transparency = normColor(vec3(values[0], values[1], values[2]));
+
+		transparency = readColor(s);
 	}
 
 	else if (cmd == Commands.refIndex) {

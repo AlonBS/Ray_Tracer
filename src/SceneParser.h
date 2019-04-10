@@ -78,6 +78,7 @@ private:
 	static bool readValues(std::stringstream &s, const int numValues, GLfloat *values);
 	static void fillObjectInfo(ObjectProperties* op, ObjectTransforms* ot, mat4* uniqueTrans=nullptr);
 
+	static vec3 readColor(stringstream& s);
 	static vec3 normColor(vec3 c);
 	static void clearObjectProps();
 
