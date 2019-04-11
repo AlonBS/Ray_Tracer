@@ -1,0 +1,42 @@
+
+# Refraction Scene 
+# 
+# Normals interpolation example
+#
+
+
+size 1280 720
+camera 0 4 10 0 0 0 0 1 0 45
+
+attenuation 1 0.0 0.0
+
+maxDepth 1
+
+texture ./scenes/a/water_1.jpg
+texture ./scenes/a/wood2.jpeg
+texture ./scenes/a/lines.jpg
+
+
+#directional 1 -1 0 1 0 0 
+area 1 7 5 1 1 1 1
+area -1 7 5 1 0 1 1
+#area 1 10 5 1 0 1 1
+#point -1 7 5 1 1 1
+
+
+
+
+clearProps
+pushTransform
+	#bindTexture 2
+	ambient 0.2 .2 0.2
+	diffuse 0.3 0.3 0.3
+	specular 0.2 0.2 0.2
+	shininess 16
+	translate 0 0 -5
+	#scale 0.5 0.5 0.5
+	model ./3ds/pokeball/pokeball_small.obj
+	#unbindTexture
+popTransform
+
+
