@@ -368,7 +368,7 @@ RayTracer::calculateReflrectionsNRefractions(Scene& scene,
 	GLfloat kr = 1.f;
 
 	// object is refractive
-	if (!equalToVec3(hit.properties._transparency, COLOR_BLACK)){
+	if (!equalToVec3(hit.properties._refraction, COLOR_BLACK)){
 
 		kr = computeFrenselProportion(ray.direction, hit.normal, hit.properties._refractionIndex);
 
@@ -444,7 +444,7 @@ RayTracer::calculateRefractions(Scene& scene,
 								GLuint depth)
 {
 	// object is not refractive
-	if (equalToVec3(hit.properties._transparency, COLOR_BLACK)){
+	if (equalToVec3(hit.properties._refraction, COLOR_BLACK)){
 		return COLOR_BLACK;
 	}
 
@@ -472,6 +472,6 @@ RayTracer::calculateRefractions(Scene& scene,
 	refractedRayOrigin = refractedRayOrigin + EPSILON * refractedRayDir;
 	Ray refractedRay(refractedRayOrigin , refractedRayDir);
 
-	return hit.properties._transparency * recursiveRayTrace(scene, refractedRay, --depth);
+	return hit.properties._refraction * recursiveRayTrace(scene, refractedRay, --depth);
 }
 

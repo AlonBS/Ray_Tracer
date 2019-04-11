@@ -77,7 +77,7 @@ struct Commands {
 	const string shininess     = "shininess";
 	const string emission      = "emission";
 	const string reflection    = "reflection";
-	const string transparency  = "transparency";
+	const string refraction    = "refraction";
 	const string refIndex      = "refIndex";
 
 }Commands;
@@ -99,7 +99,7 @@ set<string> SceneParser::transformations {Commands.translate, Commands.rotate, C
 set<string> SceneParser::lights {Commands.directional, Commands.point, Commands.area, Commands.attenuation};
 set<string> SceneParser::materials {Commands.clearProps, Commands.ambient, Commands.diffuse, Commands.specular,
 									Commands.shininess, Commands.emission,
-									Commands.reflection, Commands.transparency, Commands.refIndex};
+									Commands.reflection, Commands.refraction, Commands.refIndex};
 
 GLfloat SceneParser::values[MAX_POSSIBLE_VALUES] = {};
 
@@ -110,7 +110,7 @@ vec3 SceneParser::specular = vec3(0.0f, 0.0f, 0.0f);
 vec3 SceneParser::emission = vec3(0.0f, 0.0f, 0.0f);
 GLfloat SceneParser::shininess = 0.0f;
 vec3 SceneParser::reflection = vec3(0.0f, 0.0f, 0.0f);
-vec3 SceneParser::transparency = vec3(0.0f, 0.0f, 0.0f);
+vec3 SceneParser::refraction = vec3(0.0f, 0.0f, 0.0f);
 GLfloat SceneParser::refIndex = 0.0f;
 
 
@@ -225,7 +225,7 @@ void SceneParser::fillObjectInfo(ObjectProperties* op, ObjectTransforms* ot, mat
 	op->_specular = specular;
 	op->_shininess = shininess;
 	op->_reflection = reflection;
-	op->_transparency = transparency;
+	op->_refraction = refraction;
 	op->_refractionIndex = refIndex;
 
 	if (ot) { // Not all objects need this
@@ -280,7 +280,7 @@ void SceneParser::clearObjectProps()
 	emission = vec3(0.0f, 0.0f, 0.0f);
 	shininess = 0.0f;
 	reflection = vec3(0.0f, 0.0f, 0.0f);
-	transparency = vec3(0.0f, 0.0f, 0.0f);
+	refraction = vec3(0.0f, 0.0f, 0.0f);
 	refIndex = 0.0f;
 }
 
@@ -790,9 +790,9 @@ SceneParser::handleMaterialsCommand(stringstream& s, string& cmd)
 		reflection = readColor(s);
 	}
 
-	else if (cmd == Commands.transparency) {
+	else if (cmd == Commands.refraction) {
 
-		transparency = readColor(s);
+		refraction = readColor(s);
 	}
 
 	else if (cmd == Commands.refIndex) {

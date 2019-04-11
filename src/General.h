@@ -28,7 +28,7 @@ typedef struct ObjectProperties {
 	GLfloat _shininess;
 
 	vec3 _reflection;
-	vec3 _transparency;
+	vec3 _refraction;
 	GLfloat _refractionIndex;
 
 }ObjectProperties;

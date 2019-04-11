@@ -105,7 +105,7 @@ private:
 	static vec3 emission;
 	static GLfloat shininess;
 	static vec3 reflection;
-	static vec3 transparency;
+	static vec3 refraction;
 	static GLfloat refIndex;
 
 	static Attenuation attenuation;
