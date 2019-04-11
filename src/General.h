@@ -91,6 +91,7 @@ typedef struct RayTracerStats {
 }RayTracerStats;
 
 extern RayTracerStats rayTracerStats;
+extern bool faceNormals;
 
 void clearStats();
 

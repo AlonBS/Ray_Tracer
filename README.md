@@ -19,6 +19,7 @@ Current list of features supported:
 - Statistics about rendering
 - Soft shadows and area lights. 
 - Full support for reflections and refractions, including mix of the 2 using Fresnel equations. 
+- Normals interpolation (by default) for smoother appearance of less detailed models. 
 
 
 
@@ -60,6 +61,11 @@ Usage:
 	                          appear if area lights are used. If this flag is true 
 	                          then hard shadows will be simulated, even if area 
 	                          lights are present.
+	  --flat-shading          Indicate whether flat shading should be used. If set,
+	                          face normals will be used, otherwise (and by 
+	                          default), normals are interpolated and for much 
+	                          smoother image.
+
 
 
 	Other values are specified within each scene separately. 
@@ -328,6 +334,11 @@ The result image can be found in "./Rendered_Scenes/ExampleSphere_result.png
 Version History:
 =================
 
+3.6:
+- More on shading: Added normals interpolation when rendering meshes (and triangles). By default, normals are interpolated, unless stated otherwise (--flat-shading flag)
+- Added a scene with the difference between the modes. The model is exactly the same. this means that small models can be rendered to look quite nice withouth the need of many vertices and faces.
+- Removed dead code from triangle intersections
+
 3.5:
 -----
 - Full support in reflections and refractions, and the mixture of the two, using Frensel equations. To support this, the basic rendering function was changed, so that recursive ray tracing only happnes from reflective (and/or) refractive surfaces. The specular term that was used before as a reflection, surves only for the bling_phong lighing calculations, and not the recursive calculations. 
@@ -340,6 +351,7 @@ the
 - Changed Plane.h/.cpp to Plain.h/.cpp (silly me)  (also changed the keyword spelling)
 - Readded the fixed scenes featuring the new reflections and refraction.
 - Added an example scene of reflection and refraction including frensel effect. See "ExampleAdvancedShading_1.rt". The scene looks very simple, but it actually shows nice effect. More complex scenes will be on later version when more shading techniques will be implemented. 
+- The changes above mean that the scenes given from Edx are no longer compatible, and we're finally detaching from this project. I could change them - but there's really no need for that. 
 
 
 3.3:
