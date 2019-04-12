@@ -334,6 +334,10 @@ The result image can be found in "./Rendered_Scenes/ExampleSphere_result.png
 Version History:
 =================
 
+3.7:
+- Implemented the fast ray-triangle intersection is suggested by Möller–Trumbore (1997). This speeds rendering for complex meshes by 3 times!
+- minor bug fixes.
+
 3.6:
 - More on shading: Added normals interpolation when rendering meshes (and triangles). By default, normals are interpolated, unless stated otherwise (--flat-shading flag)
 - Added a scene with the difference between the modes. The model is exactly the same. this means that small models can be rendered to look quite nice withouth the need of many vertices and faces.
