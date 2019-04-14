@@ -15,9 +15,9 @@ texture ./scenes/a/lines.jpg
 texture ./scenes/a/cola.jpg
 
 
-#directional 1 -1 0 1 0 0 
-point 1 7 8 1 1 1
-point -1 7 8 1 1 1
+#directional 1 -1 0 1 0 0 1
+point 1 7 8 1 1 1 1
+point -1 7 8 1 1 1 1
 
 
 vertexTex +8 0 +8 1 1

@@ -243,7 +243,7 @@ vec3 RayTracer::computeLight(Scene& scene, Ray& r, Intersection& hit)
 
 			halfAng = normalize(srDir + eyeDir);
 
-			tempColor = __blinn_phong(hit.properties, hit.texColors, p->_color, srDir, hit.normal, halfAng);
+			tempColor = __blinn_phong(hit.properties, hit.texColors, p->_color, p->_intensity, srDir, hit.normal, halfAng);
 			// take attenuation into account
 			GLfloat atten = 1 / (scene.attenuation().constant + scene.attenuation().linear * distToLight + scene.attenuation().quadratic * distToLight * distToLight);
 			tempColor *= atten;
@@ -265,7 +265,7 @@ vec3 RayTracer::computeLight(Scene& scene, Ray& r, Intersection& hit)
 
 				halfAng = normalize(srDir + eyeDir);
 
-				tempColor = __blinn_phong(hit.properties, hit.texColors, p->_color, srDir, hit.normal, halfAng);
+				tempColor = __blinn_phong(hit.properties, hit.texColors, p->_color, p->_intensity, srDir, hit.normal, halfAng);
 				// take attenuation into account
 				GLfloat atten = 1 / (scene.attenuation().constant + scene.attenuation().linear * distToLight + scene.attenuation().quadratic * distToLight * distToLight);
 				tempColor *= atten;
@@ -290,7 +290,7 @@ vec3 RayTracer::computeLight(Scene& scene, Ray& r, Intersection& hit)
 		if (isVisibleToLight(scene, shadowRay, distToLight)) {
 
 			halfAng = normalize(srDir + eyeDir);
-			tempColor = __blinn_phong(hit.properties, hit.texColors, p->_color, srDir, hit.normal, halfAng);
+			tempColor = __blinn_phong(hit.properties, hit.texColors, p->_color, p->_intensity, srDir, hit.normal, halfAng);
 
 			color += tempColor;
 		}
@@ -337,6 +337,7 @@ bool RayTracer::isVisibleToLight(Scene& scene, Ray& shadowRay, GLfloat limit)
 vec3 RayTracer::__blinn_phong(const ObjectProperties& objProps,
 							  const ObjectTexColors& objTexColors,
 							  const vec3& lightColor,
+							  const GLfloat& lightIntensity,
 							  const vec3& lightDir,
 							  const vec3& normal,
 							  const vec3& halfAng)
@@ -350,7 +351,7 @@ vec3 RayTracer::__blinn_phong(const ObjectProperties& objProps,
 	GLfloat spec = glm::pow(glm::max(dot(halfAng, normal), 0.0f), objProps._shininess);
 	vec3 specular = spec * objProps._specular * objTexColors._specularTexColor;
 
-	return (diffuse + specular) * lightColor;
+	return (diffuse + specular) * lightColor * lightIntensity;
 }
 
 

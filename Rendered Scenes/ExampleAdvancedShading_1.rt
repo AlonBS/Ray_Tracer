@@ -22,9 +22,9 @@ texture ./scenes/a/water_1.jpg
 texture ./scenes/a/wood2.jpeg
 
 
-#directional 1 -1 0 1 0 0 
-area 1 7 5 1 1 1 1
-#point -1 7 5 1 1 1
+#directional 1 -1 0 1 0 0 1
+area 1 7 5 1 1 1 1 1
+#point -1 7 5 1 1 1 1
 
 pushTransform
 

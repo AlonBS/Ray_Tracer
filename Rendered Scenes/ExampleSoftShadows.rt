@@ -13,16 +13,16 @@ texture ./scenes/a/earth.png
 texture ./scenes/a/marble_1.jpg
 
 pushTransform
-	#directional 1 -1 0 1 0 0 
+	#directional 1 -1 0 1 0 0 1
 
 	#rotate 0 0 1 90
 	pushTransform
-		point -3 10 0 1 1 1
+		point -3 10 0 1 1 1 1
 	popTransform
 
 	pushTransform
 		scale 2 1 1
-		area 0 6 -1 1 1 1 1
+		area 0 6 -1 1 1 1 1 1
 	popTransform
 popTransform
 

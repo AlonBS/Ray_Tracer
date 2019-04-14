@@ -15,14 +15,14 @@
 using namespace glm;
 
 
-Light::Light(vec3& color)
-:_color(color)
+Light::Light(vec3& color, GLfloat& intensity)
+:_color(color), _intensity(intensity)
 {
 }
 
 
-PointLight::PointLight(vec3& color, vec3& pos, mat4& transform)
-: Light(color)
+PointLight::PointLight(vec3& color, GLfloat& intensity, vec3& pos, mat4& transform)
+: Light(color, intensity)
 {
 //	printMat4("TRA", transform);
 	_position = vec3(transform * vec4(pos, 1.0f));
@@ -30,8 +30,8 @@ PointLight::PointLight(vec3& color, vec3& pos, mat4& transform)
 }
 
 
-DirectionalLight::DirectionalLight(vec3& color, vec3& dir, mat4& transform)
-: Light(color)
+DirectionalLight::DirectionalLight(vec3& color, GLfloat& intensity, vec3& dir, mat4& transform)
+: Light(color, intensity)
 {
 	_direction = normalize(vec3(transform * vec4(dir, 0.0f)));
 }
@@ -41,12 +41,13 @@ DirectionalLight::DirectionalLight(vec3& color, vec3& dir, mat4& transform)
 #include <stdio.h>
 
 AreaLight::AreaLight(vec3& color,
+					 GLfloat& intensity,
 					 vec3& center,
 					 GLfloat& radius,
 					 mat4& transform,
 					 GLuint samples,
 					 bool smartRandom)
-: Light(color), _center(center), _radius(radius)
+: Light(color, intensity), _center(center), _radius(radius)
 {
 	smartRandom = false;
 	_positions.push_back(center);

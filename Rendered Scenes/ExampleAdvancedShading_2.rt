@@ -17,11 +17,11 @@ texture ./scenes/a/wood2.jpeg
 texture ./scenes/a/lines.jpg
 
 
-#directional 1 -1 0 1 0 0 
-area 1 7 5 1 1 1 1
-area -1 7 5 1 0 1 1
-#area 1 10 5 1 0 1 1
-#point -1 7 5 1 1 1
+#directional 1 -1 0 1 0 0 1
+area 1 7 5 1 1 1 1 1
+area -1 7 5 1 0 1 1 1
+#area 1 10 5 1 0 1 1 1
+#point -1 7 5 1 1 1 1
 
 
 

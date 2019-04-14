@@ -50,6 +50,7 @@ private:
 	vec3 __blinn_phong(const ObjectProperties& objProps,
 			  	  	   const ObjectTexColors& objTexColors,
 					   const vec3& lightColor,
+					   const GLfloat& lightIntensity,
 					   const vec3& lightDir,
 					   const vec3& normal,
 					   const vec3& halfAng);
