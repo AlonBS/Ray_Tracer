@@ -252,6 +252,7 @@ Also note you can simply write: "white" or "black" for vec3(1.0f, 1.0f, 1.0f) an
 	reflection <color_v3> - The amount of light that will be reflected from this surface.
 	refraction <color_v3> - The amout of light that will be refracted from this surface. 
 	refIndex <color_f> - The index of refraction. (See https://en.wikipedia.org/wiki/Refractive_index for common indecies)
+	clearProps - Removes all previous defined properties. (Sets everything to 0, except ambient which is set to 0.2;
 
 
 
@@ -335,7 +336,7 @@ Version History:
 =================
 
 3.7:
-- Implemented the fast ray-triangle intersection is suggested by Möller–Trumbore (1997). This speeds rendering for complex meshes by 3 times!
+- Implemented the fast ray-triangle intersection as suggested by Möller–Trumbore (1997). This speeds rendering for complex meshes by 3 times!
 - minor bug fixes.
 
 3.6:
