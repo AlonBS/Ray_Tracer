@@ -8,11 +8,11 @@ maxDepth 3
 
 attenuation 1 0.0 0.0
 
-texture ./scenes/a/wood2.jpeg
-texture ./scenes/a/earth.png
-texture ./scenes/a/checkers.png
-texture ./scenes/a/marble_1.jpg
-texture ./scenes/a/cola.jpg
+texture ./textures/wood2.jpeg
+texture ./textures/earth.png
+texture ./textures/checkers.png
+texture ./textures/marble_1.jpg
+texture ./textures/cola.jpg
 
 #directional 1 -1 0 1 0 0 1
 area 1 7 5 1 1 1 1 1

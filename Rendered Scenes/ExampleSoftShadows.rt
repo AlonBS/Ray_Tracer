@@ -8,9 +8,9 @@ attenuation 1 0.0 0.0
 
 maxDepth 3
 
-texture ./scenes/a/wood.jpg
-texture ./scenes/a/earth.png
-texture ./scenes/a/marble_1.jpg
+texture ./textures/wood.jpg
+texture ./textures/earth.png
+texture ./textures/marble_1.jpg
 
 pushTransform
 	#directional 1 -1 0 1 0 0 1

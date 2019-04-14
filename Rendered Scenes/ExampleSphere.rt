@@ -6,8 +6,8 @@ camera 0 4 13 0 0 0 0 1 0 45
 
 attenuation 1 0.0 0.0
 
-texture ./scenes/a/wood2.jpeg
-texture ./scenes/a/earth.png
+texture ./textures/wood2.jpeg
+texture ./textures/earth.png
 
 #directional 1 -1 0 1 0 0 1
 point 1 7 5 1 1 1 1

@@ -18,8 +18,8 @@ attenuation 1 0.0 0.0
 
 maxDepth 5
 
-texture ./scenes/a/water_1.jpg
-texture ./scenes/a/wood2.jpeg
+texture ./textures/water_1.jpg
+texture ./textures/wood2.jpeg
 
 
 #directional 1 -1 0 1 0 0 1

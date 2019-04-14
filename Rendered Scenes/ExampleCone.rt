@@ -8,12 +8,12 @@ maxDepth 3
 
 attenuation 1 0.05 0.00
 
-texture ./scenes/a/7up.jpg
-texture ./scenes/a/road1.png
-texture ./scenes/a/marble_1.jpg
-texture ./scenes/a/lines.jpg
-texture ./scenes/a/cone3.jpg
-texture ./scenes/a/cone1.jpg
+texture ./textures/7up.jpg
+texture ./textures/road1.png
+texture ./textures/marble_1.jpg
+texture ./textures/lines.jpg
+texture ./textures/cone3.jpg
+texture ./textures/cone1.jpg
 
 directional 1 10 7 0 0 0.5 1
 area 1 7 10 1 1 1 1 2
