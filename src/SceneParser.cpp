@@ -48,9 +48,11 @@ struct Commands {
 	const string vertex        = "vertex";
 	const string vertexNormal  = "vertexNormal";
 	const string vertexTex     = "vertexTex";
+	const string vertexNormTex = "vertexNormTex";
 	const string tri           = "tri";
 	const string triNormal     = "triNormal";
 	const string triTex        = "triTex";
+	const string triNormTex    = "triNormTex";
 	const string texture       = "texture";
 	const string bindTexture   = "bindTexture";
 	const string unbindTexture = "unbindTexture";
@@ -91,8 +93,8 @@ set<string> SceneParser::general{Commands.size, Commands.maxdepth};
 string 	    SceneParser::camera = Commands.camera;
 set<string> SceneParser::geometry{Commands.sphere, Commands.cylinder, Commands.box, Commands.cone,
 								  Commands.plain, Commands.maxVerts, Commands.maxVertNorms,
-								  Commands.vertex, Commands.vertexNormal, Commands.vertexTex, Commands.tri,
-								  Commands.triNormal, Commands.triTex, Commands.texture, Commands.bindTexture, Commands.unbindTexture,
+								  Commands.vertex, Commands.vertexNormal, Commands.vertexTex, Commands.vertexNormTex, Commands.tri,
+								  Commands.triNormal, Commands.triTex, Commands.triNormTex, Commands.texture, Commands.bindTexture, Commands.unbindTexture,
 								  Commands.model};
 set<string> SceneParser::transformations {Commands.translate, Commands.rotate, Commands.scale,
 										  Commands.pushTransform, Commands.popTransform};
@@ -124,6 +126,10 @@ vector<glm::vec3> SceneParser::verticesNormals;
 
 vector<glm::vec3> SceneParser::verticesTexV{};
 vector<glm::vec2> SceneParser::verticesTexT{};
+
+vector<glm::vec3> SceneParser::verticesNormTexV{};
+vector<glm::vec3> SceneParser::verticesNormTexN{};
+vector<glm::vec2> SceneParser::verticesNormTexT{};
 
 GLint SceneParser::lineNumber = 0;
 Image* SceneParser::boundTexture = nullptr;
@@ -366,6 +372,9 @@ SceneParser::readFile(const AdditionalParams& params, const char* fileName)
 	verticesNormals.clear();
 	verticesTexV.clear();
 	verticesTexT.clear();
+	verticesNormTexV.clear();
+	verticesNormTexN.clear();
+	verticesNormTexT.clear();
 	boundTexture = nullptr;
 	textureIsBound = false;
 	clearObjectProps();
@@ -566,6 +575,13 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		verticesTexT.push_back(vec2(values[3], values[4]));
 	}
 
+	else if (cmd == Commands.vertexNormTex) {
+		readValues(s, 8, values);
+		verticesNormTexV.push_back(vec3(values[0], values[1], values[2]));
+		verticesNormTexN.push_back(vec3(values[3], values[4], values[5]));
+		verticesNormTexT.push_back(vec2(values[6], values[7]));
+	}
+
 
 	else if (cmd == Commands.tri) {
 		readValues(s, 3, values);
@@ -577,24 +593,26 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		fillObjectInfo(&op, nullptr);
 		Object *triangle = new Triangle(op, A, B, C);
 		scene->addObject(triangle);
-//		applyPropsToObject(triangle, true);
+
 	}
 
+
+	// This is legacy and shouldn't really be supported
 	else if (cmd == Commands.triNormal) {
 		readValues(s, 3, values);
 		ObjectProperties op{};
 		fillObjectInfo(&op, nullptr);
-		Object *triangle = new Triangle(op,
-				                        vertices[values[0] * 2],
-										vertices[values[1] * 2],
-										vertices[values[2] * 2],
-										vertices[values[0] * 2 - 1],
-										vertices[values[1] * 2 - 1],
-										vertices[values[2] * 2 - 1]);
 
-		if (textureIsBound) {
-			triangle->setTexture(boundTexture);
-		}
+		mat3 invTranspose = mat3(transpose(inverse(transformsStack.top())));
+
+		vec3 A = vec3 (transformsStack.top() * vec4(verticesNormals[values[0] * 2], 1.0f));
+		vec3 B = vec3 (transformsStack.top() * vec4(verticesNormals[values[1] * 2], 1.0f));
+		vec3 C = vec3 (transformsStack.top() * vec4(verticesNormals[values[2] * 2], 1.0f));
+		vec3 AN = invTranspose * verticesNormals[values[0] * 2 + 1];
+		vec3 BN = invTranspose * verticesNormals[values[0] * 2 + 1];
+		vec3 CN = invTranspose * verticesNormals[values[0] * 2 + 1];
+
+		Object *triangle = new Triangle(op, A, B, C, AN, BN, CN);
 		scene->addObject(triangle);
 	}
 
@@ -616,6 +634,33 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		}
 		scene->addObject(triangle);
 	}
+
+
+	else if (cmd == Commands.triNormTex) {
+		readValues(s, 3, values);
+
+		mat3 invTranspose = mat3(transpose(inverse(transformsStack.top())));
+
+		vec3 A = vec3 (transformsStack.top() * vec4(verticesNormTexV[values[0]], 1.0f));
+		vec3 B = vec3 (transformsStack.top() * vec4(verticesNormTexV[values[1]], 1.0f));
+		vec3 C = vec3 (transformsStack.top() * vec4(verticesNormTexV[values[2]], 1.0f));
+		vec3 AN = invTranspose * verticesNormTexN[values[0]];
+		vec3 BN = invTranspose * verticesNormTexN[values[1]];
+		vec3 CN = invTranspose * verticesNormTexN[values[2]];
+		vec2 Auv = vec2(verticesNormTexT[values[0]]);
+		vec2 Buv = vec2(verticesNormTexT[values[1]]);
+		vec2 Cuv = vec2(verticesNormTexT[values[2]]);
+
+		ObjectProperties op{};
+		fillObjectInfo(&op, nullptr);
+
+		Object *triangle = new Triangle(op, A, B, C, AN, BN, CN, Auv, Buv, Cuv);
+		if (textureIsBound) {
+			triangle->setTexture(boundTexture);
+		}
+		scene->addObject(triangle);
+	}
+
 
 	else if (cmd == Commands.texture) {
 

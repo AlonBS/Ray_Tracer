@@ -17,11 +17,6 @@ texture ./scenes/a/marble_1.jpg
 area 1 7 5 1 1 1 1 1
 #point -1 7 5 1 1 1 1
 
-vertexTex +8 0 +8 1 1
-vertexTex +8 0 -8 0 1
-vertexTex -8 0 +8 1 0
-vertexTex -8 0 -8 0 0 
-
 
 pushTransform
 

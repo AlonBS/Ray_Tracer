@@ -29,6 +29,10 @@ public:
 	Triangle(ObjectProperties& op, vec3& va, vec3& vb, vec3& vc);
 	Triangle(ObjectProperties& op, vec3& va, vec3& vb, vec3& vc, vec2& auv, vec2& buv, vec2& cuv);
 	Triangle(ObjectProperties& op, vec3& va, vec3& vb, vec3& vc, vec3& vaNorm, vec3& vbNorm, vec3& vcNorm);
+	Triangle(ObjectProperties& op, vec3& va, vec3& vb, vec3& vc, vec3& vaNorm, vec3& vbNorm, vec3& vcNorm, vec2& auv, vec2& buv, vec2& cuv);
+
+
+	// This constructor is used when a triangle is a part of a mesh (and the properties are derived from the mesh and model
 	Triangle(vec3& va, vec3& vb, vec3& vc,
 			 vec3& vaNorm, vec3& vbNorm, vec3& vcNorm,
 			 vec2& auv, vec2& buv, vec2& cuv);

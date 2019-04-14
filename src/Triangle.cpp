@@ -42,6 +42,23 @@ Triangle::Triangle(ObjectProperties& op, vec3& va, vec3& vb, vec3& vc, vec3& vaN
 
 }
 
+
+Triangle::Triangle(ObjectProperties& op,
+				   vec3& va, vec3& vb, vec3& vc,
+			 	   vec3& vaNorm, vec3& vbNorm, vec3& vcNorm,
+				   vec2& auv, vec2& buv, vec2& cuv)
+: Object(), A(va), B(vb), C(vc),
+  	  	    AN(vaNorm), BN(vbNorm), CN(vcNorm),
+  	  	  	Auv(auv), Buv(buv), Cuv(cuv)
+{
+	Object::_properties = op;
+	N = normalize(cross(C-B,A-B)); // Compute the face normal
+}
+
+
+
+
+
 Triangle::Triangle(vec3& va, vec3& vb, vec3& vc,
 			 	   vec3& vaNorm, vec3& vbNorm, vec3& vcNorm,
 				   vec2& auv, vec2& buv, vec2& cuv)
@@ -145,7 +162,6 @@ Triangle::__iRay2(const Ray& r,
 			*normal = this->N;
 		}
 		else {
-
 			*normal = (1.f-u-v)*AN + u*BN + v*CN;
 		}
 	}

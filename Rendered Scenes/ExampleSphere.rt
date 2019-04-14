@@ -11,12 +11,12 @@ texture ./scenes/a/earth.png
 
 #directional 1 -1 0 1 0 0 1
 point 1 7 5 1 1 1 1
-point -1 7 5 1 1 1 1
+#point -1 7 5 1 1 1 1
 
-vertexTex +8 0 +8 1 1
-vertexTex +8 0 -8 0 1
-vertexTex -8 0 +8 1 0
-vertexTex -8 0 -8 0 0 
+vertexNormTex +8 0 +8 0 1 0 1 1
+vertexNormTex +8 0 -8 0 1 0 0 1
+vertexNormTex -8 0 +8 0 1 0 1 0
+vertexNormTex -8 0 -8 0 1 0 0 0 
 
 
 pushTransform
@@ -27,8 +27,8 @@ pushTransform
 	specular .8 0.8 0.8
 	reflection 0.8 0.8 0.8
 	shininess 16
-	triTex 0 1 2
-	triTex 1 3 2
+	triNormTex 0 1 2
+	triNormTex 1 3 2
 	unbindTexture
 popTransform
 

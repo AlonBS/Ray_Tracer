@@ -119,6 +119,10 @@ private:
 	static vector<glm::vec3> verticesTexV; // For Vertices with textures mapping
 	static vector<glm::vec2> verticesTexT; // The texture mapping
 
+	static vector<glm::vec3> verticesNormTexV; // For vertices with normals and texture mapping
+	static vector<glm::vec3> verticesNormTexN;
+	static vector<glm::vec2> verticesNormTexT;
+
 	static Image *boundTexture;
 	static bool textureIsBound;
 

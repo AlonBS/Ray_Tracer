@@ -9,7 +9,7 @@ Current list of features supported:
 - Blinn-Phong illumination module - including normals interpolation and attenuation.
 - Rendering of models comprised of multiple meshes with (partial) material properties. 
 - Textures to primitives and models (even multiple textures types - such as diffuse-texture etc.). 
-- Point lights, directional lights. 
+- Point lights, directional lights and area lights, with intesity.
 - Recursive lighting calculations. Max recursion depth is currently limited to 5. 
 - Multi-core rendering and Single-Core rendering. 
 - Command line argument parse
@@ -212,12 +212,12 @@ Lights:
 Lights are also subjected to the current transform on top of the transformation stack. 
 Colors can also be expressed in [0-225] RGB format. For value 1, it is assumed the the color component should be maximized. 
 
-	directional <dir_v3> <color_v3> - Creates a directional light with direction <dir> and with color <color>. 
-		Color valus should range between 0 to 1.
-	point <pos_v3> <color_v3> - Creates a point light at the position <pos> with color <color>. Colors should range
-		between 0 to 1.
-	area <pos_v3> <color_v3> <radius_f> - Creates an area light (simulated as a 2D-disc), at the given position, with the
-		given color, and at the given radius. By defualt, the disc it perpendicular to the Y axis, and the user should
+	directional <dir_v3> <color_v3> <intesity_f> - Creates a directional light with direction <dir> and with color <color> and
+		with the given intesity. The intesity should be greater than 0.
+	point <pos_v3> <color_v3> <intesity_f> - Creates a point light at the position <pos> with color <color>. and with the given intesity.
+		The intesity should be greater than 0.
+	area <pos_v3> <color_v3> <intesity_f> <radius_f> - Creates an area light (simulated as a 2D-disc), at the given position, with the
+		given color and intensity (>0), and with the given radius. By defualt, the disc it perpendicular to the Y axis, and the user should
 		use the various transforms in order to achieve any kind of area light. 
 		Note: Currently, the number of samples, and the randomeness when generation the point is not visible to the user - this 
 		might change on next stages. 
@@ -227,7 +227,7 @@ Colors can also be expressed in [0-225] RGB format. For value 1, it is assumed t
 			K_c - is the constant factor.
 			K_l - is the linear factor.
 			K_q - the quadratic factor.
-			d - Distance between light source and surface (this means that this only affect point lights,
+			d - Distance between light source and surface (this means that this only affect point lights and area lights,
 				and not directional lights). 
 
 
@@ -334,6 +334,16 @@ The result image can be found in "./Rendered_Scenes/ExampleSphere_result.png
 
 Version History:
 =================
+
+3.8:
+- Added lights intesity. The intesity is a float, that should be greater than 0. Use this to create larger effect of a light. (Point light and area
+lights can look nicer). Consider using attenuation for more realistic results.
+- Added two key words: "vertexNormTex" for creating a vertex with normals and textures, and triNormTex for creating a triangle with these properties 
+on each vertex.
+- Fixed a bug that was added due to normals interpolations. Scenes didn't have the normals definition, so old scene that uses triangles as planes
+didn't have proper lighting. This was fixed, and the scenes were fixed and re-uploaded. In general, the triangle is legacy to Edx course and should
+be avoided. Use plains intead is much better and easier.
+- Some scene with "Soft" shadows were really with hard shadows. So they were removed and re-added, this time with proper shadows. 
 
 3.7:
 - Implemented the fast ray-triangle intersection as suggested by Möller–Trumbore (1997). This speeds rendering for complex meshes by 3 times!
