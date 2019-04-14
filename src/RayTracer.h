@@ -26,9 +26,9 @@ public:
 	RayTracer();
 	virtual ~RayTracer();
 
-	Image* rayTraceMT(Scene& scene);
+	Image* rayTraceMT(Scene& scene, bool noAA=false);
 
-	Image* rayTraceST(Scene& scene);
+	Image* rayTraceST(Scene& scene, bool noAA=false);
 
 
 

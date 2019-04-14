@@ -37,6 +37,7 @@ typedef enum CommandType {
 typedef struct AdditionalParams
 {
 	bool hardShadows;
+	bool noAntiAliasing;
 
 }AdditionalParams;
 

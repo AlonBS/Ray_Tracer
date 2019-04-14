@@ -24,7 +24,7 @@ RayTracer::~RayTracer() {
 }
 
 
-Image* RayTracer::rayTraceMT(Scene& scene)
+Image* RayTracer::rayTraceMT(Scene& scene, bool noAA)
 {
 	Image *image = new Image(scene.width(), scene.height());
 
@@ -47,9 +47,27 @@ Image* RayTracer::rayTraceMT(Scene& scene)
 	                GLuint i = index % scene.width();
 	                GLuint j = index / scene.width();
 
-	                Ray ray = scene.camera().generateRay(i + .5, j - .5);
-	                vec3 color = recursiveRayTrace(scene, ray, scene.maxDepth());
-	                image->setPixel(i, j, color);
+	                if (noAA)
+	                {
+	                	Ray ray = scene.camera().generateRay(i + .5, j - .5);
+	                	vec3 color = recursiveRayTrace(scene, ray, scene.maxDepth());
+	                	image->setPixel(i, j, color);
+
+
+	                }
+
+	                // Anti Aliasing
+	                else {
+	                	vec3 color = COLOR_BLACK;
+	                	for (int x = 0 ; x < 16 ; ++x) {
+
+	                		GLfloat a = static_cast <GLfloat> (rand()) / static_cast <GLfloat> (RAND_MAX);
+	                		Ray ray = scene.camera().generateRay(i + a, j - a);
+	                		color += recursiveRayTrace(scene, ray, scene.maxDepth());
+	                	}
+	                	color /= 16;
+	                	image->setPixel(i, j, color);
+	                }
 	            }
 	        }));
 	}
@@ -76,7 +94,7 @@ Image* RayTracer::rayTraceMT(Scene& scene)
 
 
 // single threaded - for benchmark purposes and debugging
-Image* RayTracer::rayTraceST(Scene& scene)
+Image* RayTracer::rayTraceST(Scene& scene, bool noAA)
 {
 	Image *image = new Image(scene.width(), scene.height());
 	vec3 color;
@@ -85,9 +103,25 @@ Image* RayTracer::rayTraceST(Scene& scene)
 	{
 		for (GLuint j = 0 ; j < scene.height(); ++j)
 		{
-			Ray ray = scene.camera().generateRay(i + .5, j - .5);
-			color = recursiveRayTrace(scene, ray, scene.maxDepth());
-			image->setPixel(i, j, color);
+			// Anti Aliasing
+			if (noAA)
+			{
+				Ray ray = scene.camera().generateRay(i + .5, j - .5);
+				vec3 color = recursiveRayTrace(scene, ray, scene.maxDepth());
+				image->setPixel(i, j, color);
+			}
+			else {
+
+				vec3 color = COLOR_BLACK;
+				for (int x = 0 ; x < 16 ; ++x) {
+
+					GLfloat a = static_cast <GLfloat> (rand()) / static_cast <GLfloat> (RAND_MAX);
+					Ray ray = scene.camera().generateRay(i + a, j - a);
+					color += recursiveRayTrace(scene, ray, scene.maxDepth());
+				}
+				color /= 16;
+				image->setPixel(i, j, color);
+			}
 
 		}
 

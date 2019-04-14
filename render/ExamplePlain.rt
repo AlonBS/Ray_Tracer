@@ -11,6 +11,8 @@ maxDepth 3
 texture ./textures/wood.jpg
 texture ./textures/earth.png
 texture ./textures/marble_1.jpg
+texture ./textures/checkers.png
+
 
 
 #directional 1 -1 0 1 0 0 1
@@ -20,7 +22,7 @@ area 1 7 5 1 1 1 1 1
 
 pushTransform
 
-	bindTexture 2
+	bindTexture 3
 	ambient 0.1 0.1 0.1
 	diffuse 0.3 0.3 0.3
 	specular 0.2 0.2 0.2
@@ -38,7 +40,7 @@ pushTransform
 		reflection black
 		translate 0 0 -10
 		rotate 1 0 1 90
-		plain R
+	#	plain R
 		unbindTexture
 	popTransform
 

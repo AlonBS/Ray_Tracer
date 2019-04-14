@@ -35,7 +35,8 @@ fs::path outputDirectory;
 bool generateStats = false;
 
 AdditionalParams ap = {
-	.hardShadows = false
+	.hardShadows = false,
+	.noAntiAliasing = false
 };
 
 
@@ -75,6 +76,7 @@ static void parse_args(int argc, char *argv[], vector<fs::path>& scenes)
 			("stats", po::bool_switch(&generateStats), "Generate and print statistics about each scene rendered.")
 			("hard-shadows", po::bool_switch(&ap.hardShadows), "Indicate whether hard shadows should be simulated. By default, soft shadows are simulated. Use this to improve performance. Note that soft shadows only appear if area lights are used. If this flag is true then hard shadows will be simulated, even if area lights are present.")
 			("flat-shading", po::bool_switch(&faceNormals), "Indicate whether flat shading should be used. If set, face normals will be used, otherwise (and by default), normals are interpolated for a much smoother image.")
+			("no-anti-aliasing", po::bool_switch(&ap.noAntiAliasing), "Indicate if anti-aliasing should be disabled, or enabled, as by default")
 		;
 
 
@@ -173,10 +175,10 @@ static void render_scene(string fileName)
 	scene->constructAccelerationStructures();
 
 	if (singleThreaded) {
-		img = rayTracer.rayTraceST(*scene);
+		img = rayTracer.rayTraceST(*scene, ap.noAntiAliasing);
 	}
 	else {
-		img = rayTracer.rayTraceMT(*scene);
+		img = rayTracer.rayTraceMT(*scene, ap.noAntiAliasing);
 	}
 
 
