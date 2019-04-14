@@ -63,7 +63,7 @@ Usage:
 	                          lights are present.
 	  --flat-shading          Indicate whether flat shading should be used. If set,
 	                          face normals will be used, otherwise (and by 
-	                          default), normals are interpolated and for much 
+	                          default), normals are interpolated for a much 
 	                          smoother image.
 
 

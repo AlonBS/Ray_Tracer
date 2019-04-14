@@ -74,7 +74,7 @@ static void parse_args(int argc, char *argv[], vector<fs::path>& scenes)
 			("single-thread,s", po::bool_switch(&singleThreaded), "Flag to force single thread rendering. Default behavior is multi-threaded.")
 			("stats", po::bool_switch(&generateStats), "Generate and print statistics about each scene rendered.")
 			("hard-shadows", po::bool_switch(&ap.hardShadows), "Indicate whether hard shadows should be simulated. By default, soft shadows are simulated. Use this to improve performance. Note that soft shadows only appear if area lights are used. If this flag is true then hard shadows will be simulated, even if area lights are present.")
-			("flat-shading", po::bool_switch(&faceNormals), "Indicate whether flat shading should be used. If set, face normals will be used, otherwise (and by default), normals are interpolated and for much smoother image.")
+			("flat-shading", po::bool_switch(&faceNormals), "Indicate whether flat shading should be used. If set, face normals will be used, otherwise (and by default), normals are interpolated for a much smoother image.")
 		;
 
 
