@@ -31,6 +31,7 @@ Major Topics:
 13) Lighing Models: Ray Traceing vs Monte-Carlo vs Path-tracing vs Photon mapping - and make them available to use interchangeably.
 14) Allow GPU rendering. 
 15) Add Sky boxes
+16) Add CSG
 
 
 

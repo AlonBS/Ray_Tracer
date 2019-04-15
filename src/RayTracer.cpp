@@ -11,6 +11,7 @@
 #include <iostream>
 #include <iomanip>
 #include <vector>
+#include <random>
 
 #include "RayTracer.h"
 #include "General.h"
@@ -59,10 +60,15 @@ Image* RayTracer::rayTraceMT(Scene& scene, bool noAA)
 	                // Anti Aliasing
 	                else {
 	                	vec3 color = COLOR_BLACK;
+	                	random_device rd;  //Will be used to obtain a seed for the random number engine
+	                	mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
+	                	uniform_real_distribution<> dis(0, 1);
+	                	GLfloat delta;
+
 	                	for (int x = 0 ; x < 16 ; ++x) {
 
-	                		GLfloat a = static_cast <GLfloat> (rand()) / static_cast <GLfloat> (RAND_MAX);
-	                		Ray ray = scene.camera().generateRay(i + a, j - a);
+	                		delta = dis(gen);
+	                		Ray ray = scene.camera().generateRay(i + delta, j - delta);
 	                		color += recursiveRayTrace(scene, ray, scene.maxDepth());
 	                	}
 	                	color /= 16;
@@ -103,20 +109,28 @@ Image* RayTracer::rayTraceST(Scene& scene, bool noAA)
 	{
 		for (GLuint j = 0 ; j < scene.height(); ++j)
 		{
-			// Anti Aliasing
+
 			if (noAA)
 			{
 				Ray ray = scene.camera().generateRay(i + .5, j - .5);
 				vec3 color = recursiveRayTrace(scene, ray, scene.maxDepth());
 				image->setPixel(i, j, color);
 			}
+
+			// Anti Aliasing
 			else {
 
 				vec3 color = COLOR_BLACK;
+
+				random_device rd;  //Will be used to obtain a seed for the random number engine
+				mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
+				uniform_real_distribution<> dis(0, 1);
+				GLfloat delta;
+
 				for (int x = 0 ; x < 16 ; ++x) {
 
-					GLfloat a = static_cast <GLfloat> (rand()) / static_cast <GLfloat> (RAND_MAX);
-					Ray ray = scene.camera().generateRay(i + a, j - a);
+					delta = dis(gen);
+					Ray ray = scene.camera().generateRay(i + delta, j - delta);
 					color += recursiveRayTrace(scene, ray, scene.maxDepth());
 				}
 				color /= 16;
@@ -451,6 +465,28 @@ RayTracer::computeFrenselProportion(const vec3& I, const vec3& N, const GLfloat&
 }
 
 
+
+void RayTracer::orthoBasis(const vec3& x,
+						   vec3& u,
+						   vec3& v,
+						   vec3& w)
+{
+	u = x; //x = [a,b,c]
+	v = vec3(0, -x.z, x.y);
+	if (equalToVec3(v, vec3(0,0,0))) {
+		v = vec3(-x.z, 0, x.x);
+	}
+
+	w = cross(u,v);
+
+	printVec3("X", x);
+	printVec3("u", u);
+	printVec3("v", v);
+	printVec3("w", w);
+
+}
+
+
 vec3
 RayTracer::calculateReflections(Scene& scene,
 								Ray& ray,
@@ -466,6 +502,28 @@ RayTracer::calculateReflections(Scene& scene,
 	vec3 reflectedRayDir = glm::reflect(ray.direction, hit.normal);
 	reflectedRayOrigin = reflectedRayOrigin + EPSILON * reflectedRayDir;
 	Ray reflectedRay(reflectedRayOrigin , reflectedRayDir);
+
+	vec3 u,v,w;
+
+	random_device rd;  //Will be used to obtain a seed for the random number engine
+	mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
+	uniform_real_distribution<> dis(0, 1);
+	GLfloat r1 = dis(gen);
+	GLfloat r2 = dis(gen);
+	GLfloat w1 = (-1/2 + r1);
+	GLfloat w2 = (-1/2 + r2);
+
+
+	orthoBasis(reflectedRayDir, u, v, w);
+	for (int n = 0 ; n < 16 ; ++n)
+	{
+		vec3 perturbedRayDir = u + w1*v + w2*w;
+		GLfloat contribution = dot(reflectedRayDir, perturbedRayDir);
+		Ray perturbedRay(reflectedRayOrigin , perturbedRayDir);
+
+		hit.properties._reflection * recursiveRayTrace(scene, perturbedRay, depth);
+	}
+
 
 	return hit.properties._reflection * recursiveRayTrace(scene, reflectedRay, --depth);
 }
