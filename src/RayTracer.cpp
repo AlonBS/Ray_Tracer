@@ -472,17 +472,22 @@ void RayTracer::orthoBasis(const vec3& x,
 						   vec3& w)
 {
 	u = x; //x = [a,b,c]
-	v = vec3(0, -x.z, x.y);
+	v = normalize(vec3(0, -x.z, x.y));
 	if (equalToVec3(v, vec3(0,0,0))) {
-		v = vec3(-x.z, 0, x.x);
+		v = normalize(vec3(-x.z, 0, x.x));
 	}
 
-	w = cross(u,v);
+	w = normalize(cross(u,v));
 
-	printVec3("X", x);
-	printVec3("u", u);
-	printVec3("v", v);
-	printVec3("w", w);
+//	printVec3("X", x);
+//	printVec3("u", u);
+//	printVec3("v", v);
+//	printVec3("w", w);
+//
+//	printf("1: %f\n", dot(u,v));
+//	printf("2: %f\n", dot(v,w));
+//	printf("3: %f\n", dot(u,w));
+
 
 }
 
@@ -498,8 +503,16 @@ RayTracer::calculateReflections(Scene& scene,
 		return COLOR_BLACK;
 	}
 
+/*
+	vec3 o(-1,0,0);
+	vec3 d(1,0,0);
+	hit.normal = normalize(vec3(-1, 1, 0));
+	ray = Ray(o, d);
+*/
+
+	vec3 color = COLOR_BLACK;
 	vec3 reflectedRayOrigin = hit.point;
-	vec3 reflectedRayDir = glm::reflect(ray.direction, hit.normal);
+	vec3 reflectedRayDir = normalize(glm::reflect(ray.direction, hit.normal));
 	reflectedRayOrigin = reflectedRayOrigin + EPSILON * reflectedRayDir;
 	Ray reflectedRay(reflectedRayOrigin , reflectedRayDir);
 
@@ -507,25 +520,29 @@ RayTracer::calculateReflections(Scene& scene,
 
 	random_device rd;  //Will be used to obtain a seed for the random number engine
 	mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
-	uniform_real_distribution<> dis(0, 1);
+	uniform_real_distribution<> dis(0, 0.1);
 	GLfloat r1 = dis(gen);
 	GLfloat r2 = dis(gen);
-	GLfloat w1 = (-1/2 + r1);
-	GLfloat w2 = (-1/2 + r2);
-
+	GLfloat w1 = (-0.01/2.f + r1);
+	GLfloat w2 = (-0.01/2.f + r2);
 
 	orthoBasis(reflectedRayDir, u, v, w);
+
 	for (int n = 0 ; n < 16 ; ++n)
 	{
-		vec3 perturbedRayDir = u + w1*v + w2*w;
+		vec3 perturbedRayDir = normalize(u + w1*v + w2*w);
+//		printVec3("REF", reflectedRayDir);
+//		printVec3("Per", perturbedRayDir);
+
 		GLfloat contribution = dot(reflectedRayDir, perturbedRayDir);
 		Ray perturbedRay(reflectedRayOrigin , perturbedRayDir);
 
-		hit.properties._reflection * recursiveRayTrace(scene, perturbedRay, depth);
+//		printf("Contri %f\n", contribution);
+		color += contribution * hit.properties._reflection * recursiveRayTrace(scene, perturbedRay, depth-1);
 	}
 
 
-	return hit.properties._reflection * recursiveRayTrace(scene, reflectedRay, --depth);
+	return (color + hit.properties._reflection * recursiveRayTrace(scene, reflectedRay, depth-1)) / 17.0f;
 }
 
 
