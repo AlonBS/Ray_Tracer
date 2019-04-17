@@ -20,7 +20,7 @@
 #define ANTI_ALIASING_DIST_MAX_VALUE 1
 
 
-#define REFL_PERT_NUM_OF_RAYS 4    // The number of perturbed ray to generate when reflecting
+#define REFL_PERT_NUM_OF_RAYS 8    // The number of perturbed ray to generate when reflecting
 #define REFL_PERT_DIST_MIN_VALUE 0 // The minimal value to use for the uniform distribution of the perturbation of reflection
 #define REFL_PERT_DIST_MAX_VALUE 1 // the maximal.
 
@@ -83,7 +83,6 @@ Image* RayTracer::rayTraceMT(Scene& scene)
 	                	for (int x = 0 ; x < ANTI_ALIASING_NUM_OF_SAMPLES ; ++x) {
 
 	                		delta = AA_dis(generator);
-	                		cout << delta << endl;
 	                		Ray ray = scene.camera().generateRay(i + delta, j - delta);
 	                		color += recursiveRayTrace(scene, ray, scene.maxDepth());
 	                	}
@@ -485,24 +484,13 @@ void RayTracer::orthoBasis(const vec3& x,
 						   vec3& v,
 						   vec3& w)
 {
-	u = x; //x = [a,b,c]
+	u = x;
 	v = normalize(vec3(0, -x.z, x.y));
 	if (equalToVec3(v, vec3(0,0,0))) {
 		v = normalize(vec3(-x.z, 0, x.x));
 	}
 
 	w = normalize(cross(u,v));
-
-//	printVec3("X", x);
-//	printVec3("u", u);
-//	printVec3("v", v);
-//	printVec3("w", w);
-//
-//	printf("1: %f\n", dot(u,v));
-//	printf("2: %f\n", dot(v,w));
-//	printf("3: %f\n", dot(u,w));
-
-
 }
 
 
@@ -529,12 +517,11 @@ RayTracer::calculateReflections(Scene& scene,
 		vec3 u,v,w;
 		orthoBasis(reflectedRayDir, u, v, w);
 
-		// First ray is always the same is the perfect reflection
-		color = recursiveRayTrace(scene, reflectedRay, depth-1);
-		for (GLuint n = 1 ; n < REFL_PERT_NUM_OF_RAYS ; ++n)
+		// color = recursiveRayTrace(scene, reflectedRay, depth-1); - This is left out because it gives more realistic results.
+		for (GLuint n = 0 ; n < REFL_PERT_NUM_OF_RAYS ; ++n)
 		{
-			GLfloat w1 = (-hit.properties._reflectionBlur/2) + refl_dis(generator);
-			GLfloat w2 = (-hit.properties._reflectionBlur/2) + refl_dis(generator);
+			GLfloat w1 = hit.properties._reflectionBlur * refl_dis(generator);
+			GLfloat w2 = hit.properties._reflectionBlur *refl_dis(generator);
 
 			vec3 perturbedRayDir = normalize(u + w1*v + w2*w);
 
@@ -579,7 +566,7 @@ RayTracer::calculateRefractions(Scene& scene,
 		eta = hit.properties._refractionIndex / VOID_INDEX;
 	}
 	else {
-		dir = ray.direction; // TODO - consier -ray.direction
+		dir = ray.direction; // TODO - consider -ray.direction
 		norm = hit.normal;
 		eta = VOID_INDEX / hit.properties._refractionIndex;
 	}
@@ -591,6 +578,34 @@ RayTracer::calculateRefractions(Scene& scene,
 	refractedRayOrigin = refractedRayOrigin + EPSILON * refractedRayDir;
 	Ray refractedRay(refractedRayOrigin , refractedRayDir);
 
-	return hit.properties._refraction * recursiveRayTrace(scene, refractedRay, --depth);
+	if (hit.properties._refractionBlur > 0) {
+
+		vec3 color = COLOR_BLACK;
+		vec3 u,v,w;
+		orthoBasis(refractedRayDir, u, v, w);
+
+		// color = recursiveRayTrace(scene, refractedRayOrigin, depth-1); - This is left out because it gives more realistic results.
+		for (GLuint n = 0 ; n < REFR_PERT_NUM_OF_RAYS ; ++n)
+		{
+			GLfloat w1 = hit.properties._refractionBlur * refr_dis(generator);
+			GLfloat w2 = hit.properties._refractionBlur * refr_dis(generator);
+
+			vec3 perturbedRayDir = normalize(u + w1*v + w2*w);
+
+			GLfloat contribution = dot(refractedRayDir, perturbedRayDir);
+			Ray perturbedRay(refractedRayOrigin , perturbedRayDir);
+
+			color += contribution * recursiveRayTrace(scene, perturbedRay, depth-1);
+		}
+
+
+		return (hit.properties._refraction * color) / (GLfloat) REFR_PERT_NUM_OF_RAYS;
+	}
+
+	else {
+
+		return hit.properties._refraction * recursiveRayTrace(scene, refractedRay, depth-1);
+	}
+
 }
 

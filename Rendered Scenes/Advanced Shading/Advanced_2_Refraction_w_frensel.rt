@@ -63,7 +63,7 @@ pushTransform
 	#shininess 16
 	reflection white
 	refraction white
-	refIndex 1.6
+	refractionIndex 1.6
 
 	#reflection 0.2 0.2 0.2
 

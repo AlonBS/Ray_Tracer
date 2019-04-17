@@ -22,7 +22,7 @@ pushTransform
 
 	pushTransform
 		scale 2 1 1
-		area 0 6 -1 1 1 1 1 1
+		area 0 6 -1 1 1 1 2 0.05
 	popTransform
 popTransform
 

@@ -63,7 +63,7 @@ AreaLight::AreaLight(vec3& color,
 
 			random_device rd;
 			mt19937 gen(rd());
-			uniform_real_distribution<> dis(0, 1);
+			uniform_real_distribution<> dis(0, radius);
 			GLfloat a = dis(gen);
 
 			vec2 xz;

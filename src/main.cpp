@@ -224,10 +224,6 @@ GLfloat foo()
 
 int main(int argc, char *argv[])
 {
-	cout << 1.04 /2 << endl;
-	return 0;
-
-
 	vector<fs::path> files{};
 	parse_args(argc, argv, files);
 

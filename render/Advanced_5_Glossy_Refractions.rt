@@ -1,5 +1,5 @@
 
-# Example of a simple glossy reflection
+# Example of a glossy refraction
 
 size 1280 720 
 camera 0 3 13 0 0 0 0 1 0 45
@@ -8,7 +8,7 @@ attenuation 1 0.0 0.0
 
 maxDepth 3
 
-texture ./textures/wood.jpg
+texture ./textures/water_1.jpg
 texture ./textures/earth.png
 texture ./textures/marble_1.jpg
 texture ./textures/checkers2.png
@@ -17,18 +17,18 @@ texture ./textures/lines.jpg
 
 
 #directional 1 -1 0 1 0 0 1
-#area -1 4 13 1 1 1 1 10
-point -1 4 10 1 1 1 1
+#area   1 4 10 1 1 1 1.2 0.05
+point -1 7 -10 1 1 0.2 1
 
 
 pushTransform
 
-	bindTexture 3
+	bindTexture 0
 	ambient 0.1 0.1 0.1
 	diffuse 0.3 0.3 0.3
 	scale 5 5 5
 	#rotate 0 1 0 90
-	plain R
+	plain MR
 	unbindTexture
 
 popTransform
@@ -47,13 +47,13 @@ pushTransform
 		reflection white
 		
 		refraction white
-		refIndex 1.000
-
+		refractionIndex 1.000
+		refractionBlur 0
 
 		translate 0 1 7
 		
-	#	sphere 0 0 0 1
-	#	scale 2 2 2
+		sphere 0 0 0 1
+		scale 2 2 2
 	#	model ./3ds/cube/cube.obj
 	#	unbindTexture
 	#
@@ -67,10 +67,11 @@ pushTransform
 		diffuse 0.0 0.0 0.0
 		specular 0.5 0.5 0.5
 		shininess 32
-		reflection 1 1 1 
+		reflection white
+		reflectionBlur 1
 
-		scale 2 2 2
-		translate -3 0 0
+		scale 1 1 1
+		translate -3 1 0
 		sphere 0 0 0 1
 	#	unbindTexture
 	#
@@ -87,8 +88,8 @@ pushTransform
 		shininess 16
 
 		reflection 0.5 0.5 0.5
-		refraction 0.3 0.3 0.3
-		refIndex 1.3
+		refraction 0.8 0.8 0.8
+		refractionIndex 1.1
 
 		translate 3 0 0
 		sphere 0 0 0 1
