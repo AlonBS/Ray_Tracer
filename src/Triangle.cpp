@@ -7,6 +7,9 @@
 
 #include "Triangle.h"
 
+
+bool Triangle::faceNormal = false;
+
 Triangle::Triangle(ObjectProperties& op, vec3& va, vec3& vb, vec3& vc)
 : Object(), A(va), B(vb), C(vc)
 {
@@ -158,7 +161,7 @@ Triangle::__iRay2(const Ray& r,
 		*point = r.origin + t*r.direction;;
 	if (normal) {
 
-		if (faceNormals) {
+		if (faceNormal) {
 			*normal = this->N;
 		}
 		else {

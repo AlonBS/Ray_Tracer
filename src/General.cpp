@@ -16,7 +16,7 @@ void clearStats()
 }
 
 
-bool faceNormals = false;
+//bool faceNormals = false;
 
 
 

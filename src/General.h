@@ -28,8 +28,10 @@ typedef struct ObjectProperties {
 	GLfloat _shininess;
 
 	vec3 _reflection;
+	GLfloat _reflectionBlur;
 	vec3 _refraction;
 	GLfloat _refractionIndex;
+	GLfloat _refractionBlur;
 
 }ObjectProperties;
 
@@ -91,7 +93,7 @@ typedef struct RayTracerStats {
 }RayTracerStats;
 
 extern RayTracerStats rayTracerStats;
-extern bool faceNormals;
+//extern bool faceNormals;
 
 void clearStats();
 

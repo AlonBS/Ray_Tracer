@@ -34,23 +34,15 @@ typedef enum CommandType {
 }CommandType;
 
 
-typedef struct AdditionalParams
-{
-	bool hardShadows;
-	bool noAntiAliasing;
-
-}AdditionalParams;
-
-
 class SceneParser {
 
 public:
 
-	static Scene* readFile(const AdditionalParams& params, const char* fileName);
+	static Scene* readFile(const AdditionalRenderParams& params, const char* fileName);
 
 private:
 
-	static AdditionalParams additionalParams;
+	static AdditionalRenderParams additionalParams;
 
 	static GLint lineNumber;
 
@@ -106,8 +98,10 @@ private:
 	static vec3 emission;
 	static GLfloat shininess;
 	static vec3 reflection;
+	static GLfloat reflectionBlur;
 	static vec3 refraction;
-	static GLfloat refIndex;
+	static GLfloat refractionIndex;
+	static GLfloat refractionBlur;
 
 	static Attenuation attenuation;
 	static GLuint maxDepth;

@@ -58,6 +58,9 @@ TODOs:
 - fix stats (Done)
 - Stop recursion of light contribution is minor (Done)
 
+
+- CHange to object properties in sceneparser
+
 - Move to unique ptrs
 - Ipmlemnt const mechanisms 
 - Fix Vertices in Mesh class - (Copy of Vertex)

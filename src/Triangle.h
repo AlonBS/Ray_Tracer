@@ -17,6 +17,8 @@ class Triangle: public Object {
 
 private:
 
+		static bool faceNormal;
+
 		vec3 A,B,C ; 		// This triangle vertices
 		vec3 AN,BN,CN ; 	// Normals to the above vertices, respectively.
 		vec2 Auv, Buv, Cuv; // Vertices texture uv-mapping
@@ -45,6 +47,8 @@ public:
 	bool intersectsRayM(const Ray& r, GLfloat* dist, vec3* point, vec3* normal, vec2* texCoords);
 
 	virtual void print() const;
+
+	static void setFaceNormal() { faceNormal = true;};
 };
 
 #endif /* TRIANGLE_H_ */

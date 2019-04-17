@@ -11,21 +11,39 @@
 #include <iostream>
 #include <iomanip>
 #include <vector>
-#include <random>
 
 #include "RayTracer.h"
 #include "General.h"
 
+#define ANTI_ALIASING_NUM_OF_SAMPLES 16 // Cook's 'magic' number
+#define ANTI_ALIASING_DIST_MIN_VALUE 0
+#define ANTI_ALIASING_DIST_MAX_VALUE 1
+
+
+#define REFL_PERT_NUM_OF_RAYS 4    // The number of perturbed ray to generate when reflecting
+#define REFL_PERT_DIST_MIN_VALUE 0 // The minimal value to use for the uniform distribution of the perturbation of reflection
+#define REFL_PERT_DIST_MAX_VALUE 1 // the maximal.
+
+#define REFR_PERT_NUM_OF_RAYS 4    // The number of perturbed ray to generate when refracting
+#define REFR_PERT_DIST_MIN_VALUE 0 // Of refration
+#define REFR_PERT_DIST_MAX_VALUE 1 //
+
 
 RayTracer::RayTracer()
 {
+	random_device rd;  //Will be used to obtain a seed for the random number engine
+	generator = mt19937(rd());
+
+	AA_dis = uniform_real_distribution<> (ANTI_ALIASING_DIST_MIN_VALUE, ANTI_ALIASING_DIST_MAX_VALUE);
+	refl_dis = uniform_real_distribution<> (REFL_PERT_DIST_MIN_VALUE, REFL_PERT_DIST_MAX_VALUE);
+	refr_dis = uniform_real_distribution<> (REFR_PERT_DIST_MIN_VALUE, REFR_PERT_DIST_MAX_VALUE);
 }
 
 RayTracer::~RayTracer() {
 }
 
 
-Image* RayTracer::rayTraceMT(Scene& scene, bool noAA)
+Image* RayTracer::rayTraceMT(Scene& scene)
 {
 	Image *image = new Image(scene.width(), scene.height());
 
@@ -48,7 +66,7 @@ Image* RayTracer::rayTraceMT(Scene& scene, bool noAA)
 	                GLuint i = index % scene.width();
 	                GLuint j = index / scene.width();
 
-	                if (noAA)
+	                if (scene.noAntiAliasing())
 	                {
 	                	Ray ray = scene.camera().generateRay(i + .5, j - .5);
 	                	vec3 color = recursiveRayTrace(scene, ray, scene.maxDepth());
@@ -60,18 +78,17 @@ Image* RayTracer::rayTraceMT(Scene& scene, bool noAA)
 	                // Anti Aliasing
 	                else {
 	                	vec3 color = COLOR_BLACK;
-	                	random_device rd;  //Will be used to obtain a seed for the random number engine
-	                	mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
-	                	uniform_real_distribution<> dis(0, 1);
 	                	GLfloat delta;
 
-	                	for (int x = 0 ; x < 16 ; ++x) {
+	                	for (int x = 0 ; x < ANTI_ALIASING_NUM_OF_SAMPLES ; ++x) {
 
-	                		delta = dis(gen);
+	                		delta = AA_dis(generator);
+	                		cout << delta << endl;
 	                		Ray ray = scene.camera().generateRay(i + delta, j - delta);
 	                		color += recursiveRayTrace(scene, ray, scene.maxDepth());
 	                	}
-	                	color /= 16;
+
+	                	color /= ANTI_ALIASING_NUM_OF_SAMPLES;
 	                	image->setPixel(i, j, color);
 	                }
 	            }
@@ -100,7 +117,7 @@ Image* RayTracer::rayTraceMT(Scene& scene, bool noAA)
 
 
 // single threaded - for benchmark purposes and debugging
-Image* RayTracer::rayTraceST(Scene& scene, bool noAA)
+Image* RayTracer::rayTraceST(Scene& scene)
 {
 	Image *image = new Image(scene.width(), scene.height());
 	vec3 color;
@@ -110,7 +127,7 @@ Image* RayTracer::rayTraceST(Scene& scene, bool noAA)
 		for (GLuint j = 0 ; j < scene.height(); ++j)
 		{
 
-			if (noAA)
+			if (scene.noAntiAliasing())
 			{
 				Ray ray = scene.camera().generateRay(i + .5, j - .5);
 				vec3 color = recursiveRayTrace(scene, ray, scene.maxDepth());
@@ -121,19 +138,16 @@ Image* RayTracer::rayTraceST(Scene& scene, bool noAA)
 			else {
 
 				vec3 color = COLOR_BLACK;
-
-				random_device rd;  //Will be used to obtain a seed for the random number engine
-				mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
-				uniform_real_distribution<> dis(0, 1);
 				GLfloat delta;
 
-				for (int x = 0 ; x < 16 ; ++x) {
+				for (int x = 0 ; x < ANTI_ALIASING_NUM_OF_SAMPLES ; ++x) {
 
-					delta = dis(gen);
+					delta = AA_dis(generator);
 					Ray ray = scene.camera().generateRay(i + delta, j - delta);
 					color += recursiveRayTrace(scene, ray, scene.maxDepth());
 				}
-				color /= 16;
+
+				color /= ANTI_ALIASING_NUM_OF_SAMPLES;
 				image->setPixel(i, j, color);
 			}
 
@@ -503,46 +517,41 @@ RayTracer::calculateReflections(Scene& scene,
 		return COLOR_BLACK;
 	}
 
-/*
-	vec3 o(-1,0,0);
-	vec3 d(1,0,0);
-	hit.normal = normalize(vec3(-1, 1, 0));
-	ray = Ray(o, d);
-*/
 
-	vec3 color = COLOR_BLACK;
 	vec3 reflectedRayOrigin = hit.point;
 	vec3 reflectedRayDir = normalize(glm::reflect(ray.direction, hit.normal));
 	reflectedRayOrigin = reflectedRayOrigin + EPSILON * reflectedRayDir;
 	Ray reflectedRay(reflectedRayOrigin , reflectedRayDir);
 
-	vec3 u,v,w;
+	if (hit.properties._reflectionBlur > 0) {
 
-	random_device rd;  //Will be used to obtain a seed for the random number engine
-	mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
-	uniform_real_distribution<> dis(0, 0.1);
-	GLfloat r1 = dis(gen);
-	GLfloat r2 = dis(gen);
-	GLfloat w1 = (-0.01/2.f + r1);
-	GLfloat w2 = (-0.01/2.f + r2);
+		vec3 color = COLOR_BLACK;
+		vec3 u,v,w;
+		orthoBasis(reflectedRayDir, u, v, w);
 
-	orthoBasis(reflectedRayDir, u, v, w);
+		// First ray is always the same is the perfect reflection
+		color = recursiveRayTrace(scene, reflectedRay, depth-1);
+		for (GLuint n = 1 ; n < REFL_PERT_NUM_OF_RAYS ; ++n)
+		{
+			GLfloat w1 = (-hit.properties._reflectionBlur/2) + refl_dis(generator);
+			GLfloat w2 = (-hit.properties._reflectionBlur/2) + refl_dis(generator);
 
-	for (int n = 0 ; n < 16 ; ++n)
-	{
-		vec3 perturbedRayDir = normalize(u + w1*v + w2*w);
-//		printVec3("REF", reflectedRayDir);
-//		printVec3("Per", perturbedRayDir);
+			vec3 perturbedRayDir = normalize(u + w1*v + w2*w);
 
-		GLfloat contribution = dot(reflectedRayDir, perturbedRayDir);
-		Ray perturbedRay(reflectedRayOrigin , perturbedRayDir);
+			GLfloat contribution = dot(reflectedRayDir, perturbedRayDir);
+			Ray perturbedRay(reflectedRayOrigin , perturbedRayDir);
 
-//		printf("Contri %f\n", contribution);
-		color += contribution * hit.properties._reflection * recursiveRayTrace(scene, perturbedRay, depth-1);
+			color += contribution * recursiveRayTrace(scene, perturbedRay, depth-1);
+		}
+
+
+		return (hit.properties._reflection * color) / (GLfloat) REFL_PERT_NUM_OF_RAYS;
 	}
 
+	else {
 
-	return (color + hit.properties._reflection * recursiveRayTrace(scene, reflectedRay, depth-1)) / 17.0f;
+		return hit.properties._reflection * recursiveRayTrace(scene, reflectedRay, depth-1);;
+	}
 }
 
 

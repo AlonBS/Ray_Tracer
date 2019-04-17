@@ -31,63 +31,65 @@ using namespace std;
 struct Commands {
 
 	// General Scene
-	const string size          = "size";
-	const string maxdepth      = "maxDepth";
+	const string size            = "size";
+	const string maxdepth        = "maxDepth";
 
 	// Camera
-	const string camera        = "camera";
+	const string camera          = "camera";
 
 	// Geometry and objects
-	const string sphere        = "sphere";
-	const string cylinder      = "cylinder";
-	const string box		   = "box";
-	const string cone		   = "cone";
-	const string plain		   = "plain";
-	const string maxVerts      = "maxVerts";
-	const string maxVertNorms  = "maxVertNorms";
-	const string vertex        = "vertex";
-	const string vertexNormal  = "vertexNormal";
-	const string vertexTex     = "vertexTex";
-	const string vertexNormTex = "vertexNormTex";
-	const string tri           = "tri";
-	const string triNormal     = "triNormal";
-	const string triTex        = "triTex";
-	const string triNormTex    = "triNormTex";
-	const string texture       = "texture";
-	const string bindTexture   = "bindTexture";
-	const string unbindTexture = "unbindTexture";
-	const string model		   = "model";
+	const string sphere          = "sphere";
+	const string cylinder        = "cylinder";
+	const string box		     = "box";
+	const string cone		     = "cone";
+	const string plain		     = "plain";
+	const string maxVerts        = "maxVerts";
+	const string maxVertNorms    = "maxVertNorms";
+	const string vertex          = "vertex";
+	const string vertexNormal    = "vertexNormal";
+	const string vertexTex       = "vertexTex";
+	const string vertexNormTex   = "vertexNormTex";
+	const string tri             = "tri";
+	const string triNormal       = "triNormal";
+	const string triTex          = "triTex";
+	const string triNormTex      = "triNormTex";
+	const string texture         = "texture";
+	const string bindTexture     = "bindTexture";
+	const string unbindTexture   = "unbindTexture";
+	const string model		     = "model";
 
 	// Transformations
-	const string translate     = "translate";
-	const string rotate        = "rotate";
-	const string scale         = "scale";
-	const string pushTransform = "pushTransform";
-	const string popTransform  = "popTransform";
+	const string translate       = "translate";
+	const string rotate          = "rotate";
+	const string scale           = "scale";
+	const string pushTransform   = "pushTransform";
+	const string popTransform    = "popTransform";
 
 	// Lights
-	const string directional   = "directional";
-	const string point         = "point";
-	const string area          = "area";
-	const string attenuation   = "attenuation";
+	const string directional     = "directional";
+	const string point           = "point";
+	const string area            = "area";
+	const string attenuation     = "attenuation";
 
 	// Materials
-	const string clearProps    = "clearProps";
-	const string ambient       = "ambient"; // As this is per object - and not per scene
-	const string diffuse       = "diffuse";
-	const string specular      = "specular";
-	const string shininess     = "shininess";
-	const string emission      = "emission";
-	const string reflection    = "reflection";
-	const string refraction    = "refraction";
-	const string refIndex      = "refIndex";
+	const string clearProps      = "clearProps";
+	const string ambient         = "ambient"; // As this is per object - and not per scene
+	const string diffuse         = "diffuse";
+	const string specular        = "specular";
+	const string shininess       = "shininess";
+	const string emission        = "emission";
+	const string reflection      = "reflection";
+	const string reflectionBlur  = "reflectionBlur";
+	const string refraction      = "refraction";
+	const string refractionIndex = "refractionIndex";
+	const string refractionBlur  = "refractionBlur";
 
 }Commands;
 
 
 /////////////////////////////////////INIT STATIC MEMBERS ///////////////////////////////////////////////////
 
-AdditionalParams SceneParser::additionalParams{};
+AdditionalRenderParams SceneParser::additionalParams{};
 
 set<string> SceneParser::general{Commands.size, Commands.maxdepth};
 string 	    SceneParser::camera = Commands.camera;
@@ -101,7 +103,8 @@ set<string> SceneParser::transformations {Commands.translate, Commands.rotate, C
 set<string> SceneParser::lights {Commands.directional, Commands.point, Commands.area, Commands.attenuation};
 set<string> SceneParser::materials {Commands.clearProps, Commands.ambient, Commands.diffuse, Commands.specular,
 									Commands.shininess, Commands.emission,
-									Commands.reflection, Commands.refraction, Commands.refIndex};
+									Commands.reflection, Commands.reflectionBlur,
+									Commands.refraction, Commands.refractionIndex, Commands.refractionBlur};
 
 GLfloat SceneParser::values[MAX_POSSIBLE_VALUES] = {};
 
@@ -112,8 +115,11 @@ vec3 SceneParser::specular = vec3(0.0f, 0.0f, 0.0f);
 vec3 SceneParser::emission = vec3(0.0f, 0.0f, 0.0f);
 GLfloat SceneParser::shininess = 0.0f;
 vec3 SceneParser::reflection = vec3(0.0f, 0.0f, 0.0f);
+GLfloat SceneParser::reflectionBlur = 0.0f;
 vec3 SceneParser::refraction = vec3(0.0f, 0.0f, 0.0f);
-GLfloat SceneParser::refIndex = 0.0f;
+GLfloat SceneParser::refractionIndex = 0.0f;
+GLfloat SceneParser::refractionBlur = 0.0f;
+
 
 
 Attenuation SceneParser::attenuation = { .constant = 1.0f, .linear = 0.0f, .quadratic = 0.0f};
@@ -231,8 +237,10 @@ void SceneParser::fillObjectInfo(ObjectProperties* op, ObjectTransforms* ot, mat
 	op->_specular = specular;
 	op->_shininess = shininess;
 	op->_reflection = reflection;
+	op->_reflectionBlur = reflectionBlur;
 	op->_refraction = refraction;
-	op->_refractionIndex = refIndex;
+	op->_refractionIndex = refractionIndex;
+	op->_refractionBlur = refractionBlur;
 
 	if (ot) { // Not all objects need this
 		ot->_transform = (uniqueTrans) ? *uniqueTrans : transformsStack.top();
@@ -286,14 +294,16 @@ void SceneParser::clearObjectProps()
 	emission = vec3(0.0f, 0.0f, 0.0f);
 	shininess = 0.0f;
 	reflection = vec3(0.0f, 0.0f, 0.0f);
+	reflectionBlur = 0.0f;
 	refraction = vec3(0.0f, 0.0f, 0.0f);
-	refIndex = 0.0f;
+	refractionIndex = 0.0f;
+	refractionBlur = 0.0f;
 }
 
 
 
 Scene*
-SceneParser::readFile(const AdditionalParams& params, const char* fileName)
+SceneParser::readFile(const AdditionalRenderParams& params, const char* fileName)
 {
 
 	string str, cmd;
@@ -309,6 +319,7 @@ SceneParser::readFile(const AdditionalParams& params, const char* fileName)
 
 	additionalParams = params;
 	scene = new Scene();
+	scene->handleAdditionalParams(additionalParams);
 
 	// Default transform
 	transformsStack.push(mat4(1.0));
@@ -838,14 +849,25 @@ SceneParser::handleMaterialsCommand(stringstream& s, string& cmd)
 		reflection = readColor(s);
 	}
 
+	else if (cmd == Commands.reflectionBlur) {
+
+		readValues(s, 1, values);
+		reflectionBlur = values[0];
+	}
+
 	else if (cmd == Commands.refraction) {
 
 		refraction = readColor(s);
 	}
 
-	else if (cmd == Commands.refIndex) {
+	else if (cmd == Commands.refractionIndex) {
 		readValues(s, 1, values);
-		refIndex = values[0];
+		refractionIndex = values[0];
+	}
+
+	else if (cmd == Commands.refractionBlur) {
+		readValues(s, 1, values);
+		refractionBlur = values[0];
 	}
 
 }

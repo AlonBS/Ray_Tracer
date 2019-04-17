@@ -48,6 +48,15 @@ Scene::~Scene() {
 	delete (bvh); bvh = nullptr;
 }
 
+void Scene::handleAdditionalParams(AdditionalRenderParams& params)
+{
+	addParams = params;
+
+	if (addParams.flatShading) {
+		Triangle::setFaceNormal();
+	}
+}
+
 
 void Scene::constructAccelerationStructures()
 {

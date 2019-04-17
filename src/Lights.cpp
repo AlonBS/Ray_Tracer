@@ -9,6 +9,7 @@
 #include <glm/glm.hpp>
 #include <GL/glew.h>
 #include <glm/gtc/random.hpp>
+#include <random>
 #include "Lights.h"
 #include "General.h"
 
@@ -59,7 +60,12 @@ AreaLight::AreaLight(vec3& color,
 
 			GLfloat theta = (i*360) / (samples-1);
 			theta = glm::radians(theta);
-			GLfloat a = static_cast <GLfloat> (rand()) / static_cast <GLfloat> (RAND_MAX / radius);
+
+			random_device rd;
+			mt19937 gen(rd());
+			uniform_real_distribution<> dis(0, 1);
+			GLfloat a = dis(gen);
+
 			vec2 xz;
 			xz.x = 0.3 + 0.7*sqrt(a)*cos(radians(theta));
 			xz.y = 0.3 + 0.7*sqrt(a)*sin(radians(theta));

@@ -15,10 +15,21 @@
 //#include "BoundingVolume.h"
 #include "BVH.h"
 
+typedef struct AdditionalRenderParams
+{
+	bool hardShadows;
+	bool flatShading;
+	bool noAntiAliasing;
+
+}AdditionalRenderParams;
+
 
 class Scene {
 
 private:
+
+	AdditionalRenderParams addParams;
+
 
 	GLuint 							_width, _height;
 	GLuint			 				_maxDepth;
@@ -70,7 +81,6 @@ public:
 	}
 
 	BVH* getBVH() { return bvh;}
-	//std::vector<Mesh*>& getMeshes() { return _meshes; }
 
 	void addTexture(Image *texture) { _textures.push_back(texture); }
 	void addTextures(vector<Image*>& textures)
@@ -91,9 +101,11 @@ public:
 
 	Attenuation_t& attenuation() { return _attenuation; }
 
-
-//	std::vector<BoundingVolume*>& getBoundingVolumes() { return _boundingVolumes; }
 	void constructAccelerationStructures();
+
+
+	void handleAdditionalParams(AdditionalRenderParams& params);
+	bool noAntiAliasing() { return addParams.noAntiAliasing; }
 
 
 };

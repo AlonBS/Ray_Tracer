@@ -10,6 +10,7 @@
 
 #include <vector>
 #include <future>
+#include <random>
 
 #include "GL/glew.h"
 #include "Image.h"
@@ -26,14 +27,20 @@ public:
 	RayTracer();
 	virtual ~RayTracer();
 
-	Image* rayTraceMT(Scene& scene, bool noAA=false);
+	Image* rayTraceMT(Scene& scene);
 
-	Image* rayTraceST(Scene& scene, bool noAA=false);
+	Image* rayTraceST(Scene& scene);
 
 
 
 
 private:
+
+	mt19937 generator; // Mersenne generator
+	uniform_real_distribution<> AA_dis; // Distribution used for anti-aliasing
+	uniform_real_distribution<> refl_dis;  // Distribution used for reflections
+	uniform_real_distribution<> refr_dis;  // Distribution used for refractions
+
 
 
 	vec3 recursiveRayTrace(Scene& scene, Ray& ray, GLuint depth);

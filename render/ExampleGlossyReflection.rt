@@ -1,5 +1,5 @@
 
-# Plane Scene - An example scene to show the syntax and usage 
+# Example of a simple glossy reflection
 
 size 1280 720 
 camera 0 3 13 0 0 0 0 1 0 45
