@@ -24,7 +24,7 @@
 #define REFL_PERT_DIST_MIN_VALUE 0 // The minimal value to use for the uniform distribution of the perturbation of reflection
 #define REFL_PERT_DIST_MAX_VALUE 1 // the maximal.
 
-#define REFR_PERT_NUM_OF_RAYS 4    // The number of perturbed ray to generate when refracting
+#define REFR_PERT_NUM_OF_RAYS 8    // The number of perturbed ray to generate when refracting
 #define REFR_PERT_DIST_MIN_VALUE 0 // Of refration
 #define REFR_PERT_DIST_MAX_VALUE 1 //
 
@@ -436,14 +436,14 @@ RayTracer::calculateReflrectionsNRefractions(Scene& scene,
 
 		// Not total internal reflection
 		if (kr < 1.0f) {
-			refractionColor = calculateRefractions(scene, ray, hit, depth);
+			refractionColor = calculateRefractions(scene, ray.direction, hit, depth);
 		}
 
 	}
 
 	if (!equalToVec3(hit.properties._reflection, COLOR_BLACK)){
 
-		reflectionColor = calculateReflections(scene, ray, hit, depth);
+		reflectionColor = calculateReflections(scene, ray.direction, hit, depth);
 	}
 
 
@@ -465,7 +465,7 @@ RayTracer::computeFrenselProportion(const vec3& I, const vec3& N, const GLfloat&
 	// Compute sini using Snell's law
 	GLfloat sint = etai / etat * sqrtf(std::max(0.f, 1 - cosi*cosi));
 	// Total internal reflection
-	if (sint >= 1) {
+	if (sint >= 1 - EPSILON) {
 		return 1;
 	}
 	else {
@@ -496,7 +496,7 @@ void RayTracer::orthoBasis(const vec3& x,
 
 vec3
 RayTracer::calculateReflections(Scene& scene,
-								Ray& ray,
+								vec3& rayDir,
 								Intersection& hit,
 								GLuint depth)
 {
@@ -507,7 +507,7 @@ RayTracer::calculateReflections(Scene& scene,
 
 
 	vec3 reflectedRayOrigin = hit.point;
-	vec3 reflectedRayDir = normalize(glm::reflect(ray.direction, hit.normal));
+	vec3 reflectedRayDir = normalize(glm::reflect(rayDir, hit.normal));
 	reflectedRayOrigin = reflectedRayOrigin + EPSILON * reflectedRayDir;
 	Ray reflectedRay(reflectedRayOrigin , reflectedRayDir);
 
@@ -545,7 +545,7 @@ RayTracer::calculateReflections(Scene& scene,
 
 vec3
 RayTracer::calculateRefractions(Scene& scene,
-								Ray& ray,
+								vec3& rayDir,
 								Intersection& hit,
 								GLuint depth)
 {
@@ -558,21 +558,21 @@ RayTracer::calculateRefractions(Scene& scene,
 	vec3 norm;
 	GLfloat eta;
 
-	GLfloat nDotD = dot(hit.normal, ray.direction);
+	GLfloat nDotD = dot(hit.normal, rayDir);
 
 	if (nDotD > EPSILON) { // Going out of the object
-		dir = ray.direction;
+		dir = rayDir;
 		norm = -hit.normal;
 		eta = hit.properties._refractionIndex / VOID_INDEX;
 	}
 	else {
-		dir = ray.direction; // TODO - consider -ray.direction
+		dir = -rayDir; // TODO - consider -rayDir
 		norm = hit.normal;
 		eta = VOID_INDEX / hit.properties._refractionIndex;
 	}
 
 	vec3 refractedRayOrigin = hit.point;
-	vec3 refractedRayDir = glm::refract(dir, norm, eta);
+	vec3 refractedRayDir = normalize(glm::refract(dir, norm, eta));
 
 
 	refractedRayOrigin = refractedRayOrigin + EPSILON * refractedRayDir;

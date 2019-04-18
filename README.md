@@ -20,6 +20,7 @@ Current list of features supported:
 - Soft shadows and area lights. 
 - Full support for reflections and refractions, including mix of the 2 using Fresnel equations. 
 - Normals interpolation (by default) for smoother appearance of less detailed models. 
+- Glossy reflections and refractions
 
 
 
@@ -65,6 +66,9 @@ Usage:
 	                          face normals will be used, otherwise (and by 
 	                          default), normals are interpolated for a much 
 	                          smoother image.
+  	  --no-anti-aliasing      Indicate if anti-aliasing should be disabled, or 
+          	                  enabled, as by default
+
 
 
 
@@ -250,8 +254,10 @@ Also note you can simply write: "white" or "black" for vec3(1.0f, 1.0f, 1.0f) an
 	shininess  <color_i> - The shininess factor. Default 0f
 	emission  <color_v3> - The emission factor. Default vec3(0.0f, 0.0f, 0.0f)
 	reflection <color_v3> - The amount of light that will be reflected from this surface.
+	reflectionBlur <float_f> - Should range [0-1]. The ammount of perturbation to apply to the stochastically generated rays when simulating glossy reflections  
 	refraction <color_v3> - The amout of light that will be refracted from this surface. 
-	refIndex <color_f> - The index of refraction. (See https://en.wikipedia.org/wiki/Refractive_index for common indecies)
+	reflectionIndex <color_f> - The index of refraction. (See https://en.wikipedia.org/wiki/Refractive_index for common indecies)
+	refractionBlur <float_f> - Should range [0-1]. The ammount of perturbation to apply to the stochastically generated rays when simulating glossy refractions  
 	clearProps - Removes all previous defined properties. (Sets everything to 0, except ambient which is set to 0.2;
 
 
@@ -334,6 +340,20 @@ The result image can be found in "./Rendered_Scenes/ExampleSphere_result.png
 
 Version History:
 =================
+
+4.0:
+-----
+- Added glossy reflections and refractions. These are supported with a new keyword (reflectionBlur <float(0,1)>, and refractionBlur <float(0,1)> respectively.
+To get nice result, usually somewhere between 0.1 to 0.3 is nice. 0 means no blur at all. 
+- Added multiple scenes with these new options, each with values a little different.
+- changed folder structure a little bit.
+- Fixed a bug when refracting a ray wrongfully. Still another bug exists and will be fixed on later version.
+- Changed random sampling to C++11 standard using mersenee twister engine. 
+- removed some dead code from RayTracer.cpp
+- Changed the mechanism for additional render options (anti-aliasing, flat-shading and hard-shadows - for now)
+- Changed keyword "refIndex" -> "reflectionIndex" for better clarity. Also updated scene where this was relevant 
+- Some problem with AA is still present. Will be fixed next verion.
+- Created a folder with problematic scenes which produce bugs. Also changed folders hierarchy a little bit.
 
 3.8:
 - Added lights intesity. The intesity is a float, that should be greater than 0. Use this to create larger effect of a light. (Point light and area

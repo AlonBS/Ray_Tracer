@@ -70,8 +70,8 @@ private:
 
 
 	void orthoBasis(const vec3& x, vec3& u, vec3& v, vec3& w);
-	vec3 calculateReflections(Scene& scene, Ray& ray, Intersection& hit, GLuint depth);
-	vec3 calculateRefractions(Scene& scene, Ray& ray, Intersection& hit, GLuint depth);
+	vec3 calculateReflections(Scene& scene, vec3& rayDir, Intersection& hit, GLuint depth);
+	vec3 calculateRefractions(Scene& scene, vec3& rayDir, Intersection& hit, GLuint depth);
 
 };
 

@@ -15,8 +15,10 @@ ObjectProperties operator*(const MeshProperties& mp, const ObjectProperties& op)
 
 			//TODO - add these properties per mesh
 			._reflection      = 1.f * op._reflection,
-			._refraction    = 1.f * op._refraction,
-			._refractionIndex = 1.f * op._refractionIndex
+			._reflectionBlur  =	1.f * op._reflectionBlur,
+			._refraction      = 1.f * op._refraction,
+			._refractionIndex = 1.f * op._refractionIndex,
+			._refractionBlur  =	1.f * op._refractionBlur
 	};
 	return ret;
 }
