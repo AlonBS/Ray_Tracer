@@ -175,22 +175,14 @@ vec3 RayTracer::recursiveRayTrace(Scene& scene, Ray & ray, GLuint depth)
 		return COLOR_BLACK;
 	}
 
-
 	Intersection hit = intersectScene(scene, ray);
 	if (!hit.isValid) {
 		return COLOR_BLACK;
 	}
 
-	color = computeLight(scene, ray, hit);
-	// If color contribution is already very small, we stop the recursion.
-	// Alternatively, if color is already maxed-out -no point in adding values that will later be clamped.
-	if (equalToVec3(color, NEGLIGENT_CONTRIBUTION) ||
-		equalToVec3(color, FULL_CONTRIBUTION)) {
-		return color;
-	}
 
-
-	color += calculateReflrectionsNRefractions(scene, ray, hit, depth);
+	color += calculateReflectionsNRefractions(scene, ray, hit, depth);
+	color += computeLight(scene, ray, hit);
 
 	return color;
 }
@@ -287,7 +279,7 @@ vec3 RayTracer::computeLight(Scene& scene, Ray& r, Intersection& hit)
 			 hit.properties._emission * hit.texColors._ambientTexColor; // TODO Currently - ambient texture == emission texture
 
 
-	if (equalToVec3(hit.properties._diffuse, NEGLIGENT_CONTRIBUTION) ||
+	if (equalToVec3(hit.properties._diffuse, NEGLIGENT_CONTRIBUTION) &&
 		equalToVec3(hit.properties._specular, NEGLIGENT_CONTRIBUTION) ) {
 		return color;
 	}
@@ -418,10 +410,10 @@ vec3 RayTracer::__blinn_phong(const ObjectProperties& objProps,
 
 
 vec3
-RayTracer::calculateReflrectionsNRefractions(Scene& scene,
-											 Ray& ray,
-											 Intersection& hit,
-											 GLuint depth)
+RayTracer::calculateReflectionsNRefractions(Scene& scene,
+											Ray& ray,
+											Intersection& hit,
+											GLuint depth)
 {
 
 	vec3 reflectionColor = COLOR_BLACK;
@@ -445,7 +437,6 @@ RayTracer::calculateReflrectionsNRefractions(Scene& scene,
 
 		reflectionColor = calculateReflections(scene, ray.direction, hit, depth);
 	}
-
 
 	return kr*reflectionColor + (1.f-kr)*refractionColor;
 
@@ -566,7 +557,7 @@ RayTracer::calculateRefractions(Scene& scene,
 		eta = hit.properties._refractionIndex / VOID_INDEX;
 	}
 	else {
-		dir = -rayDir; // TODO - consider -rayDir
+		dir = rayDir; // TODO - consider -rayDir
 		norm = hit.normal;
 		eta = VOID_INDEX / hit.properties._refractionIndex;
 	}

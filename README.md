@@ -341,6 +341,12 @@ The result image can be found in "./Rendered_Scenes/ExampleSphere_result.png
 Version History:
 =================
 
+4.1:
+- Added a scene dipiction rays refraction when passsing through a refractive medium (with changed parameters) (See advanced scene 6). 
+- Fixed a bug where objects that are purely reflective and refractive would not render properly. 
+- Fixed a bug where object that were only diffusive or specular (but not both) were not rendered properly (Solved)
+- Fix to ray direction calculation when refractive a ray. This means that sphere refract differently than before, but this gives more realistic results.
+
 4.0:
 -----
 - Added glossy reflections and refractions. These are supported with a new keyword (reflectionBlur <float(0,1)>, and refractionBlur <float(0,1)> respectively.

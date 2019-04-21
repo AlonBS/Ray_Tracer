@@ -141,5 +141,6 @@ void Sphere::computeBoundingBox()
 	}
 
 	this->bbox = new AABB(minBound, maxBound);
+
 }
 

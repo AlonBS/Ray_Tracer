@@ -63,7 +63,7 @@ private:
 					   const vec3& halfAng);
 
 
-	vec3 calculateReflrectionsNRefractions(Scene& scene, Ray& ray, Intersection& hit, GLuint depth);
+	vec3 calculateReflectionsNRefractions(Scene& scene, Ray& ray, Intersection& hit, GLuint depth);
 
 	GLfloat computeFrenselProportion(const vec3& I, const vec3& N, const GLfloat& eta);
 
