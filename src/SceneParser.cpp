@@ -708,7 +708,19 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 
 		vector<Mesh*> modelMeshes{};
 		vector<Image*> modelTextures{};
-		Model::loadModel(modelFile, op, ot, boundTexture, modelMeshes, modelTextures);
+//		Model::loadModel(modelFile, op, ot, boundTexture, modelMeshes, modelTextures);
+
+		Image* envMaps[6] = {
+				scene->getTexture(values[0]),
+				scene->getTexture(values[1]),
+				scene->getTexture(values[2]),
+				scene->getTexture(values[3]),
+				scene->getTexture(values[4]),
+				scene->getTexture(values[5])
+		};
+
+
+		Model::loadModel(modelFile, op, ot, boundTexture, envMaps, modelMeshes, modelTextures);
 
 		scene->addTextures(modelTextures);
 		scene->addMeshes(modelMeshes);

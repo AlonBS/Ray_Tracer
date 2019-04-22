@@ -21,8 +21,13 @@ public:
     /**
      * TODO - add doc
      */
-    static void loadModel(string const &path, const ObjectProperties& op, const ObjectTransforms& ot, Image* texture,
-    					  vector<Mesh*>& modelMeshes, vector<Image*>& modelTextures);
+    static void loadModel(string const &path,
+    					  const ObjectProperties& op,
+						  const ObjectTransforms& ot,
+						  Image* texture,
+						  Image* envMaps[],
+    					  vector<Mesh*>& modelMeshes,
+						  vector<Image*>& modelTextures);
 
     static void FreeTextures();
 
@@ -42,6 +47,10 @@ private:
     static ObjectProperties _objectProperties;
     static ObjectTransforms _objectTransforms;
     static Image* _texture;
+    static Image* _envMaps[];
+
+
+
 
     static Image* loadMaterialTextures(aiMaterial* mat, aiTextureType type);
     static vector<Texture*> _loadedTextures; // We store all the textures loaded for this module, to avoid load duplication

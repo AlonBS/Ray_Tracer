@@ -36,6 +36,9 @@ private:
 	Image* _meshSpecularTexture;
 
 
+	Image* _envMaps[6];
+
+
 public:
 
 
@@ -45,7 +48,8 @@ public:
 			Image *ambientTexture,
 			Image *diffuseTexture,
 			Image *specualrTexture,
-			Image *generalTexture);
+			Image *generalTexture,
+			Image *envMaps[] = nullptr);
 
 	virtual ~Mesh();
 
@@ -65,6 +69,8 @@ private:
 
 
 	void __triangulate(vector<Vertex> vertices, vector<unsigned int> indices);
+
+	vec3 Mesh::_mapEnvironment(const Ray& r, vec3& Normal);
 
 };
 

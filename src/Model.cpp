@@ -40,6 +40,7 @@ Model::loadModel(string const &path,
 				 const ObjectProperties& op,
 				 const ObjectTransforms& ot,
 				 Image* texture,
+				 Image* envMaps[],
 				 vector<Mesh*>& modelMeshes,
 				 vector<Image*>& modelTextures)
 
@@ -49,6 +50,9 @@ Model::loadModel(string const &path,
 	_objectProperties = op;
 	_objectTransforms = ot;
 	_texture = texture;
+
+	_envMaps = envMaps;
+
 
 	// read file via ASSIMP
 	Assimp::Importer importer;
@@ -188,7 +192,7 @@ Model::processMesh(aiMesh *mesh, const aiScene *scene)
 
 	// return a mesh object created from the extracted mesh data
 	ObjectProperties op = _objectProperties * properties;
-	return new Mesh(vertices, indices, op, ambientTexture, diffuseTexture, specularTexture, _texture);
+	return new Mesh(vertices, indices, op, ambientTexture, diffuseTexture, specularTexture, _texture, _envMaps);
 }
 
 

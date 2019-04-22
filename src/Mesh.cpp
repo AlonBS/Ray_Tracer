@@ -37,7 +37,8 @@ Mesh::Mesh(vector<Vertex>& vertices,
 		   Image *ambientTexture,
 		   Image *diffuseTexture,
 		   Image *specularTexture,
-		   Image *generalTexture)
+		   Image *generalTexture,
+		   Image *envMaps[])
 
 : Object(),
   _meshAmbientTexture(ambientTexture),
@@ -46,6 +47,9 @@ Mesh::Mesh(vector<Vertex>& vertices,
 {
 	super::setTexture(generalTexture);
 	super::properties() = properties;
+
+
+	_envMaps = envMaps;
 
 	_vertices = vertices; // Yes - this is shit, but a must for now
 	__triangulate(vertices, indices);
@@ -60,6 +64,7 @@ Mesh::~Mesh()
 	}
 
 	triangles.clear();
+
 
 }
 
@@ -122,11 +127,29 @@ Mesh::intersectsRay(const Ray &r,
 				*dist = minDist = tDist;
 				if (point) *point = tP;
 				if (normal) *normal = tN;
-				if (texColors) {
+
+				if (_envMaps) {
+
+					texColors->_ambientTexColor  = _mapEnvironment(r, tN);
+					texColors->_diffuseTexColor  = _mapEnvironment(r, tN);
+					texColors->_specularTexColor = _mapEnvironment(r, tN);
+
+				}
+				else if (texColors) {
+
 					texColors->_ambientTexColor  = this->getAmbientTextureColor(ttC);
 					texColors->_diffuseTexColor  = this->getDiffuseTextureColor(ttC);
 					texColors->_specularTexColor = this->getSpecularTextureColor(ttC);
 				}
+
+
+
+
+//				if (texColors) {
+//					texColors->_ambientTexColor  = this->getAmbientTextureColor(ttC);
+//					texColors->_diffuseTexColor  = this->getDiffuseTextureColor(ttC);
+//					texColors->_specularTexColor = this->getSpecularTextureColor(ttC);
+//				}
 				if (properties) *properties = this->_properties;
 			}
 		}
@@ -164,5 +187,17 @@ vec3 Mesh::getDiffuseTextureColor(vec2& uv)
 vec3 Mesh::getSpecularTextureColor(vec2& uv)
 {
 	return this->getTextureColor(_meshSpecularTexture, uv) * super::getSpecularTextureColor(uv);
+}
+
+
+
+vec3 Mesh::_mapEnvironment(vec3& rayDir, vec3& normal)
+{
+	vec3 r = normalize(glm::reflect(rayDir, normal));
+
+	vec3 normR = r / glm::max(r.x, glm::max(r.y, r.z));
+
+
+
 }
 
