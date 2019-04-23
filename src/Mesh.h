@@ -35,21 +35,21 @@ private:
 	Image* _meshDiffuseTexture;
 	Image* _meshSpecularTexture;
 
-
-	Image* _envMaps[6];
+	vector<Image*> _envMaps;
+	bool _envMapped = false;
 
 
 public:
 
 
 	Mesh(vector<Vertex>& vertices,
-			vector<unsigned int>& indices,
-			ObjectProperties& properties,
-			Image *ambientTexture,
-			Image *diffuseTexture,
-			Image *specualrTexture,
-			Image *generalTexture,
-			Image *envMaps[] = nullptr);
+		 vector<unsigned int>& indices,
+		 ObjectProperties& properties,
+		 Image *ambientTexture,
+		 Image *diffuseTexture,
+		 Image *specualrTexture,
+		 Image *generalTexture,
+		 vector<Image*> envMaps);
 
 	virtual ~Mesh();
 
@@ -70,7 +70,8 @@ private:
 
 	void __triangulate(vector<Vertex> vertices, vector<unsigned int> indices);
 
-	vec3 Mesh::_mapEnvironment(const Ray& r, vec3& Normal);
+	void __mapEnvironment(const vec3& r, vec2& uv, GLuint& texIndex);
+	void convert_xyz_to_cube_uv(float x, float y, float z, int *index, float *u, float *v);
 
 };
 

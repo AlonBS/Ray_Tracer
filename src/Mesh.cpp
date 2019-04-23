@@ -38,17 +38,17 @@ Mesh::Mesh(vector<Vertex>& vertices,
 		   Image *diffuseTexture,
 		   Image *specularTexture,
 		   Image *generalTexture,
-		   Image *envMaps[])
+		   vector<Image*> envMaps)
 
 : Object(),
-  _meshAmbientTexture(ambientTexture),
+ _meshAmbientTexture(ambientTexture),
  _meshDiffuseTexture(diffuseTexture),
  _meshSpecularTexture(specularTexture)
 {
 	super::setTexture(generalTexture);
 	super::properties() = properties;
 
-
+	_envMapped = envMaps.size() > 0;
 	_envMaps = envMaps;
 
 	_vertices = vertices; // Yes - this is shit, but a must for now
@@ -128,38 +128,72 @@ Mesh::intersectsRay(const Ray &r,
 				if (point) *point = tP;
 				if (normal) *normal = tN;
 
-				if (_envMaps) {
+				if (texColors) {
+					if (_envMapped) {
 
-					texColors->_ambientTexColor  = _mapEnvironment(r, tN);
-					texColors->_diffuseTexColor  = _mapEnvironment(r, tN);
-					texColors->_specularTexColor = _mapEnvironment(r, tN);
+						GLint index;
+						vec2 uv;
+						vec3 xx = normalize(glm::reflect(r.direction, tN));
+						convert_xyz_to_cube_uv(xx.x, xx.y, xx.z, &index, &uv.x, &uv.y);
 
+
+						GLuint index2;
+						vec2 uv2;
+						vec3 xx2 = normalize(glm::reflect(r.direction, tN));
+						__mapEnvironment(xx2, uv2, index2);
+
+
+						// TODO - remove once made sure this is stable
+						if (!equalToVec3(xx, xx2)) {
+							printVec3("XX", xx);
+							printVec3("XX2", xx2);
+
+						}
+
+						if (index != index2) {
+							cout << index << endl;
+							cout << index2 << endl;
+						}
+//
+
+//
+//
+//
+//
+////						Image* tex = this->getTextureColor(_envMaps[index], uv);
+//
+////						vec2 uv;
+////						Image* tex;
+////						__mapEnvironment(r.direction, tN, uv, tex);
+//
+//
+//						printVec2("UV", uv);
+//						cout << "INDEX: " << index << endl;;
+//						printVec2("UV 2:", uv2);
+//						cout << "INDEX 2: " << index2 << endl;;
+
+
+
+						vec3 envColor = this->getTextureColor(_envMaps[index], uv);
+
+						texColors->_ambientTexColor  = envColor * this->getAmbientTextureColor(ttC);;
+						texColors->_diffuseTexColor  = envColor * this->getDiffuseTextureColor(ttC);;
+						texColors->_specularTexColor = envColor * this->getSpecularTextureColor(ttC);;
+
+					}
+					else {
+						texColors->_ambientTexColor  = this->getAmbientTextureColor(ttC);
+						texColors->_diffuseTexColor  = this->getDiffuseTextureColor(ttC);
+						texColors->_specularTexColor = this->getSpecularTextureColor(ttC);
+					}
 				}
-				else if (texColors) {
 
-					texColors->_ambientTexColor  = this->getAmbientTextureColor(ttC);
-					texColors->_diffuseTexColor  = this->getDiffuseTextureColor(ttC);
-					texColors->_specularTexColor = this->getSpecularTextureColor(ttC);
-				}
-
-
-
-
-//				if (texColors) {
-//					texColors->_ambientTexColor  = this->getAmbientTextureColor(ttC);
-//					texColors->_diffuseTexColor  = this->getDiffuseTextureColor(ttC);
-//					texColors->_specularTexColor = this->getSpecularTextureColor(ttC);
-//				}
 				if (properties) *properties = this->_properties;
 			}
 		}
 	}
 
-	if (minDist == INFINITY) {
-		return false;
-	}
-
-	return true;
+	return minDist != INFINITY;
 }
 
 
@@ -191,13 +225,126 @@ vec3 Mesh::getSpecularTextureColor(vec2& uv)
 
 
 
-vec3 Mesh::_mapEnvironment(vec3& rayDir, vec3& normal)
+void Mesh::__mapEnvironment(const vec3& r, vec2& uv, GLuint& texIndex)
 {
-	vec3 r = normalize(glm::reflect(rayDir, normal));
+	if (glm::abs(r.x) > glm::max(abs(r.y), abs(r.z)))
+	{
+		if (r.x > 0) {
+			uv.x = (r.y/r.x + 1)/2;
+			uv.y = (r.z/r.x + 1)/2;
+			texIndex = 0;
+		}
+		else {
+			uv.x = (r.y/r.x + 1)/2;
+			uv.y = (r.z/r.x + 1)/2;
+			texIndex = 1;
+		}
 
-	vec3 normR = r / glm::max(r.x, glm::max(r.y, r.z));
+	}
 
+	else if (glm::abs(r.y) > glm::max(abs(r.x), abs(r.z)))
+	{
+		if (r.y > 0) {
+			uv.x = (r.x/r.y + 1)/2;
+			uv.y = (r.z/r.y + 1)/2;
+			texIndex = 2;
+		}
+		else {
+			uv.x = (r.x/r.y + 1)/2;
+			uv.y = (r.z/r.y + 1)/2;
+			texIndex = 3;
+		}
 
+	}
 
+	else  /*(glm::abs(r.z) > glm::max(abs(r.x), abs(r.z))) */
+	{
+		if (r.z > 0) {
+			uv.x = (r.x/r.z + 1)/2;
+			uv.y = (r.y/r.z + 1)/2;
+			texIndex = 4;
+		}
+		else {
+			uv.x = (r.x/r.z + 1)/2;
+			uv.y = (r.y/r.z + 1)/2;
+			texIndex = 5;
+		}
+
+	}
 }
 
+
+
+
+/* We'll keep it for now as a refernce */
+void Mesh::convert_xyz_to_cube_uv(float x, float y, float z, int *index, float *u, float *v)
+{
+  float absX = fabs(x);
+  float absY = fabs(y);
+  float absZ = fabs(z);
+
+  int isXPositive = x > 0 ? 1 : 0;
+  int isYPositive = y > 0 ? 1 : 0;
+  int isZPositive = z > 0 ? 1 : 0;
+
+  float maxAxis, uc, vc;
+
+  // POSITIVE X
+  if (isXPositive && absX >= absY && absX >= absZ) {
+    // u (0 to 1) goes from +z to -z
+    // v (0 to 1) goes from -y to +y
+    maxAxis = absX;
+    uc = -z;
+    vc = y;
+    *index = 0;
+  }
+  // NEGATIVE X
+  if (!isXPositive && absX >= absY && absX >= absZ) {
+    // u (0 to 1) goes from -z to +z
+    // v (0 to 1) goes from -y to +y
+    maxAxis = absX;
+    uc = z;
+    vc = y;
+    *index = 1;
+  }
+  // POSITIVE Y
+  if (isYPositive && absY >= absX && absY >= absZ) {
+    // u (0 to 1) goes from -x to +x
+    // v (0 to 1) goes from +z to -z
+    maxAxis = absY;
+    uc = x;
+    vc = -z;
+    *index = 2;
+  }
+  // NEGATIVE Y
+  if (!isYPositive && absY >= absX && absY >= absZ) {
+    // u (0 to 1) goes from -x to +x
+    // v (0 to 1) goes from -z to +z
+    maxAxis = absY;
+    uc = x;
+    vc = z;
+    *index = 3;
+  }
+  // POSITIVE Z
+  if (isZPositive && absZ >= absX && absZ >= absY) {
+    // u (0 to 1) goes from -x to +x
+    // v (0 to 1) goes from -y to +y
+    maxAxis = absZ;
+    uc = x;
+    vc = y;
+    *index = 4;
+  }
+  // NEGATIVE Z
+  if (!isZPositive && absZ >= absX && absZ >= absY) {
+    // u (0 to 1) goes from +x to -x
+    // v (0 to 1) goes from -y to +y
+    maxAxis = absZ;
+    uc = -x;
+    vc = y;
+    *index = 5;
+  }
+
+  // Convert range from -1 to 1 to 0 to 1
+  *u = 0.5f * (uc / maxAxis + 1.0f);
+  *v = 0.5f * (vc / maxAxis + 1.0f);
+}

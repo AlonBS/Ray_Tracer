@@ -175,6 +175,10 @@ vec3 RayTracer::recursiveRayTrace(Scene& scene, Ray & ray, GLuint depth)
 		return COLOR_BLACK;
 	}
 
+	vec3 o = vec3(0, 0, 2);
+	vec3 d = vec3(0, 0, -1);
+	ray = Ray(o, d);
+
 	Intersection hit = intersectScene(scene, ray);
 	if (!hit.isValid) {
 		return COLOR_BLACK;

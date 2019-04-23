@@ -120,6 +120,8 @@ private:
 
 	static Image *boundTexture;
 	static bool textureIsBound;
+	static vector<Image*> boundEnvMaps;
+	static bool envMapsAreBound;
 
 	/***********************************************************************/
 

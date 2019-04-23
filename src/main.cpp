@@ -221,6 +221,92 @@ GLfloat foo()
 
 }
 
+//
+//vec3 _mapEnvironment(vec3& rayDir, vec3& normal)
+//{
+//	vec2 uv;
+//	//vec3 r = normalize(glm::reflect(rayDir, normal));
+//	vec3 r = rayDir;
+//
+//	if (glm::abs(r.x) > glm::max(abs(r.y), abs(r.z)))
+//	{
+//		if (r.x > 0) {
+//			uv.x = (r.y/r.x + 1)/2;
+//			uv.y = (r.z/r.x + 1)/2;
+//		}
+//		else {
+//			uv.x = (r.y/r.x + 1)/2;
+//			uv.y = (r.z/r.x + 1)/2;
+//		}
+//
+//	}
+//
+//	else if (glm::abs(r.y) > glm::max(abs(r.x), abs(r.z)))
+//	{
+//		if (r.y > 0) {
+//			uv.x = (r.x/r.y + 1)/2;
+//			uv.y = (r.z/r.y + 1)/2;
+//		}
+//		else {
+//			uv.x = (r.x/r.y + 1)/2;
+//			uv.y = (r.z/r.y + 1)/2;
+//		}
+//
+//	}
+//
+//	else
+//	{
+//		if (r.z > 0) {
+//			uv.x = (r.x/r.z + 1)/2;
+//			uv.y = (r.y/r.z + 1)/2;
+//		}
+//		else {
+//			uv.x = (r.x/r.z + 1)/2;
+//			uv.y = (r.y/r.z + 1)/2;
+//		}
+//
+//	}
+//
+//	printVec2("UV", uv);
+//
+//}
+
+
+vector<int*> b {};
+
+void foo(vector<int*> a)
+{
+	b = a;
+
+
+}
+
+void boo()
+{
+	for (int* i : b) {
+		cout << *i << endl;
+	}
+
+}
+
+int main2()
+{
+//	vec3 r = vec3(-5, -1, 2);
+//	vec3 n = vec3(1, 0, 0);
+
+	int n1 = 1, n2 = 2, n3 = 3;
+	vector<int*> a { &n1, &n2, &n3};
+
+	*a[0] = 6;
+
+	foo(a);
+	boo();
+
+
+	return 0;
+
+}
+
 
 int main(int argc, char *argv[])
 {

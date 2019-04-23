@@ -25,7 +25,7 @@ public:
     					  const ObjectProperties& op,
 						  const ObjectTransforms& ot,
 						  Image* texture,
-						  Image* envMaps[],
+						  vector<Image*>& envMaps,
     					  vector<Mesh*>& modelMeshes,
 						  vector<Image*>& modelTextures);
 
@@ -47,7 +47,7 @@ private:
     static ObjectProperties _objectProperties;
     static ObjectTransforms _objectTransforms;
     static Image* _texture;
-    static Image* _envMaps[];
+    static vector<Image*> _envMaps;
 
 
 

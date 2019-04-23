@@ -21,6 +21,7 @@ vector<Mesh*> Model::_meshes {};
 ObjectProperties Model::_objectProperties{};
 ObjectTransforms Model::_objectTransforms{};
 Image* Model::_texture = nullptr;
+vector<Image*> Model::_envMaps{};
 vector<Model::Texture*> Model::_loadedTextures{}; // We store all the textures loaded for this module, to avoid load duplication
 string Model::_directory{};
 
@@ -40,7 +41,7 @@ Model::loadModel(string const &path,
 				 const ObjectProperties& op,
 				 const ObjectTransforms& ot,
 				 Image* texture,
-				 Image* envMaps[],
+				 vector<Image*>& envMaps,
 				 vector<Mesh*>& modelMeshes,
 				 vector<Image*>& modelTextures)
 
@@ -50,7 +51,6 @@ Model::loadModel(string const &path,
 	_objectProperties = op;
 	_objectTransforms = ot;
 	_texture = texture;
-
 	_envMaps = envMaps;
 
 

@@ -39,6 +39,7 @@ private:
 	std::vector<Object*> 	  		_objects;
 	std::vector<Mesh*>				_meshes;
 	std::vector<Image*>				_textures;
+	std::vector<Image*>				_envMaps;
 
 	std::vector<PointLight*>  		_pointLights;
 	std::vector<DirectionalLight*>  _directionalLights;
@@ -88,7 +89,11 @@ public:
 		_textures.reserve(_textures.size() + textures.size());
 		_textures.insert(_textures.end(), textures.begin(), textures.end());
 	}
+	void addEnvMap(Image *envMap) { _envMaps.push_back(envMap); }
+
+
 	Image* getTexture(uint i) { assert(i < _textures.size()); return _textures[i]; }
+	vector<Image*> getEnvMaps(uint i) { assert (6*i < _envMaps.size()); return vector<Image*> (_envMaps.begin() + 6*i, _envMaps.begin() + 6*i + 6); }
 
 	void addPointLight(PointLight *light) { _pointLights.push_back(light); }
 	std::vector<PointLight*>& getPointLights() { return _pointLights; }

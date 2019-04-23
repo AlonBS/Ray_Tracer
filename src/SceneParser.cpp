@@ -56,6 +56,9 @@ struct Commands {
 	const string texture         = "texture";
 	const string bindTexture     = "bindTexture";
 	const string unbindTexture   = "unbindTexture";
+	const string envMap          = "envMap";
+	const string bindEnvMaps      = "bindEnvMaps";
+	const string unbindEnvMaps    = "unbindEnvMaps";
 	const string model		     = "model";
 
 	// Transformations
@@ -96,7 +99,9 @@ string 	    SceneParser::camera = Commands.camera;
 set<string> SceneParser::geometry{Commands.sphere, Commands.cylinder, Commands.box, Commands.cone,
 								  Commands.plain, Commands.maxVerts, Commands.maxVertNorms,
 								  Commands.vertex, Commands.vertexNormal, Commands.vertexTex, Commands.vertexNormTex, Commands.tri,
-								  Commands.triNormal, Commands.triTex, Commands.triNormTex, Commands.texture, Commands.bindTexture, Commands.unbindTexture,
+								  Commands.triNormal, Commands.triTex, Commands.triNormTex,
+								  Commands.texture, Commands.bindTexture, Commands.unbindTexture,
+								  Commands.envMap, Commands.bindEnvMaps, Commands.unbindEnvMaps,
 								  Commands.model};
 set<string> SceneParser::transformations {Commands.translate, Commands.rotate, Commands.scale,
 										  Commands.pushTransform, Commands.popTransform};
@@ -140,6 +145,11 @@ vector<glm::vec2> SceneParser::verticesNormTexT{};
 GLint SceneParser::lineNumber = 0;
 Image* SceneParser::boundTexture = nullptr;
 bool SceneParser::textureIsBound = false;
+vector<Image*> SceneParser::boundEnvMaps {};
+bool SceneParser::envMapsAreBound = false;
+
+
+
 Scene* SceneParser::scene = nullptr;
 
 
@@ -388,6 +398,8 @@ SceneParser::readFile(const AdditionalRenderParams& params, const char* fileName
 	verticesNormTexT.clear();
 	boundTexture = nullptr;
 	textureIsBound = false;
+	boundEnvMaps.clear();
+	envMapsAreBound = false;
 	clearObjectProps();
 	transformsStack = {};
 	attenuation = Attenuation{
@@ -694,10 +706,33 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 
 	else if (cmd == Commands.unbindTexture) {
 
-			textureIsBound = false;
-			boundTexture = nullptr;
-		}
+		textureIsBound = false;
+		boundTexture = nullptr;
+	}
 
+	else if (cmd == Commands.envMap) {
+
+		string envMapFile;
+		s >> envMapFile;
+
+		Image *envMap = new Image(0, 0);
+		envMap->loadImage(envMapFile);
+
+		scene->addEnvMap(envMap);
+	}
+
+	else if (cmd == Commands.bindEnvMaps) {
+
+		readValues(s, 1, values);
+		boundEnvMaps = scene->getEnvMaps(values[0]);
+		envMapsAreBound = true;
+	}
+
+	else if (cmd == Commands.unbindEnvMaps) {
+
+		envMapsAreBound = false;
+		boundEnvMaps.clear();
+	}
 	else if (cmd == Commands.model) {
 		string modelFile;
 		s >> modelFile;
@@ -710,17 +745,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		vector<Image*> modelTextures{};
 //		Model::loadModel(modelFile, op, ot, boundTexture, modelMeshes, modelTextures);
 
-		Image* envMaps[6] = {
-				scene->getTexture(values[0]),
-				scene->getTexture(values[1]),
-				scene->getTexture(values[2]),
-				scene->getTexture(values[3]),
-				scene->getTexture(values[4]),
-				scene->getTexture(values[5])
-		};
-
-
-		Model::loadModel(modelFile, op, ot, boundTexture, envMaps, modelMeshes, modelTextures);
+		Model::loadModel(modelFile, op, ot, boundTexture, boundEnvMaps, modelMeshes, modelTextures);
 
 		scene->addTextures(modelTextures);
 		scene->addMeshes(modelMeshes);

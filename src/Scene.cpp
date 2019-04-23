@@ -26,6 +26,10 @@ Scene::~Scene() {
 		delete t;
 	}
 
+	for (auto* e : _envMaps) {
+		delete e;
+	}
+
 	for (auto* p : _pointLights) {
 		delete p;
 	}
@@ -39,10 +43,10 @@ Scene::~Scene() {
 	}
 
 
-	//_boundingVolumes.clear();
 	_objects.clear();
 	_meshes.clear();
 	_textures.clear();
+	_envMaps.clear();
 	_pointLights.clear();
 	_directionalLights.clear();
 	delete (bvh); bvh = nullptr;
