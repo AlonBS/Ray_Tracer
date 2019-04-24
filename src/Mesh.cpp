@@ -134,6 +134,7 @@ Mesh::intersectsRay(const Ray &r,
 						GLint index;
 						vec2 uv;
 						vec3 xx = normalize(glm::reflect(r.direction, tN));
+						printVec3("tN", tN);
 						convert_xyz_to_cube_uv(xx.x, xx.y, xx.z, &index, &uv.x, &uv.y);
 
 
@@ -229,47 +230,23 @@ void Mesh::__mapEnvironment(const vec3& r, vec2& uv, GLuint& texIndex)
 {
 	if (glm::abs(r.x) > glm::max(abs(r.y), abs(r.z)))
 	{
-		if (r.x > 0) {
-			uv.x = (r.y/r.x + 1)/2;
-			uv.y = (r.z/r.x + 1)/2;
-			texIndex = 0;
-		}
-		else {
-			uv.x = (r.y/r.x + 1)/2;
-			uv.y = (r.z/r.x + 1)/2;
-			texIndex = 1;
-		}
-
+		uv.x = (r.y/r.x + 1)/2;
+		uv.y = (r.z/r.x + 1)/2;
+		texIndex = (r.x > 0) ? 0 : 1;
 	}
 
 	else if (glm::abs(r.y) > glm::max(abs(r.x), abs(r.z)))
 	{
-		if (r.y > 0) {
-			uv.x = (r.x/r.y + 1)/2;
-			uv.y = (r.z/r.y + 1)/2;
-			texIndex = 2;
-		}
-		else {
-			uv.x = (r.x/r.y + 1)/2;
-			uv.y = (r.z/r.y + 1)/2;
-			texIndex = 3;
-		}
-
+		uv.x = (r.x/r.y + 1)/2;
+		uv.y = (r.z/r.y + 1)/2;
+		texIndex = (r.y > 0) ? 2 : 3;
 	}
 
-	else  /*(glm::abs(r.z) > glm::max(abs(r.x), abs(r.z))) */
+	else /* (glm::abs(r.z) > glm::max(abs(r.x), abs(r.z))) */
 	{
-		if (r.z > 0) {
-			uv.x = (r.x/r.z + 1)/2;
-			uv.y = (r.y/r.z + 1)/2;
-			texIndex = 4;
-		}
-		else {
-			uv.x = (r.x/r.z + 1)/2;
-			uv.y = (r.y/r.z + 1)/2;
-			texIndex = 5;
-		}
-
+		uv.x = (r.x/r.z + 1)/2;
+		uv.y = (r.y/r.z + 1)/2;
+		texIndex = (r.z > 0) ? 4 : 5;
 	}
 }
 
@@ -348,3 +325,17 @@ void Mesh::convert_xyz_to_cube_uv(float x, float y, float z, int *index, float *
   *u = 0.5f * (uc / maxAxis + 1.0f);
   *v = 0.5f * (vc / maxAxis + 1.0f);
 }
+
+
+
+
+void Mesh::print() const
+{
+	super::print();
+//	printVec3("Ambient", _properties._ambient);
+//	printVec3("_emission", _properties._emission);
+//	printVec3("_diffuse", _properties._diffuse);
+//	printVec3("_specular", _properties._specular);
+//	cout << "Shininess: " << _properties._shininess << endl;
+}
+

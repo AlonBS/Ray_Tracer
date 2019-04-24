@@ -65,6 +65,8 @@ public:
 	const vector<Vertex>& getVertices() { return const_cast<vector<Vertex>&>(static_cast<const Mesh &>(*this).getVertices()); }
 
 
+	void print() const;
+
 private:
 
 

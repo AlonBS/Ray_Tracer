@@ -175,10 +175,6 @@ vec3 RayTracer::recursiveRayTrace(Scene& scene, Ray & ray, GLuint depth)
 		return COLOR_BLACK;
 	}
 
-	vec3 o = vec3(0, 0, 2);
-	vec3 d = vec3(0, 0, -1);
-	ray = Ray(o, d);
-
 	Intersection hit = intersectScene(scene, ray);
 	if (!hit.isValid) {
 		return COLOR_BLACK;
@@ -383,7 +379,7 @@ bool RayTracer::isVisibleToLight(Scene& scene, Ray& shadowRay, GLfloat limit)
 	}
 
 	// Now we check for complex object, where we already know the closest primitive object for this ray.
-	if (scene.getBVH()->intersectsRay(shadowRay, limit, &dist, nullptr, nullptr, nullptr, nullptr))
+	if (scene.getBVH()->intersectsRay(shadowRay, limit, &dist, nullptr, nullptr, nullptr, nullptr, true))
 	{
 		return false;
 	}

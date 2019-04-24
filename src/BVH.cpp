@@ -20,11 +20,18 @@ const vec3 BVH::PLANE_SET_NORMALS[BVH::NUM_OF_SET_NORMALS] = {
 };
 
 
+GLuint BVH::Octree::maxDepth = 0;
+
+
 BVH::BVH(std::vector<Mesh*>& meshes)
 : meshes(meshes)
 {
 
 	Extents sceneExtents = __buildSceneExtents(meshes); // that's the extent of the entire scene which we need to compute for the octree
+
+	// The max depth of the tree is proportional to the number of objects in the scene, and with max possible value
+	Octree::maxDepth = glm::min(16.0, ceil(pow(meshes.size(), (1.0 / 8.0))));
+	cout << "MAX DEPTH " << Octree::maxDepth << endl;
 
 	// Now that we have the extents of the scene we can start building our octree
 	octree = new Octree(sceneExtents);
@@ -48,7 +55,8 @@ bool BVH::intersectsRay(const Ray &r,
 						vec3* point,
 						vec3* normal,
 						ObjectTexColors* texColors,
-						ObjectProperties* properties)
+						ObjectProperties* properties,
+						bool shadowRay)
 {
 	bool intersected = false;
 	GLfloat closestHit = minDist;
@@ -83,11 +91,22 @@ bool BVH::intersectsRay(const Ray &r,
 		if (node->isLeaf) {
 			for (const auto& e: node->nodeExtentsList) {
 
-				if (e->mesh->intersectsRay(r, dist, point, normal, texColors, properties)) {
+				vec3 tPoint;
+				vec3 tNormal;
+				ObjectTexColors tTexColors{};
+				ObjectProperties tProperties{};
+				if (e->mesh->intersectsRay(r, dist, &tPoint, &tNormal, &tTexColors, &tProperties)) {
 
 					if (*dist < closestHit) {
 						// Notice we only update closestHit upon intersection with object (mesh), NOT extents
 						closestHit = *dist;
+
+						if (!shadowRay) {
+							*point = tPoint;
+							*normal = tNormal;
+							*texColors = tTexColors;
+							*properties = tProperties;
+						}
 						intersected = true;
 					}
 				}
@@ -186,7 +205,7 @@ void BVH::Octree::deleteOctreeNode(OctreeNode*& node)
 void BVH::Octree::insert(OctreeNode*& node, const Extents* extents, const AABB& bbox, uint32_t depth)
 {
 	if (node->isLeaf) {
-		if (node->nodeExtentsList.size() == 0 || depth == 16) {
+		if (node->nodeExtentsList.size() == 0 || depth == maxDepth) {
 			node->nodeExtentsList.push_back(extents);
 		}
 		else {

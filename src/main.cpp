@@ -289,24 +289,6 @@ void boo()
 
 }
 
-int main2()
-{
-//	vec3 r = vec3(-5, -1, 2);
-//	vec3 n = vec3(1, 0, 0);
-
-	int n1 = 1, n2 = 2, n3 = 3;
-	vector<int*> a { &n1, &n2, &n3};
-
-	*a[0] = 6;
-
-	foo(a);
-	boo();
-
-
-	return 0;
-
-}
-
 
 int main(int argc, char *argv[])
 {

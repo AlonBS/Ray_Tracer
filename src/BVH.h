@@ -44,7 +44,8 @@ public:
 					   vec3* point,
 					   vec3* normal,
 					   ObjectTexColors* texColors,
-					   ObjectProperties* properties);
+					   ObjectProperties* properties,
+					   bool shadowRay = false);
 
 
 
@@ -146,7 +147,11 @@ private:
 		OctreeNode* root = nullptr;
 		AABB bbox;
 
+		static GLuint maxDepth;
+
 	private:
+
+
 
 		void deleteOctreeNode(OctreeNode*& node);
 
