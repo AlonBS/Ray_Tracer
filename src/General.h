@@ -151,6 +151,14 @@ printMat4(const string& name, const mat4& mat)
 }
 
 inline bool
+equalToVec2(const vec2& v1, const vec2& v2)
+{
+	return glm::abs(v1.x - v2.x) < EPSILON &&
+		   glm::abs(v1.y - v2.y) < EPSILON;
+
+}
+
+inline bool
 equalToVec3(const vec3& v1, const vec3& v2)
 {
 	return glm::abs(v1.x - v2.x) < EPSILON &&

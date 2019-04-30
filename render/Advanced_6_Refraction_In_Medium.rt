@@ -1,17 +1,20 @@
 
 # Example of a Refraction within medium to show rays changing
 
-size 1280 720 
-camera 0 4 10 0 0 0 0 1 0 45
-
+size 640 480 
+camera 3 4 10 0 0 0 0 1 0 60
 attenuation 1 0.0 0.0
 
-maxDepth 3
+maxDepth 1
 
 area -3 4 10 0 0 1 3 1
 
 texture ./textures/earth.png
 texture ./textures/bricks.jpg
+texture ./textures/checkers.png
+texture ./textures/cola.jpg
+
+
 
 envMap ./environments/cube/posx.jpg # pos X
 envMap ./environments/cube/negx.jpg # neg X
@@ -20,6 +23,26 @@ envMap ./environments/cube/negy.jpg # neg Y
 envMap ./environments/cube/posz.jpg # pos Z
 envMap ./environments/cube/negz.jpg # neg Z
 
+envMap ./environments/Yokohama2/posx.jpg # pos X
+envMap ./environments/Yokohama2/negx.jpg # neg X
+envMap ./environments/Yokohama2/posy.jpg # pos Y
+envMap ./environments/Yokohama2/negy.jpg # neg Y
+envMap ./environments/Yokohama2/posz.jpg # pos Z
+envMap ./environments/Yokohama2/negz.jpg # neg Z
+
+
+envMap ./environments/Lycksele3/posx.jpg # pos X
+envMap ./environments/Lycksele3/negx.jpg # neg X
+envMap ./environments/Lycksele3/posy.jpg # pos Y
+envMap ./environments/Lycksele3/negy.jpg # neg Y
+envMap ./environments/Lycksele3/posz.jpg # pos Z
+envMap ./environments/Lycksele3/negz.jpg # neg Z
+
+
+
+
+
+#Yokohama2
 
 pushTransform
 
@@ -88,16 +111,16 @@ pushTransform
 
 	clearProps
 
-#	bindTexture 0
-	bindEnvMaps 0
-	ambient 0.2 0.2 0.2
+	bindTexture 2
+#	bindEnvMaps 1
+	ambient 1 1 1
 
-	translate 0 0 0
-	rotate 0 1 0 45
-	scale 30 30 30
+#	translate 0 0 0
+#	rotate 0 1 0 90
+	scale 2 2 2
 	model ./3ds/cube/cube.obj
 
-#	unbindTexture
+	unbindTexture
 
 	unbindEnvMaps
 

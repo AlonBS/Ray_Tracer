@@ -162,6 +162,86 @@ Image* RayTracer::rayTraceST(Scene& scene)
 }
 
 
+
+
+
+/* We'll keep it for now as a refernce */
+void RayTracer::aaa(vec3& v, GLuint *index, vec2 *uv)
+{
+  GLfloat absX = fabs(v.x);
+  GLfloat absY = fabs(v.y);
+  GLfloat absZ = fabs(v.z);
+
+  bool isXPositive = v.x > 0;
+  bool isYPositive = v.y > 0;
+  bool isZPositive = v.z > 0;
+
+  GLfloat maxAxis, uc, vc;
+
+  if (isXPositive && absX >= absY && absX >= absZ) {
+	  // u (0 to 1) goes from +z to -z
+	  // v (0 to 1) goes from -y to +y
+	  maxAxis = absX;
+	  uc = -v.z;
+	  vc = v.y;
+	  *index = 0;
+  }
+  // NEGATIVE X
+  if (!isXPositive && absX >= absY && absX >= absZ) {
+	  // u (0 to 1) goes from -z to +z
+	  // v (0 to 1) goes from -y to +y
+	  maxAxis = absX;
+	  uc = v.z;
+	  vc = v.y;
+	  *index = 1;
+  }
+  // POSITIVE Y
+  if (isYPositive && absY >= absX && absY >= absZ) {
+	  // u (0 to 1) goes from -x to +x
+	  // v (0 to 1) goes from +z to -z
+	  maxAxis = absY;
+	  uc = v.x;
+	  vc = -v.z;
+	  *index = 2;
+  }
+  // NEGATIVE Y
+  if (!isYPositive && absY >= absX && absY >= absZ) {
+	  // u (0 to 1) goes from -x to +x
+	  // v (0 to 1) goes from -z to +z
+	  maxAxis = absY;
+	  uc = v.x;
+	  vc = v.z;
+	  *index = 3;
+  }
+  // POSITIVE Z
+  if (isZPositive && absZ >= absX && absZ >= absY) {
+	  // u (0 to 1) goes from -x to +x
+	  // v (0 to 1) goes from -y to +y
+	  maxAxis = absZ;
+	  uc = v.x;
+	  vc = v.y;
+	  *index = 4;
+  }
+  // NEGATIVE Z
+  if (!isZPositive && absZ >= absX && absZ >= absY) {
+	  // u (0 to 1) goes from +x to -x
+	  // v (0 to 1) goes from -y to +y
+	  maxAxis = absZ;
+	  uc = -v.x;
+	  vc = v.y;
+	  *index = 5;
+  }
+
+    // Convert range from -1 to 1 to 0 to 1
+    uv->x = 0.5f * (uc / maxAxis + 1.0f);
+    uv->y = 0.5f * (vc / maxAxis + 1.0f);
+
+}
+
+
+
+
+
 vec3 RayTracer::recursiveRayTrace(Scene& scene, Ray & ray, GLuint depth)
 {
 	vec3 color = COLOR_BLACK;
@@ -175,9 +255,35 @@ vec3 RayTracer::recursiveRayTrace(Scene& scene, Ray & ray, GLuint depth)
 		return COLOR_BLACK;
 	}
 
+//	vec3 o = vec3(0,0,0);
+//	vec3 d = vec3(0,0,-1);
+//	ray = Ray(o,d);
+
 	Intersection hit = intersectScene(scene, ray);
 	if (!hit.isValid) {
-		return COLOR_BLACK;
+
+		vec3 xx = ray.direction;
+		GLuint index;
+		vec2 uv;
+
+//		if (scene.hasSkyBox()) {
+			aaa(xx, &index, &uv);
+
+			uv = glm::clamp(uv, 0.f + EPSILON, 1.f - EPSILON); // Textures at the edges tend to be not accurate
+			Image *texture = scene.getEnvMaps(0)[index];
+
+			int w = texture->getWidth();
+			int h = texture->getHeight();
+
+			/* TODO - consider interpolation for better effects (average near by pixels) */
+			return texture->getPixel((int)(uv.x * w), (int) (uv.y * h));
+
+
+
+//		}
+//		else {
+//			return COLOR_BLACK;
+//		}
 	}
 
 

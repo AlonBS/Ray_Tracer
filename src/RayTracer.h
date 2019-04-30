@@ -73,6 +73,9 @@ private:
 	vec3 calculateReflections(Scene& scene, vec3& rayDir, Intersection& hit, GLuint depth);
 	vec3 calculateRefractions(Scene& scene, vec3& rayDir, Intersection& hit, GLuint depth);
 
+
+	void aaa(vec3& v, GLuint *index, vec2 *uv);
+
 };
 
 

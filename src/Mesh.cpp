@@ -93,6 +93,10 @@ Mesh::__triangulate(vector<Vertex> vertices, vector<unsigned int> indices)
 
 		this->triangles.push_back(new Triangle(A, B, C, An, Bn, Cn, Auv, Buv, Cuv));
 
+		printVec3("A", A);
+		printVec3("B", B);
+		printVec3("C", C);
+
 	}
 
 
@@ -133,49 +137,48 @@ Mesh::intersectsRay(const Ray &r,
 
 						GLint index;
 						vec2 uv;
+//						printVec3("tN", tN);
+//						if (tN.z > 0.0f) tN.z *= -1;
+//						if (tN.x > 0.0f) tN.x *= -1;
+//						printVec3("tN", tN);
 						vec3 xx = normalize(glm::reflect(r.direction, tN));
-						printVec3("tN", tN);
-						convert_xyz_to_cube_uv(xx.x, xx.y, xx.z, &index, &uv.x, &uv.y);
-
-
-						GLuint index2;
-						vec2 uv2;
-						vec3 xx2 = normalize(glm::reflect(r.direction, tN));
-						__mapEnvironment(xx2, uv2, index2);
-
-
-						// TODO - remove once made sure this is stable
-						if (!equalToVec3(xx, xx2)) {
-							printVec3("XX", xx);
-							printVec3("XX2", xx2);
-
-						}
-
-						if (index != index2) {
-							cout << index << endl;
-							cout << index2 << endl;
-						}
-//
+						xx = r.direction;
+//						if (tN.z != 1.0f) {
 
 //
-//
-//
-//
-////						Image* tex = this->getTextureColor(_envMaps[index], uv);
-//
-////						vec2 uv;
-////						Image* tex;
-////						__mapEnvironment(r.direction, tN, uv, tex);
-//
-//
-//						printVec2("UV", uv);
-//						cout << "INDEX: " << index << endl;;
-//						printVec2("UV 2:", uv2);
-//						cout << "INDEX 2: " << index2 << endl;;
+							convert_xyz_to_cube_uv(xx.x, xx.y, xx.z, &index, &uv.x, &uv.y);
 
+//							printVec3("tN", tN);
+//							printVec3("r", r.direction);
+//							printVec3("XX", xx);
+//							cout << index << endl;
+
+//							printVec2("uv", uv);
+//							cout << "Index " << index << endl;
+
+
+//							GLuint index2;
+//							vec2 uv2;
+//							vec3 xx2 = normalize(glm::reflect(r.direction, tN));
+//							__mapEnvironment(xx2, uv2, index2);
+
+
+////							 TODO - remove once made sure this is stable
+//							if (!equalToVec2(uv, uv2)) {
+//								printVec2("uv", uv);
+//								printVec2("uv2", uv2);
+//
+//							}
+//
+//							if (index != index2) {
+//								cout << index << endl;
+//								cout << index2 << endl;
+//							}
+//						}
 
 
 						vec3 envColor = this->getTextureColor(_envMaps[index], uv);
+//						vec3 envColor = this->getTextureColor(_envMaps[index2], uv2);
 
 						texColors->_ambientTexColor  = envColor * this->getAmbientTextureColor(ttC);;
 						texColors->_diffuseTexColor  = envColor * this->getDiffuseTextureColor(ttC);;
@@ -266,64 +269,71 @@ void Mesh::convert_xyz_to_cube_uv(float x, float y, float z, int *index, float *
 
   float maxAxis, uc, vc;
 
-  // POSITIVE X
+//  vec3 aaa = vec3(x,y,z);
+//  printVec3("R", aaa);
+
+  *index = 0;
+  *u = 0;
+  *v = 0;
+
   if (isXPositive && absX >= absY && absX >= absZ) {
-    // u (0 to 1) goes from +z to -z
-    // v (0 to 1) goes from -y to +y
-    maxAxis = absX;
-    uc = -z;
-    vc = y;
-    *index = 0;
+	  // u (0 to 1) goes from +z to -z
+	  // v (0 to 1) goes from -y to +y
+	  maxAxis = absX;
+	  uc = -z;
+	  vc = y;
+	  *index = 0;
   }
   // NEGATIVE X
   if (!isXPositive && absX >= absY && absX >= absZ) {
-    // u (0 to 1) goes from -z to +z
-    // v (0 to 1) goes from -y to +y
-    maxAxis = absX;
-    uc = z;
-    vc = y;
-    *index = 1;
+	  // u (0 to 1) goes from -z to +z
+	  // v (0 to 1) goes from -y to +y
+	  maxAxis = absX;
+	  uc = z;
+	  vc = y;
+	  *index = 1;
   }
   // POSITIVE Y
   if (isYPositive && absY >= absX && absY >= absZ) {
-    // u (0 to 1) goes from -x to +x
-    // v (0 to 1) goes from +z to -z
-    maxAxis = absY;
-    uc = x;
-    vc = -z;
-    *index = 2;
+	  // u (0 to 1) goes from -x to +x
+	  // v (0 to 1) goes from +z to -z
+	  maxAxis = absY;
+	  uc = x;
+	  vc = -z;
+	  *index = 2;
   }
   // NEGATIVE Y
   if (!isYPositive && absY >= absX && absY >= absZ) {
-    // u (0 to 1) goes from -x to +x
-    // v (0 to 1) goes from -z to +z
-    maxAxis = absY;
-    uc = x;
-    vc = z;
-    *index = 3;
+	  // u (0 to 1) goes from -x to +x
+	  // v (0 to 1) goes from -z to +z
+	  maxAxis = absY;
+	  uc = x;
+	  vc = z;
+	  *index = 3;
   }
   // POSITIVE Z
   if (isZPositive && absZ >= absX && absZ >= absY) {
-    // u (0 to 1) goes from -x to +x
-    // v (0 to 1) goes from -y to +y
-    maxAxis = absZ;
-    uc = x;
-    vc = y;
-    *index = 4;
+	  // u (0 to 1) goes from -x to +x
+	  // v (0 to 1) goes from -y to +y
+	  maxAxis = absZ;
+	  uc = x;
+	  vc = y;
+	  *index = 4;
   }
   // NEGATIVE Z
   if (!isZPositive && absZ >= absX && absZ >= absY) {
-    // u (0 to 1) goes from +x to -x
-    // v (0 to 1) goes from -y to +y
-    maxAxis = absZ;
-    uc = -x;
-    vc = y;
-    *index = 5;
+	  // u (0 to 1) goes from +x to -x
+	  // v (0 to 1) goes from -y to +y
+	  maxAxis = absZ;
+	  uc = -x;
+	  vc = y;
+	  *index = 5;
   }
 
-  // Convert range from -1 to 1 to 0 to 1
-  *u = 0.5f * (uc / maxAxis + 1.0f);
-  *v = 0.5f * (vc / maxAxis + 1.0f);
+    // Convert range from -1 to 1 to 0 to 1
+    *u = 0.5f * (uc / maxAxis + 1.0f);
+    *v = 0.5f * (vc / maxAxis + 1.0f);
+
 }
 
 
@@ -338,4 +348,69 @@ void Mesh::print() const
 //	printVec3("_specular", _properties._specular);
 //	cout << "Shininess: " << _properties._shininess << endl;
 }
+
+
+
+
+/*
+ *
+ *  if (isXPositive && absX >= absY && absX >= absZ) {
+	  // u (0 to 1) goes from +z to -z
+	  // v (0 to 1) goes from -y to +y
+	  maxAxis = absX;
+	  uc = -z;
+	  vc = y;
+	  *index = 0;
+  }
+  // NEGATIVE X
+  if (!isXPositive && absX >= absY && absX >= absZ) {
+	  // u (0 to 1) goes from -z to +z
+	  // v (0 to 1) goes from -y to +y
+	  maxAxis = absX;
+	  uc = z;
+	  vc = y;
+	  *index = 1;
+  }
+  // POSITIVE Y
+  if (isYPositive && absY >= absX && absY >= absZ) {
+	  // u (0 to 1) goes from -x to +x
+	  // v (0 to 1) goes from +z to -z
+	  maxAxis = absY;
+	  uc = x;
+	  vc = -z;
+	  *index = 4;
+  }
+  // NEGATIVE Y
+  if (!isYPositive && absY >= absX && absY >= absZ) {
+	  // u (0 to 1) goes from -x to +x
+	  // v (0 to 1) goes from -z to +z
+	  maxAxis = absY;
+	  uc = x;
+	  vc = z;
+	  *index = 5;
+  }
+  // POSITIVE Z
+  if (isZPositive && absZ >= absX && absZ >= absY) {
+	  // u (0 to 1) goes from -x to +x
+	  // v (0 to 1) goes from -y to +y
+	  maxAxis = absZ;
+	  uc = x;
+	  vc = y;
+	  *index = 3;
+  }
+  // NEGATIVE Z
+  if (!isZPositive && absZ >= absX && absZ >= absY) {
+	  // u (0 to 1) goes from +x to -x
+	  // v (0 to 1) goes from -y to +y
+	  maxAxis = absZ;
+	  uc = -x;
+	  vc = y;
+	  *index = 4;
+  }
+
+    // Convert range from -1 to 1 to 0 to 1
+    *u = 0.5f * (uc / maxAxis + 1.0f);
+    *v = 0.5f * (vc / maxAxis + 1.0f);
+ */
+
 
