@@ -19,7 +19,7 @@
 #define DEFAULT_RESULT_FORMAT ".png"
 #define DEFAULT_SOFT_SHADOWS "on"
 
-#define CURRENT_VERSION "4.1"
+#define CURRENT_VERSION "4.5"
 
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
@@ -206,87 +206,6 @@ static void render_scene(string fileName)
 
 	delete img;
 	delete scene;
-}
-
-#include <random>
-
-GLfloat foo()
-{
-	static random_device rd;  //Will be used to obtain a seed for the random number engine
-	static mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
-	static uniform_real_distribution<> dis(0, 1);
-
-
-	return dis(gen);
-
-}
-
-//
-//vec3 _mapEnvironment(vec3& rayDir, vec3& normal)
-//{
-//	vec2 uv;
-//	//vec3 r = normalize(glm::reflect(rayDir, normal));
-//	vec3 r = rayDir;
-//
-//	if (glm::abs(r.x) > glm::max(abs(r.y), abs(r.z)))
-//	{
-//		if (r.x > 0) {
-//			uv.x = (r.y/r.x + 1)/2;
-//			uv.y = (r.z/r.x + 1)/2;
-//		}
-//		else {
-//			uv.x = (r.y/r.x + 1)/2;
-//			uv.y = (r.z/r.x + 1)/2;
-//		}
-//
-//	}
-//
-//	else if (glm::abs(r.y) > glm::max(abs(r.x), abs(r.z)))
-//	{
-//		if (r.y > 0) {
-//			uv.x = (r.x/r.y + 1)/2;
-//			uv.y = (r.z/r.y + 1)/2;
-//		}
-//		else {
-//			uv.x = (r.x/r.y + 1)/2;
-//			uv.y = (r.z/r.y + 1)/2;
-//		}
-//
-//	}
-//
-//	else
-//	{
-//		if (r.z > 0) {
-//			uv.x = (r.x/r.z + 1)/2;
-//			uv.y = (r.y/r.z + 1)/2;
-//		}
-//		else {
-//			uv.x = (r.x/r.z + 1)/2;
-//			uv.y = (r.y/r.z + 1)/2;
-//		}
-//
-//	}
-//
-//	printVec2("UV", uv);
-//
-//}
-
-
-vector<int*> b {};
-
-void foo(vector<int*> a)
-{
-	b = a;
-
-
-}
-
-void boo()
-{
-	for (int* i : b) {
-		cout << *i << endl;
-	}
-
 }
 
 

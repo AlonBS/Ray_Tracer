@@ -98,6 +98,7 @@ Scene General:
 	skybox <index_i> - Sets skybox to encompass the entire scene. Technically, the scene is mapped to a previously defined
                 environments (see "envMap" keyword under Primitives and Models). The index must be a valid index for a set of maps that
                 was previously declared. If set, the skybox textures will be used when the ray fails to hit any object. 
+		Note that in this case, there's no need to bind or unbind the envMaps used. 
  
 	
 Camera:
@@ -177,7 +178,20 @@ Primitives and Models:
 		applied to it. 
 	envMap <path_s> - Loades and saves a texture specified with the given path, relative to execution directory. The texture
 		should be used for (cubical) environment mapping, so it is expected to see 6 such declerations, and it is assumed
-		that they will be mapped in this order: PosX, NegX, PosY, NegY, PosZ, NegZ (see 
+		that they will be mapped in this order: PosX, NegX, PosY, NegY, PosZ, NegZ (see Advanced_7_Skybox_and_env_map.rt).
+		Each 6 such declerations, are grouped, and indexed, starting at index 0.
+	bindEnvMaps <index_i> - Binds a previously defined envMaps. Any model (and not object!) that will be created next, will be 
+		mapped to this environment. 
+		Important Notes:
+			a) This mechanism could have been applied to primitives, but I chose not to, because all of them 
+				can be textured already - which is much faster, and less memory consuming. So if this is needed - simply bind
+				them to a texture. 
+			b) Although models can be textured too, the textures are applied from triangles perspective, so they usually don't look 
+				quite good, and this achieves much nicer results. 
+			c) You can't bind a texture that was declared as an "envMap" and vice versa. You could declare both with the same path, and use
+				them multiple times, but you must use multiple declerations. 
+	unbindEnvMaps - unbind the last bound envMaps. Any model created from this point on, will not have environment mapping
+
 
 
 Transformations:
@@ -347,6 +361,21 @@ The result image can be found in "./Rendered_Scenes/ExampleSphere_result.png
 
 Version History:
 =================
+
+4.5:
+-----
+- Added environment mapping for models (i.e. meshes). This does not apply to primitives (sphere etc.), because you can simply texture them. I've
+implemented cubical mapping, so the textures should comply to the arrangment of cube-map, like defined here: https://en.wikipedia.org/wiki/Cube_mapping
+- Did some folders reordering. Creating a directory called "environments", which contains sub-directories for each environment mapping I tests. See keywords
+description as to how these should be ordered.
+- Added skybox to scene. This works similar to environment mapping to models, except that the ray is not reflected. If the ray misses every object, and given that
+the scene is skyboxed - (with keyword "skybox" used), then the colors will be of the appropriate texture. (See Advanced_7_Skybox_and_env_map.rt as an example)
+- Added keywords: "skybox", "envMap", "bindEnvMaps", "unbindEnvMaps" - see description above.
+- Fixed a bug in BVH module where properties of last intersected model were chosen, even if this object was more far than a previously intersected mesh. 
+- BVH oct-tree depth is now proportional to the number of meshes in the scene, as for not to consume too much memory. 
+- moved getTextureColor from object to General.h, and also added cubeMapping to there, as it is more appropriate there. 
+- Removed unused dead-code. 
+
 
 4.1:
 - Added a scene dipiction rays refraction when passsing through a refractive medium (with changed parameters) (See advanced scene 6). 

@@ -12,7 +12,6 @@
 #include "Object.h"
 #include "Lights.h"
 #include "Camera.hpp"
-//#include "BoundingVolume.h"
 #include "BVH.h"
 
 typedef struct AdditionalRenderParams
