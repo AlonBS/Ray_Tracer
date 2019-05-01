@@ -75,25 +75,6 @@ void Object::print() const
 }
 
 
-
-vec3 Object::getTextureColor(Image *texture, vec2& uv)
-{
-	if (!texture) {
-		return COLOR_WHITE;
-	}
-
-	uv = glm::clamp(uv, 0.f + EPSILON, 1.f - EPSILON); // Textures at the edges tend to be not accurate
-
-	int w = texture->getWidth();
-	int h = texture->getHeight();
-
-	/* TODO - consider interpolation for better effects (average near by pixels) */
-	return texture->getPixel((int)(uv.x * w), (int) (uv.y * h));
-}
-
-
-
-
 vec3 Object::getAmbientTextureColor(vec2& uv)
 {
 	return getTextureColor(this->_ambientTexture, uv);
@@ -119,7 +100,5 @@ bool Object::bBoxIntersectsRay(const Ray& r, GLfloat* t_near)
 
 	return bbox->intersectsRay(r, t_near);
 }
-
-
 
 

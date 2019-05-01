@@ -9,6 +9,7 @@
 
 Scene::Scene() {
 
+	_skyboxIndex = -1;
 }
 
 Scene::~Scene() {
@@ -47,6 +48,7 @@ Scene::~Scene() {
 	_meshes.clear();
 	_textures.clear();
 	_envMaps.clear();
+	_skybox.clear();
 	_pointLights.clear();
 	_directionalLights.clear();
 	delete (bvh); bvh = nullptr;

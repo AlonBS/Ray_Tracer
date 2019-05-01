@@ -40,6 +40,8 @@ private:
 	std::vector<Mesh*>				_meshes;
 	std::vector<Image*>				_textures;
 	std::vector<Image*>				_envMaps;
+	std::vector<Image*>				_skybox; // Sub-vector of the above to save the need to fetch it everytime
+	GLint 							_skyboxIndex;
 
 	std::vector<PointLight*>  		_pointLights;
 	std::vector<DirectionalLight*>  _directionalLights;
@@ -49,10 +51,6 @@ private:
 
 
 	BVH* bvh;
-
-
-
-	//std::vector<BoundingVolume*>	_boundingVolumes;
 
 
 public:
@@ -91,6 +89,10 @@ public:
 	}
 	void addEnvMap(Image *envMap) { _envMaps.push_back(envMap); }
 
+	bool hasSkybox() { return _skyboxIndex >= 0;}
+	void setSkyBox(GLuint index) { _skybox = getEnvMaps(index); _skyboxIndex = index;}
+	Image* getSkyboxTexture(GLuint index) { assert(index < 6); return _skybox[index];}
+
 
 	Image* getTexture(uint i) { assert(i < _textures.size()); return _textures[i]; }
 	vector<Image*> getEnvMaps(uint i) { assert (6*i < _envMaps.size()); return vector<Image*> (_envMaps.begin() + 6*i, _envMaps.begin() + 6*i + 6); }
@@ -107,7 +109,6 @@ public:
 	Attenuation_t& attenuation() { return _attenuation; }
 
 	void constructAccelerationStructures();
-
 
 	void handleAdditionalParams(AdditionalRenderParams& params);
 	bool noAntiAliasing() { return addParams.noAntiAliasing; }

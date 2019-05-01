@@ -31,7 +31,6 @@ BVH::BVH(std::vector<Mesh*>& meshes)
 
 	// The max depth of the tree is proportional to the number of objects in the scene, and with max possible value
 	Octree::maxDepth = glm::min(16.0, ceil(pow(meshes.size(), (1.0 / 8.0))));
-	cout << "MAX DEPTH " << Octree::maxDepth << endl;
 
 	// Now that we have the extents of the scene we can start building our octree
 	octree = new Octree(sceneExtents);

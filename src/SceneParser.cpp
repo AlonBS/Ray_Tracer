@@ -33,6 +33,7 @@ struct Commands {
 	// General Scene
 	const string size            = "size";
 	const string maxdepth        = "maxDepth";
+	const string skybox			 = "skybox";
 
 	// Camera
 	const string camera          = "camera";
@@ -57,8 +58,8 @@ struct Commands {
 	const string bindTexture     = "bindTexture";
 	const string unbindTexture   = "unbindTexture";
 	const string envMap          = "envMap";
-	const string bindEnvMaps      = "bindEnvMaps";
-	const string unbindEnvMaps    = "unbindEnvMaps";
+	const string bindEnvMaps     = "bindEnvMaps";
+	const string unbindEnvMaps   = "unbindEnvMaps";
 	const string model		     = "model";
 
 	// Transformations
@@ -94,7 +95,7 @@ struct Commands {
 
 AdditionalRenderParams SceneParser::additionalParams{};
 
-set<string> SceneParser::general{Commands.size, Commands.maxdepth};
+set<string> SceneParser::general{Commands.size, Commands.maxdepth, Commands.skybox};
 string 	    SceneParser::camera = Commands.camera;
 set<string> SceneParser::geometry{Commands.sphere, Commands.cylinder, Commands.box, Commands.cone,
 								  Commands.plain, Commands.maxVerts, Commands.maxVertNorms,
@@ -337,6 +338,7 @@ SceneParser::readFile(const AdditionalRenderParams& params, const char* fileName
 	scene->attenuation() = attenuation;
 	scene->maxDepth() = maxDepth;
 
+
 	while (in) {
 
 		getline(in, str);
@@ -428,6 +430,10 @@ SceneParser::handleGeneralCommand(stringstream& s, string& cmd)
 		readValues(s, 1, values);
 		scene->maxDepth() = (GLuint) glm::min(MAX_RECURSION_DEPTH, values[0]);
 
+	} else if (cmd == Commands.skybox) {
+
+		readValues(s, 1, values);
+		scene->setSkyBox(values[0]);
 	}
 
 }

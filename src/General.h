@@ -13,6 +13,7 @@
 #include <GL/glew.h>
 #include <iostream>
 #include <future>
+#include "Image.h"
 
 
 
@@ -166,6 +167,94 @@ equalToVec3(const vec3& v1, const vec3& v2)
 		   glm::abs(v1.z - v2.z) < EPSILON;
 }
 
+
+// Return the cube mapping of 'v' to 'uv' and 'index' for texture
+inline void cubeMap(vec3& v, GLuint *index, vec2 *uv)
+{
+  GLfloat absX = glm::abs(v.x);
+  GLfloat absY = glm::abs(v.y);
+  GLfloat absZ = glm::abs(v.z);
+
+  bool isXPositive = v.x > 0;
+  bool isYPositive = v.y > 0;
+  bool isZPositive = v.z > 0;
+
+  GLfloat maxAxis, uc, vc;
+
+  if (isXPositive && absX >= absY && absX >= absZ) {
+	  // u (0 to 1) goes from +z to -z
+	  // v (0 to 1) goes from -y to +y
+	  maxAxis = absX;
+	  uc = -v.z;
+	  vc = v.y;
+	  *index = 0;
+  }
+  // NEGATIVE X
+  if (!isXPositive && absX >= absY && absX >= absZ) {
+	  // u (0 to 1) goes from -z to +z
+	  // v (0 to 1) goes from -y to +y
+	  maxAxis = absX;
+	  uc = v.z;
+	  vc = v.y;
+	  *index = 1;
+  }
+  // POSITIVE Y
+  if (isYPositive && absY >= absX && absY >= absZ) {
+	  // u (0 to 1) goes from -x to +x
+	  // v (0 to 1) goes from +z to -z
+	  maxAxis = absY;
+	  uc = v.x;
+	  vc = -v.z;
+	  *index = 2;
+  }
+  // NEGATIVE Y
+  if (!isYPositive && absY >= absX && absY >= absZ) {
+	  // u (0 to 1) goes from -x to +x
+	  // v (0 to 1) goes from -z to +z
+	  maxAxis = absY;
+	  uc = v.x;
+	  vc = v.z;
+	  *index = 3;
+  }
+  // POSITIVE Z
+  if (isZPositive && absZ >= absX && absZ >= absY) {
+	  // u (0 to 1) goes from -x to +x
+	  // v (0 to 1) goes from -y to +y
+	  maxAxis = absZ;
+	  uc = v.x;
+	  vc = v.y;
+	  *index = 4;
+  }
+  // NEGATIVE Z
+  if (!isZPositive && absZ >= absX && absZ >= absY) {
+	  // u (0 to 1) goes from +x to -x
+	  // v (0 to 1) goes from -y to +y
+	  maxAxis = absZ;
+	  uc = -v.x;
+	  vc = v.y;
+	  *index = 5;
+  }
+
+    // Convert range from -1 to 1 to 0 to 1
+    uv->x = 0.5f * (uc / maxAxis + 1.0f);
+    uv->y = 0.5f * (vc / maxAxis + 1.0f);
+}
+
+
+inline vec3
+getTextureColor(Image *texture, vec2& uv)
+{
+	if (!texture) {
+		return COLOR_WHITE;
+	}
+
+	uv = glm::clamp(uv, 0.f + EPSILON, 1.f - EPSILON); // Textures at the edges tend to be not accurate
+
+	int w = texture->getWidth();
+	int h = texture->getHeight();
+
+	return texture->getPixel((int)(uv.x * w), (int) (uv.y * h));
+}
 
 
 

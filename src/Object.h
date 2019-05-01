@@ -35,7 +35,7 @@ protected:
 	ObjectProperties _properties;
 	ObjectTransforms _transforms;
 
-	vec3 getTextureColor(Image *texture, vec2& uv);
+	//vec3 getTextureColor(Image *texture, vec2& uv);
 
 	AABB* bbox;
 
@@ -69,6 +69,8 @@ public:
 	auto invTransposeTrans() -> mat3& { return _transforms._invTransposeTrans; }
 
 };
+
+
 
 
 

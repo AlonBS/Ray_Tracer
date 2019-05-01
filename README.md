@@ -21,6 +21,7 @@ Current list of features supported:
 - Full support for reflections and refractions, including mix of the 2 using Fresnel equations. 
 - Normals interpolation (by default) for smoother appearance of less detailed models. 
 - Glossy reflections and refractions
+- Environments mapping and skyboxs (Cubical mapping)
 
 
 
@@ -93,7 +94,10 @@ Scene General:
 	size <width_i> <height_i> - The size of the result in pixels. Example: size 640 480
 	maxdepth <depth_i> - The maximum depth of the recursion of the ray tracer. Maximum value allowed is 5, and
         	default value is 2. Note that, for performance considerations, if the contribution to the light was
-		neglegent, the recursion will stop even if higher number was requested. 
+		neglegent, the recursion will stop even if higher number was requested.
+	skybox <index_i> - Sets skybox to encompass the entire scene. Technically, the scene is mapped to a previously defined
+                environments (see "envMap" keyword under Primitives and Models). The index must be a valid index for a set of maps that
+                was previously declared. If set, the skybox textures will be used when the ray fails to hit any object. 
  
 	
 Camera:
@@ -171,6 +175,9 @@ Primitives and Models:
 		and/or those mapping were given before). 
 	unbindTexture - unbind the last bound texture. Any object created from this point on, will not have textures
 		applied to it. 
+	envMap <path_s> - Loades and saves a texture specified with the given path, relative to execution directory. The texture
+		should be used for (cubical) environment mapping, so it is expected to see 6 such declerations, and it is assumed
+		that they will be mapped in this order: PosX, NegX, PosY, NegY, PosZ, NegZ (see 
 
 
 Transformations:
