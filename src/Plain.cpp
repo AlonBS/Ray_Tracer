@@ -27,7 +27,8 @@ bool Plain::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal
 
 	ip  = tr.origin + t*tr.direction;
 	n = N;
-	// Normal transformation
+
+	// normals transformation
 	n = normalize(this->invTransposeTrans() * n);
 
 	// M * p - to transform point back
@@ -39,17 +40,27 @@ bool Plain::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal
 	if (point) {
 		*point = ip;
 	}
+
 	if (normal) {
 		*normal = n;
 	}
+
 	if (texColors) {
 
-		// Mirror Textures
 		vec2 uv = _textureAt(ip2);
+
+		if (!_objectGlobalProperties.no_bump_maps) {
+			if (hasNormalsMap()) {
+				*normal = normalize(2.f*this->getNormalFromMap(uv) - 1.0f); // Note we don't need to apply normals transformation here
+			}
+		}
+
 		texColors->_ambientTexColor  = this->getAmbientTextureColor(uv);
 		texColors->_diffuseTexColor  = this->getDiffuseTextureColor(uv);
 		texColors->_specularTexColor = this->getSpecularTextureColor(uv);
 	}
+
+
 	if (properties) {
 		*properties = this->properties();
 	}

@@ -40,7 +40,8 @@ AdditionalRenderParams ap = {
 
 		.hardShadows = false,
 		.flatShading = false,
-		.noAntiAliasing = false
+		.noAntiAliasing = false,
+		.noBumpMaps = false
 };
 
 
@@ -81,6 +82,7 @@ static void parse_args(int argc, char *argv[], vector<fs::path>& scenes)
 			("hard-shadows", po::bool_switch(&ap.hardShadows), "Indicate whether hard shadows should be simulated. By default, soft shadows are simulated. Use this to improve performance. Note that soft shadows only appear if area lights are used. If this flag is true then hard shadows will be simulated, even if area lights are present.")
 			("flat-shading", po::bool_switch(&ap.flatShading), "Indicate whether flat shading should be used. If set, face normals will be used, otherwise (and by default), normals are interpolated for a much smoother image.")
 			("no-anti-aliasing", po::bool_switch(&ap.noAntiAliasing), "Indicate if anti-aliasing should be disabled, or enabled, as by default")
+			("no-bump-maps", po::bool_switch(&ap.noBumpMaps), "Indicate if normals bump maps should be used (as by default), or not. If set, no bump maps will be used even if object has one defined.")
 		;
 
 

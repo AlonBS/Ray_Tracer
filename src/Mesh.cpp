@@ -45,7 +45,7 @@ Mesh::Mesh(vector<Vertex>& vertices,
  _meshDiffuseTexture(diffuseTexture),
  _meshSpecularTexture(specularTexture)
 {
-	super::setTexture(generalTexture);
+	super::setTextures(generalTexture);
 	super::properties() = properties;
 
 	_envMapped = envMaps.maps.size() > 0;

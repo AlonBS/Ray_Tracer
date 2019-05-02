@@ -120,6 +120,7 @@ private:
 
 	static Image *boundTexture;
 	static bool textureIsBound;
+	static Image* boundNormalMap;
 	static EnvMaps boundEnvMaps;
 	static bool envMapsAreBound;
 

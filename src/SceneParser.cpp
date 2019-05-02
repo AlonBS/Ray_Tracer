@@ -31,62 +31,64 @@ using namespace std;
 struct Commands {
 
 	// General Scene
-	const string size            = "size";
-	const string maxdepth        = "maxDepth";
-	const string skybox			 = "skybox";
+	const string size              = "size";
+	const string maxdepth          = "maxDepth";
+	const string skybox			   = "skybox";
 
 	// Camera
-	const string camera          = "camera";
+	const string camera            = "camera";
 
 	// Geometry and objects
-	const string sphere          = "sphere";
-	const string cylinder        = "cylinder";
-	const string box		     = "box";
-	const string cone		     = "cone";
-	const string plain		     = "plain";
-	const string maxVerts        = "maxVerts";
-	const string maxVertNorms    = "maxVertNorms";
-	const string vertex          = "vertex";
-	const string vertexNormal    = "vertexNormal";
-	const string vertexTex       = "vertexTex";
-	const string vertexNormTex   = "vertexNormTex";
-	const string tri             = "tri";
-	const string triNormal       = "triNormal";
-	const string triTex          = "triTex";
-	const string triNormTex      = "triNormTex";
-	const string texture         = "texture";
-	const string bindTexture     = "bindTexture";
-	const string unbindTexture   = "unbindTexture";
-	const string envMap          = "envMap";
-	const string bindEnvMaps     = "bindEnvMaps";
-	const string unbindEnvMaps   = "unbindEnvMaps";
-	const string model		     = "model";
+	const string sphere            = "sphere";
+	const string cylinder          = "cylinder";
+	const string box		       = "box";
+	const string cone		       = "cone";
+	const string plain		       = "plain";
+	const string maxVerts          = "maxVerts";
+	const string maxVertNorms      = "maxVertNorms";
+	const string vertex            = "vertex";
+	const string vertexNormal      = "vertexNormal";
+	const string vertexTex         = "vertexTex";
+	const string vertexNormTex     = "vertexNormTex";
+	const string tri               = "tri";
+	const string triNormal         = "triNormal";
+	const string triTex            = "triTex";
+	const string triNormTex        = "triNormTex";
+	const string texture           = "texture";
+	const string bindTexture       = "bindTexture";
+	const string unbindTexture     = "unbindTexture";
+	const string bindNormalsMap    = "bindNormalsMap";
+	const string unbindNormalsMap  = "unbindNormalsMap";
+	const string envMap            = "envMap";
+	const string bindEnvMaps       = "bindEnvMaps";
+	const string unbindEnvMaps     = "unbindEnvMaps";
+	const string model		       = "model";
 
 	// Transformations
-	const string translate       = "translate";
-	const string rotate          = "rotate";
-	const string scale           = "scale";
-	const string pushTransform   = "pushTransform";
-	const string popTransform    = "popTransform";
+	const string translate         = "translate";
+	const string rotate            = "rotate";
+	const string scale             = "scale";
+	const string pushTransform     = "pushTransform";
+	const string popTransform      = "popTransform";
 
 	// Lights
-	const string directional     = "directional";
-	const string point           = "point";
-	const string area            = "area";
-	const string attenuation     = "attenuation";
+	const string directional       = "directional";
+	const string point             = "point";
+	const string area              = "area";
+	const string attenuation       = "attenuation";
 
 	// Materials
-	const string clearProps      = "clearProps";
-	const string ambient         = "ambient"; // As this is per object - and not per scene
-	const string diffuse         = "diffuse";
-	const string specular        = "specular";
-	const string shininess       = "shininess";
-	const string emission        = "emission";
-	const string reflection      = "reflection";
-	const string reflectionBlur  = "reflectionBlur";
-	const string refraction      = "refraction";
-	const string refractionIndex = "refractionIndex";
-	const string refractionBlur  = "refractionBlur";
+	const string clearProps        = "clearProps";
+	const string ambient           = "ambient"; // As this is per object - and not per scene
+	const string diffuse           = "diffuse";
+	const string specular          = "specular";
+	const string shininess         = "shininess";
+	const string emission          = "emission";
+	const string reflection        = "reflection";
+	const string reflectionBlur    = "reflectionBlur";
+	const string refraction        = "refraction";
+	const string refractionIndex   = "refractionIndex";
+	const string refractionBlur    = "refractionBlur";
 
 }Commands;
 
@@ -102,6 +104,7 @@ set<string> SceneParser::geometry{Commands.sphere, Commands.cylinder, Commands.b
 								  Commands.vertex, Commands.vertexNormal, Commands.vertexTex, Commands.vertexNormTex, Commands.tri,
 								  Commands.triNormal, Commands.triTex, Commands.triNormTex,
 								  Commands.texture, Commands.bindTexture, Commands.unbindTexture,
+								  Commands.bindNormalsMap, Commands.unbindNormalsMap,
 								  Commands.envMap, Commands.bindEnvMaps, Commands.unbindEnvMaps,
 								  Commands.model};
 set<string> SceneParser::transformations {Commands.translate, Commands.rotate, Commands.scale,
@@ -146,6 +149,7 @@ vector<glm::vec2> SceneParser::verticesNormTexT{};
 GLint SceneParser::lineNumber = 0;
 Image* SceneParser::boundTexture = nullptr;
 bool SceneParser::textureIsBound = false;
+Image* SceneParser::boundNormalMap = nullptr;
 EnvMaps SceneParser::boundEnvMaps {};
 bool SceneParser::envMapsAreBound = false;
 
@@ -400,6 +404,7 @@ SceneParser::readFile(const AdditionalRenderParams& params, const char* fileName
 	verticesNormTexT.clear();
 	boundTexture = nullptr;
 	textureIsBound = false;
+	boundNormalMap = nullptr;
 	boundEnvMaps.maps.clear();
 	boundEnvMaps = {};
 	envMapsAreBound = false;
@@ -479,7 +484,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 
 		Object *sphere = new Sphere(op, ot, center, radius);
 		if (textureIsBound) {
-			sphere->setTexture(boundTexture);
+			sphere->setTextures(boundTexture, boundNormalMap);
 		}
 		sphere->computeBoundingBox();
 		scene->addObject(sphere);
@@ -500,7 +505,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 
 		Object *cylinder = new Cylinder(op, ot, center, height, radius);
 		if (textureIsBound) {
-			cylinder->setTexture(boundTexture);
+			cylinder->setTextures(boundTexture, boundNormalMap);
 		}
 		cylinder->computeBoundingBox();
 		scene->addObject(cylinder);
@@ -517,7 +522,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 
 		Object *box = new Box(op, ot, minBound, maxBound);
 		if (textureIsBound) {
-			box->setTexture(boundTexture);
+			box->setTextures(boundTexture, boundNormalMap);
 		}
 		scene->addObject(box);
 	}
@@ -538,7 +543,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 
 		Object *cone = new Cone(op, ot, center, minCap, maxCap);
 		if (textureIsBound) {
-			cone->setTexture(boundTexture);
+			cone->setTextures(boundTexture, boundNormalMap);
 		}
 		cone->computeBoundingBox();
 		scene->addObject(cone);
@@ -572,7 +577,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 
 		Object *plain = new Plain(op, ot, tp);
 		if (textureIsBound) {
-			plain->setTexture(boundTexture);
+			plain->setTextures(boundTexture, boundNormalMap);
 		}
 		scene->addObject(plain);
 	}
@@ -660,7 +665,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 
 		Object *triangle = new Triangle(op, A, B, C, Auv, Buv, Cuv);
 		if (textureIsBound) {
-			triangle->setTexture(boundTexture);
+			triangle->setTextures(boundTexture, boundNormalMap);
 		}
 		scene->addObject(triangle);
 	}
@@ -686,7 +691,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 
 		Object *triangle = new Triangle(op, A, B, C, AN, BN, CN, Auv, Buv, Cuv);
 		if (textureIsBound) {
-			triangle->setTexture(boundTexture);
+			triangle->setTextures(boundTexture, boundNormalMap);
 		}
 		scene->addObject(triangle);
 	}
@@ -715,6 +720,17 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 
 		textureIsBound = false;
 		boundTexture = nullptr;
+	}
+
+	else if (cmd == Commands.bindNormalsMap) {
+
+			readValues(s, 1, values);
+			boundNormalMap = scene->getTexture(values[0]);
+	}
+
+	else if (cmd == Commands.unbindNormalsMap) {
+
+		boundNormalMap = nullptr;
 	}
 
 	else if (cmd == Commands.envMap) {

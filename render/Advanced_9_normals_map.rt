@@ -1,0 +1,58 @@
+
+# Example of a normals bump maps
+
+size 1280 720
+camera 1 1 7 0 0 0 0 1 0 60
+attenuation 1 0.0 0.0
+
+maxDepth 1
+
+area 0 5 13 1 1 1 1 1
+
+texture ./textures/brickwall.jpg
+texture ./textures/brickwall_normal.jpg
+
+pushTransform
+
+	clearProps
+
+	ambient 0.2 0.2 0.2
+	diffuse 0.3 0.3 0.3
+	specular 0.8 0.8 0.8
+	shininess 16
+
+#	translate 0 0 0
+#	rotate 0 1 0 90
+#	scale 1 1 1
+
+#	bindTexture 2
+#	plain R
+
+#	unbindTexture
+
+
+popTransform
+
+pushTransform
+
+	clearProps
+
+	ambient 0.2 0.2 0.2
+	diffuse 0.3 0.3 0.3
+	specular 0.8 0.8 0.8
+	shininess 16
+
+	translate 0 0 3
+	rotate 1 0 1 45 
+	scale 5 5 5
+
+	bindTexture 0
+	bindNormalsMap 1
+	plain R
+
+	unbindTexture
+	unbindNormalsMap
+
+
+popTransform
+

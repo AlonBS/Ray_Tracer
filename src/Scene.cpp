@@ -59,7 +59,10 @@ void Scene::handleAdditionalParams(AdditionalRenderParams& params)
 	addParams = params;
 
 	if (addParams.flatShading) {
-		Triangle::setFaceNormal();
+		Object::setFaceNormals();
+	}
+	if (addParams.noBumpMaps) {
+		Object::setNoBumpMaps();
 	}
 }
 

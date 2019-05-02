@@ -9,6 +9,12 @@
 
 using namespace glm;
 
+Object::GlobalObjectProperties Object::_objectGlobalProperties =
+{
+	.face_normals = false,
+	.no_bump_maps = false
+};
+
 
 Object::Object(const ObjectProperties& properties, const ObjectTransforms& transforms)
 : _properties(properties), _transforms(transforms)
@@ -16,6 +22,7 @@ Object::Object(const ObjectProperties& properties, const ObjectTransforms& trans
 	_ambientTexture = nullptr;
 	_diffuseTexture = nullptr;
 	_speularTexture = nullptr;
+	_normalsMap = nullptr;
 
 	bbox = nullptr;
 }
@@ -30,6 +37,7 @@ Object::Object()
 	_ambientTexture = nullptr;
 	_diffuseTexture = nullptr;
 	_speularTexture = nullptr;
+	_normalsMap = nullptr;
 
 	bbox = nullptr;
 }
@@ -43,7 +51,7 @@ Object::~Object() {
 }
 
 
-void Object::setTexture(Image *texture)
+void Object::setTextures(Image *texture, Image *normalsMap)
 {
 	if (texture == nullptr)
 		return;
@@ -55,6 +63,10 @@ void Object::setTexture(Image *texture)
 	this->_diffuseTexture = texture;
 	this->_speularTexture = texture;
 
+	if (normalsMap == nullptr)
+		return;
+
+	this->_normalsMap = normalsMap;
 }
 
 
@@ -88,6 +100,13 @@ vec3 Object::getDiffuseTextureColor(vec2& uv)
 vec3 Object::getSpecularTextureColor(vec2& uv)
 {
 	return getTextureColor(this->_speularTexture, uv);
+}
+
+
+bool Object::hasNormalsMap() { return this->_normalsMap != nullptr;}
+vec3 Object::getNormalFromMap(vec2& uv)
+{
+	return getTextureColor(this->_normalsMap, uv);
 }
 
 

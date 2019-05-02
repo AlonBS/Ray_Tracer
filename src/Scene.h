@@ -19,6 +19,7 @@ typedef struct AdditionalRenderParams
 	bool hardShadows;
 	bool flatShading;
 	bool noAntiAliasing;
+	bool noBumpMaps;
 
 }AdditionalRenderParams;
 
