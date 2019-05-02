@@ -146,7 +146,7 @@ vector<glm::vec2> SceneParser::verticesNormTexT{};
 GLint SceneParser::lineNumber = 0;
 Image* SceneParser::boundTexture = nullptr;
 bool SceneParser::textureIsBound = false;
-vector<Image*> SceneParser::boundEnvMaps {};
+EnvMaps SceneParser::boundEnvMaps {};
 bool SceneParser::envMapsAreBound = false;
 
 
@@ -400,7 +400,8 @@ SceneParser::readFile(const AdditionalRenderParams& params, const char* fileName
 	verticesNormTexT.clear();
 	boundTexture = nullptr;
 	textureIsBound = false;
-	boundEnvMaps.clear();
+	boundEnvMaps.maps.clear();
+	boundEnvMaps = {};
 	envMapsAreBound = false;
 	clearObjectProps();
 	transformsStack = {};
@@ -730,14 +731,23 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 	else if (cmd == Commands.bindEnvMaps) {
 
 		readValues(s, 1, values);
-		boundEnvMaps = scene->getEnvMaps(values[0]);
+		string envMapType;
+		s >> envMapType;
+
+		boundEnvMaps.maps = scene->getEnvMaps(values[0]);
+		boundEnvMaps.refractiveMapping = (envMapType == "refract");
+		if (boundEnvMaps.refractiveMapping) {
+			readValues(s, 1, values);
+			boundEnvMaps.refractiveIndex = values[0];
+		}
+
 		envMapsAreBound = true;
 	}
 
 	else if (cmd == Commands.unbindEnvMaps) {
 
 		envMapsAreBound = false;
-		boundEnvMaps.clear();
+		boundEnvMaps.maps.clear();
 	}
 	else if (cmd == Commands.model) {
 		string modelFile;
@@ -749,8 +759,6 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 
 		vector<Mesh*> modelMeshes{};
 		vector<Image*> modelTextures{};
-//		Model::loadModel(modelFile, op, ot, boundTexture, modelMeshes, modelTextures);
-
 		Model::loadModel(modelFile, op, ot, boundTexture, boundEnvMaps, modelMeshes, modelTextures);
 
 		scene->addTextures(modelTextures);

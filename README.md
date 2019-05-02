@@ -21,7 +21,7 @@ Current list of features supported:
 - Full support for reflections and refractions, including mix of the 2 using Fresnel equations. 
 - Normals interpolation (by default) for smoother appearance of less detailed models. 
 - Glossy reflections and refractions
-- Environments mapping and skyboxs (Cubical mapping)
+- Environments mapping and skyboxs (Cubical mapping). Supports both reflective and refractive mappings
 
 
 
@@ -180,8 +180,10 @@ Primitives and Models:
 		should be used for (cubical) environment mapping, so it is expected to see 6 such declerations, and it is assumed
 		that they will be mapped in this order: PosX, NegX, PosY, NegY, PosZ, NegZ (see Advanced_7_Skybox_and_env_map.rt).
 		Each 6 such declerations, are grouped, and indexed, starting at index 0.
-	bindEnvMaps <index_i> - Binds a previously defined envMaps. Any model (and not object!) that will be created next, will be 
-		mapped to this environment. 
+	bindEnvMaps <index_i> ["refract"] [<refIndex-f>] - Binds a previously defined envMaps. Any model (and not object!) that will be created next, will be 
+		mapped to this environment. By default, reflective mapping is used. It is possible to add 2 more arguments: "refract", to indicate that a refractive
+		mapping should be used, followed by the refraction index. if refract is specified, than it must follows with the refraction index or unexpected results
+		might show. 
 		Important Notes:
 			a) This mechanism could have been applied to primitives, but I chose not to, because all of them 
 				can be textured already - which is much faster, and less memory consuming. So if this is needed - simply bind
@@ -190,6 +192,10 @@ Primitives and Models:
 				quite good, and this achieves much nicer results. 
 			c) You can't bind a texture that was declared as an "envMap" and vice versa. You could declare both with the same path, and use
 				them multiple times, but you must use multiple declerations. 
+			d) The refraction index that is specified here is deliberatly different from the one that could be specified for the whole model
+				(using keyword "refractionIndex" - see materials). 
+			e) Currently (and probably always), I see no reason to add blur to these mappings. If one want to achieve this, he can simply ray trace
+				the "normal" way. 
 	unbindEnvMaps - unbind the last bound envMaps. Any model created from this point on, will not have environment mapping
 
 
@@ -361,6 +367,11 @@ The result image can be found in "./Rendered_Scenes/ExampleSphere_result.png
 
 Version History:
 =================
+
+4.6:
+- Added refractive environment mapping. By default, reflective mapping will be used.
+- Added scenes to show this (see advanced shading 8). 
+- More code refactoring - moved some code to General.h
 
 4.5:
 -----

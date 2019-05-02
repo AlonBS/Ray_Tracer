@@ -19,7 +19,7 @@
 #define DEFAULT_RESULT_FORMAT ".png"
 #define DEFAULT_SOFT_SHADOWS "on"
 
-#define CURRENT_VERSION "4.5"
+#define CURRENT_VERSION "4.6"
 
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>

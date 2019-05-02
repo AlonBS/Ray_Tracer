@@ -45,8 +45,6 @@ private:
 
 	vec3 recursiveRayTrace(Scene& scene, Ray& ray, GLuint depth);
 
-	bool rayIsValid(const Ray& ray);
-
 	Intersection intersectScene(Scene & scene, Ray& ray);
 
 	vec3 computeLight(Scene & scene, Ray& r, Intersection& hit);

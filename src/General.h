@@ -14,6 +14,7 @@
 #include <iostream>
 #include <future>
 #include "Image.h"
+#include "Ray.h"
 
 
 
@@ -166,6 +167,18 @@ equalToVec3(const vec3& v1, const vec3& v2)
 		   glm::abs(v1.y - v2.y) < EPSILON &&
 		   glm::abs(v1.z - v2.z) < EPSILON;
 }
+
+inline bool
+vec3IsValid(const vec3& v)
+{
+	return !(isnan(v.x) || isnan(v.y) || isnan(v.z));
+}
+
+inline bool rayIsValid(const Ray& ray)
+{
+	return vec3IsValid(ray.origin) && vec3IsValid(ray.direction);
+}
+
 
 
 // Return the cube mapping of 'v' to 'uv' and 'index' for texture

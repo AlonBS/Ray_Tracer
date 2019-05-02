@@ -38,7 +38,7 @@ Mesh::Mesh(vector<Vertex>& vertices,
 		   Image *diffuseTexture,
 		   Image *specularTexture,
 		   Image *generalTexture,
-		   vector<Image*> envMaps)
+		   EnvMaps &envMaps)
 
 : Object(),
  _meshAmbientTexture(ambientTexture),
@@ -48,8 +48,14 @@ Mesh::Mesh(vector<Vertex>& vertices,
 	super::setTexture(generalTexture);
 	super::properties() = properties;
 
-	_envMapped = envMaps.size() > 0;
-	_envMaps = envMaps;
+	_envMapped = envMaps.maps.size() > 0;
+	if (_envMapped) {
+		_refractiveMapping = envMaps.refractiveMapping;
+		if (_refractiveMapping) {
+			_envMapRefIndex = envMaps.refractiveIndex;
+		}
+		_envMaps = envMaps.maps;
+	}
 
 	_vertices = vertices; // Yes - this is shit, but a must for now
 	__triangulate(vertices, indices);
@@ -135,13 +141,43 @@ Mesh::intersectsRay(const Ray &r,
 
 						GLuint index;
 						vec2 uv;
-						vec3 refDir = glm::reflect(r.direction, tN);
-						cubeMap(refDir, &index, &uv);
-						vec3 envColor = getTextureColor(_envMaps[index], uv);
+						vec3 refDir;
 
-						texColors->_ambientTexColor  *= envColor;
-						texColors->_diffuseTexColor  *= envColor;
-						texColors->_specularTexColor *= envColor;
+						GLfloat nDotD = dot(r.direction, tN);
+												vec3 dir;
+												vec3 norm;
+												GLfloat eta;
+
+						if (_refractiveMapping) { //
+
+							if (nDotD > EPSILON) { // Going out of the object
+								dir = r.direction;
+								norm = -tN;
+								eta = _envMapRefIndex / VOID_INDEX;
+							}
+							else {
+								dir = r.direction; // TODO - consider -rayDir
+								norm = tN;
+								eta = VOID_INDEX / _envMapRefIndex;
+							}
+
+							refDir = normalize(glm::refract(dir, norm, eta));
+						}
+
+						else { // Reflective Mapping
+
+							refDir = normalize(glm::reflect(r.direction, tN));
+						}
+
+						if (vec3IsValid(refDir)) {
+
+							cubeMap(refDir, &index, &uv);
+							vec3 envColor = getTextureColor(_envMaps[index], uv);
+
+							texColors->_ambientTexColor  *= envColor;
+							texColors->_diffuseTexColor  *= envColor;
+							texColors->_specularTexColor *= envColor;
+						}
 					}
 				}
 

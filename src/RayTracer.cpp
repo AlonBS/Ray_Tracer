@@ -197,19 +197,6 @@ vec3 RayTracer::recursiveRayTrace(Scene& scene, Ray & ray, GLuint depth)
 }
 
 
-bool RayTracer::rayIsValid(const Ray& ray)
-{
-	// If any of the components of the ray is invalid - we declare the whole ray as invalid
-	if (isnan(ray.origin.x) || isnan(ray.origin.y) || isnan(ray.origin.z)  ||
-	    isnan(ray.direction.x) || isnan(ray.direction.y) || isnan(ray.direction.z) )
-	{
-		return false;
-	}
-
-	return true;
-}
-
-
 Intersection RayTracer::intersectScene(Scene & scene, Ray& ray)
 {
 	GLfloat minDist = INFINITY;

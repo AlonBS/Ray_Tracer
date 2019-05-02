@@ -20,6 +20,15 @@ typedef struct MeshProperties : ObjectProperties {
 }MeshProperties;
 
 
+typedef struct EnvMaps {
+
+	vector<Image*> maps;
+	bool refractiveMapping;
+	GLfloat refractiveIndex; // This could be different from refractive Index of the mesh.
+
+}EnvMaps;
+
+
 
 class Mesh : Object {
 
@@ -37,6 +46,8 @@ private:
 
 	vector<Image*> _envMaps;
 	bool _envMapped = false;
+	bool _refractiveMapping;
+	GLfloat _envMapRefIndex;
 
 
 public:
@@ -49,7 +60,7 @@ public:
 		 Image *diffuseTexture,
 		 Image *specualrTexture,
 		 Image *generalTexture,
-		 vector<Image*> envMaps);
+		 EnvMaps &envMaps);
 
 	virtual ~Mesh();
 

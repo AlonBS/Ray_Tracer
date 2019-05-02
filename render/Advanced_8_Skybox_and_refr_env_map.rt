@@ -1,5 +1,6 @@
 
 # Example of a Skyboxs and environent mapping
+# This is an example of refractive mapping. I removed the skybox just to emphasize that the mapping is not ray traced
 
 size 1280 720 
 camera 3 4 10 0 0 0 0 1 0 60
@@ -23,14 +24,22 @@ envMap ./environments/Yokohama2/negy.jpg # neg Y
 envMap ./environments/Yokohama2/posz.jpg # pos Z
 envMap ./environments/Yokohama2/negz.jpg # neg Z
 
-skybox 1
+envMap ./environments/Lycksele3/posx.jpg # pos X
+envMap ./environments/Lycksele3/negx.jpg # neg X
+envMap ./environments/Lycksele3/posy.jpg # pos Y
+envMap ./environments/Lycksele3/negy.jpg # neg Y
+envMap ./environments/Lycksele3/posz.jpg # pos Z
+envMap ./environments/Lycksele3/negz.jpg # neg Z
+
+
+skybox 2
 
 # Sky Box
 pushTransform
 
 	clearProps
 #	bindTexture 2
-	bindEnvMaps 1
+	bindEnvMaps 1 refract 1.0003
 	ambient 1 1 1
 	diffuse 0.3 0.3 0.3
 	specular 0.8 0.8 0.8
