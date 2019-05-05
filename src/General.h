@@ -66,9 +66,9 @@ struct Vertex {
     // texCoords
     glm::vec2 TexCoords;
 //    // tangent
-//    glm::vec3 Tangent;
+    glm::vec3 Tangent;
 //    // bitangent
-//    glm::vec3 Bitangent;
+    glm::vec3 Bitangent;
 };
 
 

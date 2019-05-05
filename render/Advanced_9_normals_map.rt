@@ -2,15 +2,15 @@
 # Example of a normals bump maps
 
 size 1280 720
-camera 1 1 7 0 0 0 0 1 0 60
+camera 0 3 5 0 0 0 0 1 0 60
 attenuation 1 0.0 0.0
 
 maxDepth 1
 
-area 0 5 13 1 1 1 1 1
+point 0 0 5 1 1 1 2
 
-texture ./textures/brickwall.jpg
-texture ./textures/brickwall_normal.jpg
+#texture ./textures/brickwall.jpg
+#texture ./textures/brickwall_normal.jpg
 
 pushTransform
 
@@ -42,16 +42,18 @@ pushTransform
 	specular 0.8 0.8 0.8
 	shininess 16
 
-	translate 0 0 3
-	rotate 1 0 1 45 
-	scale 5 5 5
+#	translate 0 0 3
+#	rotate 1 0 0 -90 
+	scale 2 2 2
 
-	bindTexture 0
-	bindNormalsMap 1
-	plain R
+#	bindTexture 0
+#	bindNormalsMap 1
+	model ./3ds/cube/cube2.obj
 
-	unbindTexture
-	unbindNormalsMap
+#	plain R
+
+#	unbindTexture
+#	unbindNormalsMap
 
 
 popTransform

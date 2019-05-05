@@ -21,7 +21,7 @@ vector<Mesh*> Model::_meshes {};
 ObjectProperties Model::_objectProperties{};
 ObjectTransforms Model::_objectTransforms{};
 Image* Model::_texture = nullptr;
-EnvMaps Model::_envMaps{};
+EnvMaps* Model::_envMaps = nullptr;
 vector<Model::Texture*> Model::_loadedTextures{}; // We store all the textures loaded for this module, to avoid load duplication
 string Model::_directory{};
 
@@ -41,7 +41,7 @@ Model::loadModel(string const &path,
 				 const ObjectProperties& op,
 				 const ObjectTransforms& ot,
 				 Image* texture,
-				 EnvMaps& envMaps,
+				 EnvMaps* envMaps,
 				 vector<Mesh*>& modelMeshes,
 				 vector<Image*>& modelTextures)
 
@@ -106,8 +106,8 @@ Model::processMesh(aiMesh *mesh, const aiScene *scene)
 	vector<Vertex> vertices;
 	vector<unsigned int> indices;
 	MeshProperties properties = {};
-	Image *ambientTexture, *diffuseTexture, *specularTexture;
-	ambientTexture = diffuseTexture = specularTexture = nullptr;
+	Image *ambientTexture, *diffuseTexture, *specularTexture, *normalsMap;
+	ambientTexture = diffuseTexture = specularTexture = normalsMap = nullptr;
 
 	properties._ambient = vec3(1.0f, 1.0f, 1.0f);
 
@@ -142,8 +142,23 @@ Model::processMesh(aiMesh *mesh, const aiScene *scene)
 			vec.y = mesh->mTextureCoords[0][i].y;
 			vertex.TexCoords = vec;
 		}
-		else
+		else {
 			vertex.TexCoords = glm::vec2(0.0f, 0.0f);
+		}
+
+		if (mesh->HasTangentsAndBitangents()) {
+
+			vector.x = mesh->mTangents[i].x;
+			vector.y = mesh->mTangents[i].y;
+			vector.z = mesh->mTangents[i].z;
+			vertex.Tangent = vector;
+			// bitangent
+			vector.x = mesh->mBitangents[i].x;
+			vector.y = mesh->mBitangents[i].y;
+			vector.z = mesh->mBitangents[i].z;
+			vertex.Bitangent = vector;
+			vertices.push_back(vertex);
+		}
 
 		vertices.push_back(vertex);
 	}
@@ -156,8 +171,8 @@ Model::processMesh(aiMesh *mesh, const aiScene *scene)
 			indices.push_back(face.mIndices[j]);
 	}
 
-	// Process materials
 
+	// Process materials
 	if(mesh->mMaterialIndex >= 0)
 	{
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
@@ -180,19 +195,31 @@ Model::processMesh(aiMesh *mesh, const aiScene *scene)
 
 
 		// Load textures
-		// Currently - we only support one ambient, one diffuse, and one specular texture
+		// Currently - we only support one ambient, one diffuse, and one specular texture, as well as normals map
 		// 1. Ambient maps
 		ambientTexture = loadMaterialTextures(material, aiTextureType_AMBIENT);
 		// 2. Diffuse maps
 		diffuseTexture = loadMaterialTextures(material, aiTextureType_DIFFUSE);
 		// 3. Specular maps
 		specularTexture = loadMaterialTextures(material, aiTextureType_SPECULAR);
+
+		// 4. Normals Map
+		normalsMap = loadMaterialTextures(material, aiTextureType_HEIGHT);
 	}
 
 
 	// return a mesh object created from the extracted mesh data
 	ObjectProperties op = _objectProperties * properties;
-	return new Mesh(vertices, indices, op, ambientTexture, diffuseTexture, specularTexture, _texture, _envMaps);
+	MeshTextures mt = {
+			ambientTexture : ambientTexture,
+			diffuseTexture : diffuseTexture,
+			specularTexture : specularTexture,
+			generalTexture : _texture,
+			normalsMap : normalsMap,
+			envMaps : _envMaps
+	};
+	//return new Mesh(vertices, indices, op, ambientTexture, diffuseTexture, specularTexture, _texture, _envMaps);
+	return new Mesh(vertices, indices, op, mt);
 }
 
 
@@ -200,6 +227,7 @@ Model::processMesh(aiMesh *mesh, const aiScene *scene)
 Image*
 Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type)
 {
+	cout << mat->GetTextureCount(type) << endl;
 	if (mat->GetTextureCount(type) == 0) {
 		return nullptr;
 	}

@@ -34,27 +34,40 @@ ObjectProperties operator*(const ObjectProperties& op, const MeshProperties& mp)
 Mesh::Mesh(vector<Vertex>& vertices,
 		   vector<unsigned int>& indices,
 		   ObjectProperties& properties,
-		   Image *ambientTexture,
-		   Image *diffuseTexture,
-		   Image *specularTexture,
-		   Image *generalTexture,
-		   EnvMaps &envMaps)
+		   MeshTextures& meshTextures)
+//		   Image *ambientTexture,
+//		   Image *diffuseTexture,
+//		   Image *specularTexture,
+//		   Image *generalTexture,
+//		   EnvMaps &envMaps)
 
-: Object(),
- _meshAmbientTexture(ambientTexture),
- _meshDiffuseTexture(diffuseTexture),
- _meshSpecularTexture(specularTexture)
+: Object()
+//_textures
+// _meshAmbientTexture(ambientTexture),
+// _meshDiffuseTexture(diffuseTexture),
+// _meshSpecularTexture(specularTexture)
 {
-	super::setTextures(generalTexture);
+	super::setTextures(meshTextures.generalTexture);
 	super::properties() = properties;
 
-	_envMapped = envMaps.maps.size() > 0;
-	if (_envMapped) {
-		_refractiveMapping = envMaps.refractiveMapping;
-		if (_refractiveMapping) {
-			_envMapRefIndex = envMaps.refractiveIndex;
+
+	_textures.ambientTexture = meshTextures.ambientTexture;
+	_textures.diffuseTexture = meshTextures.diffuseTexture;
+	_textures.specularTexture = meshTextures.specularTexture;
+	_textures.normalsMap = meshTextures.normalsMap;
+
+	if (meshTextures.envMaps) {
+
+		_envMapped = meshTextures.envMaps->maps.size() > 0;
+		if (_envMapped) {
+			_refractiveMapping = meshTextures.envMaps->refractiveMapping;
+			if (_refractiveMapping) {
+				_envMapRefIndex = meshTextures.envMaps->refractiveIndex;
+			}
+			_textures.envMaps = meshTextures.envMaps;
+//			_envMaps = envMaps.maps;
 		}
-		_envMaps = envMaps.maps;
+
 	}
 
 	_vertices = vertices; // Yes - this is shit, but a must for now
@@ -129,7 +142,22 @@ Mesh::intersectsRay(const Ray &r,
 
 				*dist = minDist = tDist;
 				if (point) *point = tP;
-				if (normal) *normal = tN;
+				if (normal) {
+
+					if (_textures.normalsMap) {
+
+						if (!_objectGlobalProperties.no_bump_maps) {
+							*normal = normalize(2.f*getTextureColor(_textures.normalsMap, ttC) - 1.0f);
+							printVec3("NORM", *normal);
+						}
+					}
+					else {
+
+						*normal = tN;
+					}
+
+
+				}
 
 				if (texColors) {
 
@@ -172,7 +200,7 @@ Mesh::intersectsRay(const Ray &r,
 						if (vec3IsValid(refDir)) {
 
 							cubeMap(refDir, &index, &uv);
-							vec3 envColor = getTextureColor(_envMaps[index], uv);
+							vec3 envColor = getTextureColor(_textures.envMaps->maps[index], uv);
 
 							texColors->_ambientTexColor  *= envColor;
 							texColors->_diffuseTexColor  *= envColor;
@@ -203,17 +231,17 @@ Mesh::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, Obje
 
 vec3 Mesh::getAmbientTextureColor(vec2& uv)
 {
-	return getTextureColor(_meshAmbientTexture, uv) * super::getAmbientTextureColor(uv);
+	return getTextureColor(_textures.ambientTexture, uv) * super::getAmbientTextureColor(uv);
 }
 
 vec3 Mesh::getDiffuseTextureColor(vec2& uv)
 {
-	return getTextureColor(_meshDiffuseTexture, uv) * super::getDiffuseTextureColor(uv);
+	return getTextureColor(_textures.diffuseTexture, uv) * super::getDiffuseTextureColor(uv);
 }
 
 vec3 Mesh::getSpecularTextureColor(vec2& uv)
 {
-	return getTextureColor(_meshSpecularTexture, uv) * super::getSpecularTextureColor(uv);
+	return getTextureColor(_textures.specularTexture, uv) * super::getSpecularTextureColor(uv);
 }
 
 

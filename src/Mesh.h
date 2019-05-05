@@ -30,6 +30,23 @@ typedef struct EnvMaps {
 
 
 
+typedef struct MeshTextures {
+
+	Image *ambientTexture;
+	Image *diffuseTexture;
+	Image *specularTexture;
+	Image *generalTexture;
+
+	Image *normalsMap;
+
+	EnvMaps *envMaps;
+
+}MeshTextures ;
+
+
+
+
+
 class Mesh : Object {
 
 private:
@@ -37,14 +54,16 @@ private:
 	using super = Object;
 
 	vector<Triangle*> triangles;
-
 	vector<Vertex> _vertices;
 
-	Image* _meshAmbientTexture;
-	Image* _meshDiffuseTexture;
-	Image* _meshSpecularTexture;
+	MeshTextures _textures;
 
-	vector<Image*> _envMaps;
+//	Image* _meshAmbientTexture;
+//	Image* _meshDiffuseTexture;
+//	Image* _meshSpecularTexture;
+
+//	vector<Image*> _envMaps;
+
 	bool _envMapped = false;
 	bool _refractiveMapping;
 	GLfloat _envMapRefIndex;
@@ -56,11 +75,12 @@ public:
 	Mesh(vector<Vertex>& vertices,
 		 vector<unsigned int>& indices,
 		 ObjectProperties& properties,
-		 Image *ambientTexture,
-		 Image *diffuseTexture,
-		 Image *specualrTexture,
-		 Image *generalTexture,
-		 EnvMaps &envMaps);
+		 MeshTextures& textures);
+//		 Image *ambientTexture,
+//		 Image *diffuseTexture,
+//		 Image *specualrTexture,
+//		 Image *generalTexture,
+//		 EnvMaps &envMaps);
 
 	virtual ~Mesh();
 

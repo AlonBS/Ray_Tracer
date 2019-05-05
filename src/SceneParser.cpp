@@ -456,7 +456,7 @@ SceneParser::handleCameraCommand(stringstream& s, string& cmd)
 	//upinit = Transform::upvector(upinit, eyeinit);
 	GLfloat fovy = values[9];
 	scene->camera() = Camera(eyeInit, center, upInit, fovy, scene->width(), scene->height());
-	//transformsStack.top() = lookAt(eyeInit,center,upInit);
+//	transformsStack.top() = lookAt(eyeInit,center,upInit);
 }
 
 
@@ -775,7 +775,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 
 		vector<Mesh*> modelMeshes{};
 		vector<Image*> modelTextures{};
-		Model::loadModel(modelFile, op, ot, boundTexture, boundEnvMaps, modelMeshes, modelTextures);
+		Model::loadModel(modelFile, op, ot, boundTexture, &boundEnvMaps, modelMeshes, modelTextures);
 
 		scene->addTextures(modelTextures);
 		scene->addMeshes(modelMeshes);
