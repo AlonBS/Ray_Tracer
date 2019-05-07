@@ -148,12 +148,12 @@ Mesh::intersectsRay(const Ray &r,
 
 						if (!_objectGlobalProperties.no_bump_maps) {
 							*normal = normalize(2.f*getTextureColor(_textures.normalsMap, ttC) - 1.0f);
-							printVec3("NORM", *normal);
+//							printVec3("NORM", *normal);
 						}
 					}
 					else {
-
 						*normal = tN;
+//						printVec3("NORM", *normal);
 					}
 
 

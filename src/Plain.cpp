@@ -53,7 +53,7 @@ bool Plain::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal
 			if (hasNormalsMap()) {
 				*normal = normalize(2.f*this->getNormalFromMap(uv) - 1.0f); // Note we don't need to apply normals transformation here
 				*normal = normalize(this->invTransposeTrans() * *normal);
-				printVec3("NORM", *normal);
+//				printVec3("NORM", *normal);
 			}
 		}
 

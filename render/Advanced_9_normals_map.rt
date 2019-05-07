@@ -2,7 +2,7 @@
 # Example of a normals bump maps
 
 size 1280 720
-camera 0 3 5 0 0 0 0 1 0 60
+camera 4 4 -5 0 0 0 0 1 0 60
 attenuation 1 0.0 0.0
 
 maxDepth 1
@@ -48,7 +48,7 @@ pushTransform
 
 #	bindTexture 0
 #	bindNormalsMap 1
-	model ./3ds/cube/cube2.obj
+	model ./3ds/cube/cube3.obj
 
 #	plain R
 
