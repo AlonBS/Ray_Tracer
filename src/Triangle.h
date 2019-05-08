@@ -28,7 +28,9 @@ private:
 //		vec3 Atan, Btan, Ctan;  // Tangent to vertices
 
 
-		bool __iRay2(const Ray& r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties, vec2* texCoords=nullptr);
+		bool __iRay2(const Ray& r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties, vec2* texCoords=nullptr, mat3* TBN=nullptr);
+
+		mat3 __calcTBNMat(const Vertex& v);
 
 public:
 
@@ -51,7 +53,7 @@ public:
 
 	virtual bool intersectsRay(const Ray& r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties);
 
-	bool intersectsRayM(const Ray& r, GLfloat* dist, vec3* point, vec3* normal, vec2* texCoords);
+	bool intersectsRayM(const Ray& r, GLfloat* dist, vec3* point, vec3* normal, vec2* texCoords, mat3* TBN);
 
 	virtual void print() const;
 

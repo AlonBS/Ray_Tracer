@@ -7,6 +7,7 @@
 
 #include "Triangle.h"
 
+#include <glm/detail/type_vec.hpp>
 
 Triangle::Triangle(Vertex& va, Vertex& vb, Vertex& vc)
 : Object(), A(std::move(va)), B(std::move(vb)), C(std::move(vc))
@@ -88,9 +89,10 @@ bool Triangle::intersectsRay(const Ray& r, GLfloat* dist, vec3* point, vec3* nor
 
 
 bool
-Triangle::intersectsRayM(const Ray& r, GLfloat* dist, vec3* point, vec3* normal, vec2* texCoords)
+Triangle::intersectsRayM(const Ray& r, GLfloat* dist, vec3* point, vec3* normal, vec2* texCoords, mat3* TBN)
 {
-	return __iRay2(r, dist, point, normal, nullptr, nullptr, texCoords);
+	cout << "A" << endl;
+	return __iRay2(r, dist, point, normal, nullptr, nullptr, texCoords, TBN);
 //	res2 = __iRay2(r, &dist2, &point2, &norm2, nullptr, nullptr, &texCoords2);
 }
 
@@ -102,11 +104,14 @@ Triangle::__iRay2(const Ray& r,
 				  vec3* normal,
 				  ObjectTexColors* texColors,
 				  ObjectProperties* properties,
-				  vec2* texCoords)
+				  vec2* texCoords,
+				  mat3* TBN)
 {
 	vec3 edge1, edge2, tvec, pvec, qvec;
 	GLfloat det, inv_det;
 	GLfloat u, v, t;
+
+	cout << "HERE" << endl;
 
 	edge1 = B.Position-A.Position;
 	edge2 = C.Position-A.Position;
@@ -185,81 +190,30 @@ Triangle::__iRay2(const Ray& r,
 		*properties = _properties;
 	}
 
+	if (TBN) {
+
+		mat3 TBN_A = __calcTBNMat(A);
+		mat3 TBN_B = __calcTBNMat(B);
+		mat3 TBN_C = __calcTBNMat(C);
+		mat3 TBN = (1.f-u-v)*TBN_A + u*TBN_B + v*TBN_C;
+	}
+
 	++rayTracerStats.numOfHits;
 
 	return true;
 
-
-	// PAPER VERSION
-
-
-//	//const float EPSILON = 0.0000001;
-//		vec3 vertex0 = A;
-//		vec3 vertex1 = B;
-//		vec3 vertex2 = C;
-//
-//		vec3 edge1, edge2, h, s, q;
-//		GLfloat a,f,u,v;
-//		edge1 = vertex1 - vertex0;
-//		edge2 = vertex2 - vertex0;
-//		h = cross(r.direction, edge2);
-//		a = dot(edge1, h);
-//		if (abs(a) < EPSILON)
-//			return false;    // This ray is parallel to this triangle.
-//
-//		f = 1.0/a;
-//		s = r.origin - vertex0;
-//
-//		u = f * (dot(s,h));
-//		if (u < 0.0 || u > 1.0)
-//			return false;
-//
-//		q = cross(s, edge1);
-//		v = f * dot(r.direction, q);
-//		if (v < 0.0 || u + v > 1.0)
-//			return false;
-//		// At this stage we can compute t to find out where the intersection point is on the line.
-//		GLfloat t = f * dot(edge2, q);;
-//		if (t < EPSILON) // ray intersection
-//		{
-//			return false;
-//		}
-//
-//		*dist = t;
-//
-//
-//		if (point)
-//			*point = r.origin + t*r.direction;;
-//		if (normal) {
-//
-//			if (faceNormals) {
-//				*normal = this->N;
-//			}
-//			else {
-//				*normal = (1.f-u-v)*AN + u*BN + v*CN;
-//			}
-//		}
-//
-//		vec2 uv;
-//		uv = (1.f-u-v)*Auv + u*Buv + v*Cuv;
-//		if (texColors) {
-//			texColors->_ambientTexColor  = this->getAmbientTextureColor(uv);
-//			texColors->_diffuseTexColor  = this->getDiffuseTextureColor(uv);
-//			texColors->_specularTexColor = this->getSpecularTextureColor(uv);
-//		}
-//		if (texCoords) {
-//			*texCoords = uv;
-//		}
-//		if (properties) {
-//			*properties = _properties;
-//		}
-//
-//		++rayTracerStats.numOfHits;
-//
-//		return true;
-//
+}
 
 
+mat3 Triangle::__calcTBNMat(const Vertex& v)
+{
+	vec3 T = normalize(v.Tangent);
+	vec3 N = normalize(v.Normal);
+	// re-orthogonalize T with respect to N
+	T = normalize(T - dot(T, N) * N);
+	// then retrieve perpendicular vector B with the cross product of T and N
+	vec3 B = cross(N, T);
+	mat3 TBN = mat3(T, B, N);
 }
 
 

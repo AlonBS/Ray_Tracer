@@ -2,12 +2,12 @@
 # Example of a normals bump maps
 
 size 1280 720
-camera 0 0 -5 0 0 0 0 1 0 60
+camera 0 0 7 0 0 0 0 1 0 60
 attenuation 1 0.0 0.0
 
 maxDepth 1
 
-point 0 0 -5 1 1 1 0.5
+point 0 0 5 1 1 1 0.5
 
 #texture ./textures/brickwall.jpg
 #texture ./textures/brickwall_normal.jpg
@@ -44,11 +44,12 @@ pushTransform
 
 #	translate 0 0 3
 #	rotate 1 0 0 -90 
-	scale 2 2 2
+#	scale 2 2 2
 
 #	bindTexture 0
 #	bindNormalsMap 1
 	model ./3ds/cube/cube.obj
+	sphere 0 0 0 1
 
 #	plain R
 

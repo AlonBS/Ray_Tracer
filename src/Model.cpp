@@ -148,8 +148,6 @@ Model::processMesh(aiMesh *mesh, const aiScene *scene)
 
 		if (mesh->HasTangentsAndBitangents()) {
 
-			cout << "HERE" << endl;
-
 			vector.x = mesh->mTangents[i].x;
 			vector.y = mesh->mTangents[i].y;
 			vector.z = mesh->mTangents[i].z;

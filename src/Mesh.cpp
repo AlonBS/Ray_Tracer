@@ -113,13 +113,16 @@ Mesh::intersectsRay(const Ray &r,
 	vec3 tP, tN;
 	vec2 ttC;
 
+	mat3 TBN;
 
+	cout << "1" << endl;
 	for (Triangle *t : _triangles) {
 
 		/* When we iterate over triangles as part of mesh - we take the properties of the mesh
 		 * and not the triangle. In fact, this triangle doesn't have other but default properties
 		 */
-		if (t->intersectsRayM(r, &tDist, &tP, &tN, &ttC)) {
+		cout << "2" << endl;
+		if (t->intersectsRayM(r, &tDist, &tP, &tN, &ttC, &TBN)) {
 
 			if (tDist < minDist) {
 
@@ -129,7 +132,9 @@ Mesh::intersectsRay(const Ray &r,
 					*normal = tN;
 
 					if (!_objectGlobalProperties.no_bump_maps && _textures.normalsMap) {
+
 						*normal = normalize(2.f*getTextureColor(_textures.normalsMap, ttC) - 1.0f);
+						*normal = normalize(TBN * (*normal));
 
 //						vec3 T = normalize(vec3(model * vec4(aTangent, 0.0)));
 //						vec3 N = normalize(vec3(model * vec4(aNormal, 0.0)));
