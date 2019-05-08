@@ -18,7 +18,7 @@
 
 using namespace std;
 
-#define MAX_POSSIBLE_VALUES 10
+#define MAX_POSSIBLE_VALUES 14
 
 typedef enum CommandType {
 
@@ -68,7 +68,7 @@ private:
 
 
 	static void rightMultiply(const mat4 & M, stack<mat4> &transfstack);
-	static bool readValues(std::stringstream &s, const int numValues, GLfloat *values);
+	static bool readValues(std::stringstream &s, vector<GLfloat>& values);
 	static void fillObjectInfo(ObjectProperties* op, ObjectTransforms* ot, mat4* uniqueTrans=nullptr);
 
 	static vec3 readColor(stringstream& s);
@@ -91,7 +91,8 @@ private:
 	 *   when an object is created.
 	 */
 
-	static GLfloat values[MAX_POSSIBLE_VALUES];
+	static vector<GLfloat> values;
+	//static GLfloat values[MAX_POSSIBLE_VALUES];
 	static vec3 ambient;
 	static vec3 diffuse;
 	static vec3 specular;
@@ -108,15 +109,15 @@ private:
 
 	static stack<mat4> transformsStack;
 
-	static vector<glm::vec3> vertices;
-	static vector<glm::vec3> verticesNormals;
-
-	static vector<glm::vec3> verticesTexV; // For Vertices with textures mapping
-	static vector<glm::vec2> verticesTexT; // The texture mapping
-
-	static vector<glm::vec3> verticesNormTexV; // For vertices with normals and texture mapping
-	static vector<glm::vec3> verticesNormTexN;
-	static vector<glm::vec2> verticesNormTexT;
+	static vector<Vertex> vertices;
+//	static vector<glm::vec3> verticesNormals;
+//
+//	static vector<glm::vec3> verticesTexV; // For Vertices with textures mapping
+//	static vector<glm::vec2> verticesTexT; // The texture mapping
+//
+//	static vector<glm::vec3> verticesNormTexV; // For vertices with normals and texture mapping
+//	static vector<glm::vec3> verticesNormTexN;
+//	static vector<glm::vec2> verticesNormTexT;
 
 	static Image *boundTexture;
 	static bool textureIsBound;

@@ -53,8 +53,8 @@ private:
 
 	using super = Object;
 
-	vector<Triangle*> triangles;
-	vector<Vertex> _vertices;
+	vector<Triangle*> _triangles;
+//	vector<Vertex> _vertices;
 
 	MeshTextures _textures;
 
@@ -73,7 +73,7 @@ public:
 
 
 	Mesh(vector<Vertex>& vertices,
-		 vector<unsigned int>& indices,
+		 vector<GLuint>& indices,
 		 ObjectProperties& properties,
 		 MeshTextures& textures);
 //		 Image *ambientTexture,
@@ -92,8 +92,11 @@ public:
 	vec3 getDiffuseTextureColor(vec2& uv);
 	vec3 getSpecularTextureColor(vec2& uv);
 
-	const vector<Vertex>& getVertices() const { return _vertices; }
-	const vector<Vertex>& getVertices() { return const_cast<vector<Vertex>&>(static_cast<const Mesh &>(*this).getVertices()); }
+	const vector<Triangle*>& getTriangles() const { return _triangles; }
+	const vector<Triangle*>& getTriangles() { return const_cast<vector<Triangle*>&>(static_cast<const Mesh &>(*this).getTriangles()); }
+
+//	const vector<Vertex>& getVertices() const { return _vertices; }
+//	const vector<Vertex>& getVertices() { return const_cast<vector<Vertex>&>(static_cast<const Mesh &>(*this).getVertices()); }
 
 
 	void print() const;
@@ -101,10 +104,7 @@ public:
 private:
 
 
-	void __triangulate(vector<Vertex> vertices, vector<unsigned int> indices);
-
-	void __mapEnvironment(const vec3& r, vec2& uv, GLuint& texIndex);
-	void convert_xyz_to_cube_uv(float x, float y, float z, int *index, float *u, float *v);
+	void __triangulate(vector<Vertex>& vertices, vector<GLuint>& indices);
 
 };
 

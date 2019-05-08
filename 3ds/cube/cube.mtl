@@ -9,6 +9,6 @@ newmtl cube
   Kd 1.0 1.0 1.0
   Ks 1.0 1.0 1.0
   Ke 0.0000 0.0000 0.0000
-  map_Ka bb.png
-#  map_Kd bb.png
-  #map_Ks bb.png
+  map_Ka brickwall.jpg
+  map_Bump brickwall_normal.jpg
+

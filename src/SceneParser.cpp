@@ -46,14 +46,15 @@ struct Commands {
 	const string plain		       = "plain";
 	const string maxVerts          = "maxVerts";
 	const string maxVertNorms      = "maxVertNorms";
+	const string vertexSimple      = "vertexSimple";
 	const string vertex            = "vertex";
-	const string vertexNormal      = "vertexNormal";
-	const string vertexTex         = "vertexTex";
-	const string vertexNormTex     = "vertexNormTex";
+//	const string vertexNormal      = "vertexNormal";
+//	const string vertexTex         = "vertexTex";
+//	const string vertexNormTex     = "vertexNormTex";
 	const string tri               = "tri";
-	const string triNormal         = "triNormal";
-	const string triTex            = "triTex";
-	const string triNormTex        = "triNormTex";
+//	const string triNormal         = "triNormal";
+//	const string triTex            = "triTex";
+//	const string triNormTex        = "triNormTex";
 	const string texture           = "texture";
 	const string bindTexture       = "bindTexture";
 	const string unbindTexture     = "unbindTexture";
@@ -101,8 +102,8 @@ set<string> SceneParser::general{Commands.size, Commands.maxdepth, Commands.skyb
 string 	    SceneParser::camera = Commands.camera;
 set<string> SceneParser::geometry{Commands.sphere, Commands.cylinder, Commands.box, Commands.cone,
 								  Commands.plain, Commands.maxVerts, Commands.maxVertNorms,
-								  Commands.vertex, Commands.vertexNormal, Commands.vertexTex, Commands.vertexNormTex, Commands.tri,
-								  Commands.triNormal, Commands.triTex, Commands.triNormTex,
+								  Commands.vertexSimple, Commands.vertex, /*Commands.vertexNormal, Commands.vertexTex, Commands.vertexNormTex, Commands.tri,
+								  Commands.triNormal, Commands.triTex, Commands.triNormTex,*/
 								  Commands.texture, Commands.bindTexture, Commands.unbindTexture,
 								  Commands.bindNormalsMap, Commands.unbindNormalsMap,
 								  Commands.envMap, Commands.bindEnvMaps, Commands.unbindEnvMaps,
@@ -115,7 +116,7 @@ set<string> SceneParser::materials {Commands.clearProps, Commands.ambient, Comma
 									Commands.reflection, Commands.reflectionBlur,
 									Commands.refraction, Commands.refractionIndex, Commands.refractionBlur};
 
-GLfloat SceneParser::values[MAX_POSSIBLE_VALUES] = {};
+vector<GLfloat> SceneParser::values = {};
 
 
 vec3 SceneParser::ambient  = vec3(0.2f, 0.2f, 0.2f);
@@ -136,15 +137,15 @@ GLuint 		SceneParser::maxDepth = RECURSION_DEFAULT_DEPTH;
 
 stack<mat4> SceneParser::transformsStack{};
 
-vector<glm::vec3> SceneParser::vertices{};
-vector<glm::vec3> SceneParser::verticesNormals;
-
-vector<glm::vec3> SceneParser::verticesTexV{};
-vector<glm::vec2> SceneParser::verticesTexT{};
-
-vector<glm::vec3> SceneParser::verticesNormTexV{};
-vector<glm::vec3> SceneParser::verticesNormTexN{};
-vector<glm::vec2> SceneParser::verticesNormTexT{};
+vector<Vertex> SceneParser::vertices{};
+//vector<glm::vec3> SceneParser::verticesNormals;
+//
+//vector<glm::vec3> SceneParser::verticesTexV{};
+//vector<glm::vec2> SceneParser::verticesTexT{};
+//
+//vector<glm::vec3> SceneParser::verticesNormTexV{};
+//vector<glm::vec3> SceneParser::verticesNormTexN{};
+//vector<glm::vec2> SceneParser::verticesNormTexT{};
 
 GLint SceneParser::lineNumber = 0;
 Image* SceneParser::boundTexture = nullptr;
@@ -231,21 +232,16 @@ rightMultiply(const mat4 & M, stack<mat4> &transfstack)
 }
 
 bool
-SceneParser::readValues(stringstream &s, const int numOfVals, GLfloat* values)
+SceneParser::readValues(stringstream &s, vector<GLfloat>& values)
 {
-	for (int i = 0; i < numOfVals; ++i) {
-		s >> values[i];
-		if (s.fail()) {
-			cout << "\t[E]\t Line: " << lineNumber << " - failed reading values, and line will be ignored. Check syntax." << endl;
-			return false;
-		}
-	}
-	return true;
+	values = std::vector<GLfloat> { std::istream_iterator<GLfloat>{s}, std::istream_iterator<GLfloat>{}};
 }
 
 
 void SceneParser::fillObjectInfo(ObjectProperties* op, ObjectTransforms* ot, mat4* uniqueTrans)
 {
+	if (!op || !ot) return;
+
 	op->_ambient = ambient;
 	op->_emission = emission;
 	op->_diffuse = diffuse;
@@ -257,12 +253,9 @@ void SceneParser::fillObjectInfo(ObjectProperties* op, ObjectTransforms* ot, mat
 	op->_refractionIndex = refractionIndex;
 	op->_refractionBlur = refractionBlur;
 
-	if (ot) { // Not all objects need this
-		ot->_transform = (uniqueTrans) ? *uniqueTrans : transformsStack.top();
-		ot->_invTransform = inverse(ot->_transform);
-		ot->_invTransposeTrans = mat3(transpose(ot->_invTransform));
-	}
-
+	ot->_transform = (uniqueTrans) ? *uniqueTrans : transformsStack.top();
+	ot->_invTransform = inverse(ot->_transform);
+	ot->_invTransposeTrans = mat3(transpose(ot->_invTransform));
 }
 
 
@@ -279,7 +272,7 @@ SceneParser::readColor(stringstream& s)
 		return vec3(1.0f, 1.0f, 1.0f);
 	}
 
-	readValues(s, 2, values);
+	readValues(s, values);
 
 	GLfloat n1 = (GLfloat) strtod(c.c_str(), NULL);
 	return normColor(vec3(n1, values[0], values[1]));
@@ -332,6 +325,7 @@ SceneParser::readFile(const AdditionalRenderParams& params, const char* fileName
 		return nullptr;
 	}
 
+	values.reserve(MAX_POSSIBLE_VALUES);
 	additionalParams = params;
 	scene = new Scene();
 	scene->handleAdditionalParams(additionalParams);
@@ -396,12 +390,12 @@ SceneParser::readFile(const AdditionalRenderParams& params, const char* fileName
 	/* Buffers clean up */
 	lineNumber = 0;
 	vertices.clear();
-	verticesNormals.clear();
-	verticesTexV.clear();
-	verticesTexT.clear();
-	verticesNormTexV.clear();
-	verticesNormTexN.clear();
-	verticesNormTexT.clear();
+//	verticesNormals.clear();
+//	verticesTexV.clear();
+//	verticesTexT.clear();
+//	verticesNormTexV.clear();
+//	verticesNormTexN.clear();
+//	verticesNormTexT.clear();
 	boundTexture = nullptr;
 	textureIsBound = false;
 	boundNormalMap = nullptr;
@@ -428,17 +422,17 @@ SceneParser::handleGeneralCommand(stringstream& s, string& cmd)
 {
 	if (cmd == Commands.size) {
 
-		readValues(s, 2, values);
+		readValues(s, values);
 		scene->width() = values[0];
 		scene->height() = values[1];
 	} else if (cmd == Commands.maxdepth) {
 
-		readValues(s, 1, values);
+		readValues(s, values);
 		scene->maxDepth() = (GLuint) glm::min(MAX_RECURSION_DEPTH, values[0]);
 
 	} else if (cmd == Commands.skybox) {
 
-		readValues(s, 1, values);
+		readValues(s, values);
 		scene->setSkyBox(values[0]);
 	}
 
@@ -449,7 +443,7 @@ void
 SceneParser::handleCameraCommand(stringstream& s, string& cmd)
 {
 	(void) cmd; //Suppress warning - maybe we'll have more camera options in the future.
-	readValues(s, 10, values);
+	readValues(s, values);
 	vec3 eyeInit = glm::vec3(values[0], values[1], values[2]);
 	vec3 center  = glm::vec3(values[3], values[4], values[5]);
 	vec3 upInit  = glm::vec3(values[6], values[7], values[8]);
@@ -465,7 +459,7 @@ void
 SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 {
 	if (cmd == Commands.sphere) {
-		readValues(s, 4, values);
+		readValues(s, values);
 
 		/* We want to allow the user to define a sphere at a specific location in addition to be able to translate it.
 		 * To achieve this, we actually create a canonical sphere at (0,0,0) at we derive the translation from the given
@@ -491,7 +485,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 	}
 
 	else if (cmd == Commands.cylinder) {
-		readValues(s, 5, values);
+		readValues(s, values);
 		vec3 center = glm::vec3(0, 0, 0);
 		mat4 objectTranslation = glm::translate(mat4(1.0), vec3(values[0], values[1], values[2]));
 		mat4 objectTransformation = objectTranslation * transformsStack.top(); // yes - left multiplied! - see note at sphere
@@ -512,7 +506,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 	}
 
 	else if (cmd == Commands.box) {
-		readValues(s, 6, values);
+		readValues(s, values);
 		vec3 minBound = vec3(values[0], values[1], values[2]);
 		vec3 maxBound = vec3(values[3], values[4], values[5]);
 
@@ -529,7 +523,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 
 
 	else if (cmd == Commands.cone) {
-		readValues(s, 5, values);
+		readValues(s, values);
 		vec3 center = glm::vec3(0, 0, 0);
 		mat4 objectTranslation = glm::translate(mat4(1.0), vec3(values[0], values[1], values[2]));
 		mat4 objectTransformation = objectTranslation * transformsStack.top(); // yes - left multiplied! - see note at sphere
@@ -588,113 +582,143 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		vertices.clear();
 	}
 
-	else if (cmd == Commands.maxVertNorms) {
-		// New Object is coming
-		verticesNormals.clear();
+//	else if (cmd == Commands.maxVertNorms) {
+//		// New Object is coming
+//		verticesNormals.clear();
+//	}
+
+	else if (cmd == Commands.vertexSimple) {
+		readValues(s, values);
+		vertices.push_back(
+				Vertex
+				{
+					Position : vec3(values[0], values[1], values[2]),
+				}
+				);
 	}
 
 	else if (cmd == Commands.vertex) {
-		readValues(s, 3, values);
-		vertices.push_back(vec3(values[0], values[1], values[2]));
+		readValues(s, values);
+		vertices.push_back(
+				Vertex
+				{
+					Position   : vec3(values[0],  values[1],  values[2]),
+					Normal	   : vec3(values[3],  values[4],  values[5]),
+					TexCoords  : vec2(values[6],  values[7]),
+					Tangent    : vec3(values[8],  values[9],  values[10]),
+					Bitangent  : vec3(values[11], values[12], values[13]),
+				}
+				);
 	}
 
-	else if (cmd == Commands.vertexNormal) {
-		readValues(s, 6, values);
-		verticesNormals.push_back(vec3(values[0], values[1], values[2]));
-		verticesNormals.push_back(vec3(values[3], values[4], values[5]));
-	}
 
-	else if (cmd == Commands.vertexTex) {
-		readValues(s, 5, values);
-		verticesTexV.push_back(vec3(values[0], values[1], values[2]));
-		verticesTexT.push_back(vec2(values[3], values[4]));
-	}
-
-	else if (cmd == Commands.vertexNormTex) {
-		readValues(s, 8, values);
-		verticesNormTexV.push_back(vec3(values[0], values[1], values[2]));
-		verticesNormTexN.push_back(vec3(values[3], values[4], values[5]));
-		verticesNormTexT.push_back(vec2(values[6], values[7]));
-	}
+//	else if (cmd == Commands.vertexNormal) {
+//		readValues(s, 6, values);
+//		verticesNormals.push_back(vec3(values[0], values[1], values[2]));
+//		verticesNormals.push_back(vec3(values[3], values[4], values[5]));
+//	}
+//
+//	else if (cmd == Commands.vertexTex) {
+//		readValues(s, 5, values);
+//		verticesTexV.push_back(vec3(values[0], values[1], values[2]));
+//		verticesTexT.push_back(vec2(values[3], values[4]));
+//	}
+//
+//	else if (cmd == Commands.vertexNormTex) {
+//		readValues(s, 8, values);
+//		verticesNormTexV.push_back(vec3(values[0], values[1], values[2]));
+//		verticesNormTexN.push_back(vec3(values[3], values[4], values[5]));
+//		verticesNormTexT.push_back(vec2(values[6], values[7]));
+//	}
 
 
 	else if (cmd == Commands.tri) {
-		readValues(s, 3, values);
-		vec3 A = vec3 (transformsStack.top() * vec4(vertices[values[0]], 1.0f));
-		vec3 B = vec3 (transformsStack.top() * vec4(vertices[values[1]], 1.0f));
-		vec3 C = vec3 (transformsStack.top() * vec4(vertices[values[2]], 1.0f));
+		readValues(s, values);
 
 		ObjectProperties op{};
-		fillObjectInfo(&op, nullptr);
+		ObjectTransforms ot{};
+		fillObjectInfo(&op, &ot);
+
+		Vertex A = vertices[values[0]];
+		Vertex B = vertices[values[1]];
+		Vertex C = vertices[values[2]];
+
+		A.Position = ot._transform * vec4(A.Position, 1.0f);
+		A.Position = ot._invTransposeTrans * A.Normal;
+		B.Position = ot._transform * vec4(B.Position, 1.0f);
+		B.Position = ot._invTransposeTrans * B.Normal;
+		C.Position = ot._transform * vec4(C.Position, 1.0f);
+		C.Position = ot._invTransposeTrans * C.Normal;
+
 		Object *triangle = new Triangle(op, A, B, C);
 		scene->addObject(triangle);
 
 	}
 
 
-	// This is legacy and shouldn't really be supported
-	else if (cmd == Commands.triNormal) {
-		readValues(s, 3, values);
-		ObjectProperties op{};
-		fillObjectInfo(&op, nullptr);
-
-		mat3 invTranspose = mat3(transpose(inverse(transformsStack.top())));
-
-		vec3 A = vec3 (transformsStack.top() * vec4(verticesNormals[values[0] * 2], 1.0f));
-		vec3 B = vec3 (transformsStack.top() * vec4(verticesNormals[values[1] * 2], 1.0f));
-		vec3 C = vec3 (transformsStack.top() * vec4(verticesNormals[values[2] * 2], 1.0f));
-		vec3 AN = invTranspose * verticesNormals[values[0] * 2 + 1];
-		vec3 BN = invTranspose * verticesNormals[values[0] * 2 + 1];
-		vec3 CN = invTranspose * verticesNormals[values[0] * 2 + 1];
-
-		Object *triangle = new Triangle(op, A, B, C, AN, BN, CN);
-		scene->addObject(triangle);
-	}
-
-	else if (cmd == Commands.triTex) {
-		readValues(s, 3, values);
-		vec3 A = vec3 (transformsStack.top() * vec4(verticesTexV[values[0]], 1.0f));
-		vec3 B = vec3 (transformsStack.top() * vec4(verticesTexV[values[1]], 1.0f));
-		vec3 C = vec3 (transformsStack.top() * vec4(verticesTexV[values[2]], 1.0f));
-		vec2 Auv = vec2(verticesTexT[values[0]]);
-		vec2 Buv = vec2(verticesTexT[values[1]]);
-		vec2 Cuv = vec2(verticesTexT[values[2]]);
-
-		ObjectProperties op{};
-		fillObjectInfo(&op, nullptr);
-
-		Object *triangle = new Triangle(op, A, B, C, Auv, Buv, Cuv);
-		if (textureIsBound) {
-			triangle->setTextures(boundTexture, boundNormalMap);
-		}
-		scene->addObject(triangle);
-	}
-
-
-	else if (cmd == Commands.triNormTex) {
-		readValues(s, 3, values);
-
-		mat3 invTranspose = mat3(transpose(inverse(transformsStack.top())));
-
-		vec3 A = vec3 (transformsStack.top() * vec4(verticesNormTexV[values[0]], 1.0f));
-		vec3 B = vec3 (transformsStack.top() * vec4(verticesNormTexV[values[1]], 1.0f));
-		vec3 C = vec3 (transformsStack.top() * vec4(verticesNormTexV[values[2]], 1.0f));
-		vec3 AN = invTranspose * verticesNormTexN[values[0]];
-		vec3 BN = invTranspose * verticesNormTexN[values[1]];
-		vec3 CN = invTranspose * verticesNormTexN[values[2]];
-		vec2 Auv = vec2(verticesNormTexT[values[0]]);
-		vec2 Buv = vec2(verticesNormTexT[values[1]]);
-		vec2 Cuv = vec2(verticesNormTexT[values[2]]);
-
-		ObjectProperties op{};
-		fillObjectInfo(&op, nullptr);
-
-		Object *triangle = new Triangle(op, A, B, C, AN, BN, CN, Auv, Buv, Cuv);
-		if (textureIsBound) {
-			triangle->setTextures(boundTexture, boundNormalMap);
-		}
-		scene->addObject(triangle);
-	}
+//	// This is legacy and shouldn't really be supported
+//	else if (cmd == Commands.triNormal) {
+//		readValues(s, 3, values);
+//		ObjectProperties op{};
+//		fillObjectInfo(&op, nullptr);
+//
+//		mat3 invTranspose = mat3(transpose(inverse(transformsStack.top())));
+//
+//		vec3 A = vec3 (transformsStack.top() * vec4(verticesNormals[values[0] * 2], 1.0f));
+//		vec3 B = vec3 (transformsStack.top() * vec4(verticesNormals[values[1] * 2], 1.0f));
+//		vec3 C = vec3 (transformsStack.top() * vec4(verticesNormals[values[2] * 2], 1.0f));
+//		vec3 AN = invTranspose * verticesNormals[values[0] * 2 + 1];
+//		vec3 BN = invTranspose * verticesNormals[values[0] * 2 + 1];
+//		vec3 CN = invTranspose * verticesNormals[values[0] * 2 + 1];
+//
+//		Object *triangle = new Triangle(op, A, B, C, AN, BN, CN);
+//		scene->addObject(triangle);
+//	}
+//
+//	else if (cmd == Commands.triTex) {
+//		readValues(s, 3, values);
+//		vec3 A = vec3 (transformsStack.top() * vec4(verticesTexV[values[0]], 1.0f));
+//		vec3 B = vec3 (transformsStack.top() * vec4(verticesTexV[values[1]], 1.0f));
+//		vec3 C = vec3 (transformsStack.top() * vec4(verticesTexV[values[2]], 1.0f));
+//		vec2 Auv = vec2(verticesTexT[values[0]]);
+//		vec2 Buv = vec2(verticesTexT[values[1]]);
+//		vec2 Cuv = vec2(verticesTexT[values[2]]);
+//
+//		ObjectProperties op{};
+//		fillObjectInfo(&op, nullptr);
+//
+//		Object *triangle = new Triangle(op, A, B, C, Auv, Buv, Cuv);
+//		if (textureIsBound) {
+//			triangle->setTextures(boundTexture, boundNormalMap);
+//		}
+//		scene->addObject(triangle);
+//	}
+//
+//
+//	else if (cmd == Commands.triNormTex) {
+//		readValues(s, 3, values);
+//
+//		mat3 invTranspose = mat3(transpose(inverse(transformsStack.top())));
+//
+//		vec3 A = vec3 (transformsStack.top() * vec4(verticesNormTexV[values[0]], 1.0f));
+//		vec3 B = vec3 (transformsStack.top() * vec4(verticesNormTexV[values[1]], 1.0f));
+//		vec3 C = vec3 (transformsStack.top() * vec4(verticesNormTexV[values[2]], 1.0f));
+//		vec3 AN = invTranspose * verticesNormTexN[values[0]];
+//		vec3 BN = invTranspose * verticesNormTexN[values[1]];
+//		vec3 CN = invTranspose * verticesNormTexN[values[2]];
+//		vec2 Auv = vec2(verticesNormTexT[values[0]]);
+//		vec2 Buv = vec2(verticesNormTexT[values[1]]);
+//		vec2 Cuv = vec2(verticesNormTexT[values[2]]);
+//
+//		ObjectProperties op{};
+//		fillObjectInfo(&op, nullptr);
+//
+//		Object *triangle = new Triangle(op, A, B, C, AN, BN, CN, Auv, Buv, Cuv);
+//		if (textureIsBound) {
+//			triangle->setTextures(boundTexture, boundNormalMap);
+//		}
+//		scene->addObject(triangle);
+//	}
 
 
 	else if (cmd == Commands.texture) {
@@ -710,7 +734,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 
 	else if (cmd == Commands.bindTexture) {
 
-			readValues(s, 1, values);
+			readValues(s, values);
 
 			boundTexture = scene->getTexture(values[0]);
 			textureIsBound = true;
@@ -724,7 +748,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 
 	else if (cmd == Commands.bindNormalsMap) {
 
-			readValues(s, 1, values);
+			readValues(s, values);
 			boundNormalMap = scene->getTexture(values[0]);
 	}
 
@@ -746,14 +770,14 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 
 	else if (cmd == Commands.bindEnvMaps) {
 
-		readValues(s, 1, values);
+		readValues(s, values);
 		string envMapType;
 		s >> envMapType;
 
 		boundEnvMaps.maps = scene->getEnvMaps(values[0]);
 		boundEnvMaps.refractiveMapping = (envMapType == "refract");
 		if (boundEnvMaps.refractiveMapping) {
-			readValues(s, 1, values);
+			readValues(s, values);
 			boundEnvMaps.refractiveIndex = values[0];
 		}
 
@@ -787,17 +811,17 @@ void
 SceneParser::handleTransformationsCommand(stringstream& s, string& cmd)
 {
 	if (cmd == Commands.translate) {
-		readValues(s,3,values);
+		readValues(s, values);
 		transformsStack.top() = glm::translate(transformsStack.top(), vec3(values[0], values[1], values[2]));
 	}
 
 	else if (cmd == Commands.scale) {
-		readValues(s,3,values);
+		readValues(s, values);
 		transformsStack.top() = glm::scale(transformsStack.top(), vec3(values[0], values[1], values[2]));
 	}
 
 	else if (cmd == Commands.rotate) {
-		readValues(s,4,values);
+		readValues(s, values);
 		transformsStack.top() = glm::rotate(transformsStack.top(), radians(values[3]), vec3(values[0], values[1], values[2]));
 	}
 
@@ -820,7 +844,7 @@ SceneParser::handleLightsCommand(stringstream& s, string& cmd)
 {
 	if (cmd == Commands.directional) {
 
-		readValues(s, 7, values);
+		readValues(s, values);
 		vec3 dir = vec3(values[0], values[1], values[2]);
 		vec3 color = normColor(vec3(values[3], values[4], values[5]));
 		GLfloat intensity = values[6];
@@ -830,7 +854,7 @@ SceneParser::handleLightsCommand(stringstream& s, string& cmd)
 	}
 
 	else if (cmd == Commands.point) {
-		readValues(s, 7, values);
+		readValues(s, values);
 
 		vec3 pos = vec3(0, 0, 0);
 		mat4 lightTranslation = glm::translate(mat4(1.0), vec3(values[0], values[1], values[2]));
@@ -842,7 +866,7 @@ SceneParser::handleLightsCommand(stringstream& s, string& cmd)
 	}
 
 	else if (cmd == Commands.area) {
-		readValues(s, 8, values);
+		readValues(s, values);
 
 		vec3 center = vec3(0, 0, 0);
 		mat4 lightTranslation = glm::translate(mat4(1.0), vec3(values[0], values[1], values[2]));
@@ -864,7 +888,7 @@ SceneParser::handleLightsCommand(stringstream& s, string& cmd)
 	}
 
 	else if (cmd == Commands.attenuation) {
-		readValues(s, 3, values);
+		readValues(s, values);
 		Attenuation atten = {
 				.constant = values[0],
 				.linear = values[1],
@@ -907,7 +931,7 @@ SceneParser::handleMaterialsCommand(stringstream& s, string& cmd)
 	}
 
 	else if (cmd == Commands.shininess) {
-		readValues(s, 1, values);
+		readValues(s, values);
 		shininess = values[0];
 	}
 
@@ -918,7 +942,7 @@ SceneParser::handleMaterialsCommand(stringstream& s, string& cmd)
 
 	else if (cmd == Commands.reflectionBlur) {
 
-		readValues(s, 1, values);
+		readValues(s, values);
 		reflectionBlur = values[0];
 	}
 
@@ -928,12 +952,12 @@ SceneParser::handleMaterialsCommand(stringstream& s, string& cmd)
 	}
 
 	else if (cmd == Commands.refractionIndex) {
-		readValues(s, 1, values);
+		readValues(s, values);
 		refractionIndex = values[0];
 	}
 
 	else if (cmd == Commands.refractionBlur) {
-		readValues(s, 1, values);
+		readValues(s, values);
 		refractionBlur = values[0];
 	}
 

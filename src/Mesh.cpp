@@ -32,7 +32,7 @@ ObjectProperties operator*(const ObjectProperties& op, const MeshProperties& mp)
     /*  Functions  */
     // constructor
 Mesh::Mesh(vector<Vertex>& vertices,
-		   vector<unsigned int>& indices,
+		   vector<GLuint>& indices,
 		   ObjectProperties& properties,
 		   MeshTextures& meshTextures)
 //		   Image *ambientTexture,
@@ -65,53 +65,36 @@ Mesh::Mesh(vector<Vertex>& vertices,
 				_envMapRefIndex = meshTextures.envMaps->refractiveIndex;
 			}
 			_textures.envMaps = meshTextures.envMaps;
-//			_envMaps = envMaps.maps;
 		}
 
 	}
 
-	_vertices = vertices; // Yes - this is shit, but a must for now
+//	_vertices = vertices; // Yes - this is shit, but a must for now
 	__triangulate(vertices, indices);
 }
 
 
 Mesh::~Mesh()
 {
-	for (Triangle *t : triangles) {
+	for (Triangle *t : _triangles) {
 		delete(t);
 		t = nullptr;
 	}
 
-	triangles.clear();
+	_triangles.clear();
 
 
 }
 
 
 void
-Mesh::__triangulate(vector<Vertex> vertices, vector<unsigned int> indices)
+Mesh::__triangulate(vector<Vertex>& vertices, vector<GLuint>& indices)
 {
-	vec3 A, B, C;
-	vec3 An, Bn, Cn;
-	vec2 Auv, Buv, Cuv;
-
-
-	for (unsigned int i = 0 ; i < indices.size() ; i+=3) {
-
-		A   = vertices[indices[i  ]].Position;
-		An  = vertices[indices[i  ]].Normal;
-		Auv = vertices[indices[i  ]].TexCoords;
-
-		B   = vertices[indices[i+1]].Position;
-		Bn  = vertices[indices[i+1]].Normal;
-		Buv = vertices[indices[i+1]].TexCoords;
-
-		C   = vertices[indices[i+2]].Position;
-		Cn  = vertices[indices[i+2]].Normal;
-		Cuv = vertices[indices[i+2]].TexCoords;
-
-		this->triangles.push_back(new Triangle(A, B, C, An, Bn, Cn, Auv, Buv, Cuv));
-
+	for (GLuint i = 0 ; i < indices.size() ; i+=3)
+	{
+		this->_triangles.push_back(new Triangle(vertices[indices[i  ]],
+											    vertices[indices[i+1]],
+											    vertices[indices[i+2]]));
 	}
 }
 
@@ -131,7 +114,7 @@ Mesh::intersectsRay(const Ray &r,
 	vec2 ttC;
 
 
-	for (Triangle *t : triangles) {
+	for (Triangle *t : _triangles) {
 
 		/* When we iterate over triangles as part of mesh - we take the properties of the mesh
 		 * and not the triangle. In fact, this triangle doesn't have other but default properties
@@ -143,20 +126,20 @@ Mesh::intersectsRay(const Ray &r,
 				*dist = minDist = tDist;
 				if (point) *point = tP;
 				if (normal) {
+					*normal = tN;
 
-					if (_textures.normalsMap) {
+					if (!_objectGlobalProperties.no_bump_maps && _textures.normalsMap) {
+						*normal = normalize(2.f*getTextureColor(_textures.normalsMap, ttC) - 1.0f);
 
-						if (!_objectGlobalProperties.no_bump_maps) {
-							*normal = normalize(2.f*getTextureColor(_textures.normalsMap, ttC) - 1.0f);
-//							printVec3("NORM", *normal);
-						}
+//						vec3 T = normalize(vec3(model * vec4(aTangent, 0.0)));
+//						vec3 N = normalize(vec3(model * vec4(aNormal, 0.0)));
+//						// re-orthogonalize T with respect to N
+//						T = normalize(T - dot(T, N) * N);
+//						// then retrieve perpendicular vector B with the cross product of T and N
+//						vec3 B = cross(N, T);
+//
+//						mat3 TBN = mat3(T, B, N)
 					}
-					else {
-						*normal = tN;
-//						printVec3("NORM", *normal);
-					}
-
-
 				}
 
 				if (texColors) {

@@ -267,6 +267,8 @@ vec3 RayTracer::computeLight(Scene& scene, Ray& r, Intersection& hit)
 	vec3 eyeDir;
 	vec3 halfAng;
 
+//	printVec3("Norm", hit.normal);
+
 	// The 'eye' direction is where the current ray was shot from, and hit.
 	eyeDir = normalize(r.origin - hit.point);
 

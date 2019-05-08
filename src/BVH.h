@@ -79,11 +79,15 @@ private:
 			for (uint8_t i = 0; i < NUM_OF_SET_NORMALS; ++i) {
 
 				dists[i].dNear = INFINITY, dists[i].dFar = -INFINITY;
-				for (const auto& v : mesh->getVertices()) {
+				for (const auto& t : mesh->getTriangles()) {
 
-					GLfloat d = dot(PLANE_SET_NORMALS[i], v.Position);
-					dists[i].dNear = glm::min(dists[i].dNear, d);
-					dists[i].dFar  = glm::max(dists[i].dFar, d);
+					for (const auto& v : t->getVerticesPos()) {
+
+						GLfloat d = dot(PLANE_SET_NORMALS[i], v);
+						dists[i].dNear = glm::min(dists[i].dNear, d);
+						dists[i].dFar  = glm::max(dists[i].dFar, d);
+					}
+
 				}
 			}
 

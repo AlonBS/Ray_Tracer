@@ -33,6 +33,7 @@ bool singleThreaded = false;
 string resultFormat;
 fs::path outputDirectory;
 bool generateStats = false;
+bool dryrun = false;
 
 
 // These are the preferred default values
@@ -83,6 +84,7 @@ static void parse_args(int argc, char *argv[], vector<fs::path>& scenes)
 			("flat-shading", po::bool_switch(&ap.flatShading), "Indicate whether flat shading should be used. If set, face normals will be used, otherwise (and by default), normals are interpolated for a much smoother image.")
 			("no-anti-aliasing", po::bool_switch(&ap.noAntiAliasing), "Indicate if anti-aliasing should be disabled, or enabled, as by default")
 			("no-bump-maps", po::bool_switch(&ap.noBumpMaps), "Indicate if normals bump maps should be used (as by default), or not. If set, no bump maps will be used even if object has one defined.")
+			("dry", po::bool_switch(&dryrun), "Run as 'dryrun'. Use this to render complex scenes fast - no anti aliasing, hard shadows, flat shading, and no bump maps")
 		;
 
 
@@ -160,6 +162,14 @@ static void parse_args(int argc, char *argv[], vector<fs::path>& scenes)
 		exit(-3);
 	}
 
+
+	if (dryrun) {
+		ap.flatShading = true;
+		ap.hardShadows = true;
+		ap.noAntiAliasing = true;
+//		ap.noBumpMaps = true;
+	}
+
 }
 
 
@@ -209,6 +219,7 @@ static void render_scene(string fileName)
 	delete img;
 	delete scene;
 }
+
 
 
 int main(int argc, char *argv[])

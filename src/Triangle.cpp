@@ -8,67 +8,71 @@
 #include "Triangle.h"
 
 
-Triangle::Triangle(ObjectProperties& op, vec3& va, vec3& vb, vec3& vc)
-: Object(), A(va), B(vb), C(vc)
+Triangle::Triangle(Vertex& va, Vertex& vb, Vertex& vc)
+: Object(), A(std::move(va)), B(std::move(vb)), C(std::move(vc))
+{
+	N = normalize(cross(C.Position-B.Position,A.Position-B.Position)); // Compute the face normal
+}
+
+
+Triangle::Triangle(ObjectProperties& op, Vertex& va, Vertex& vb, Vertex& vc)
+: Object(), A(std::move(va)), B(std::move(vb)), C(std::move(vc))
 {
 	Object::_properties = op;
-	N = normalize(cross(C-B,A-B)); // Compute the face normal
-	AN = vec3(0.0f, 0.0f, 0.0f);
-	BN = vec3(0.0f, 0.0f, 0.0f);
-	CN = vec3(0.0f, 0.0f, 0.0f);
-	Auv = vec2(0.0f, 0.0f);
-	Buv = vec2(0.0f, 0.0f);
-	Cuv = vec2(0.0f, 0.0f);
-}
-
-
-Triangle::Triangle(ObjectProperties& op, vec3& va, vec3& vb, vec3& vc, vec2& auv, vec2& buv, vec2& cuv)
-: Object(), A(va), B(vb), C(vc), Auv(auv), Buv(buv), Cuv(cuv)
-{
-	Object::_properties = op;
-	N = normalize(cross(C-B,A-B)); // Compute the face normal
-	AN = vec3(0.0f, 0.0f, 0.0f);
-	BN = vec3(0.0f, 0.0f, 0.0f);
-	CN = vec3(0.0f, 0.0f, 0.0f);
-
-}
-
-
-
-Triangle::Triangle(ObjectProperties& op, vec3& va, vec3& vb, vec3& vc, vec3& vaNorm, vec3& vbNorm, vec3& vcNorm)
-: Object(), A(va), B(vb), C(vc), AN(vaNorm), BN(vbNorm), CN(vcNorm)
-{
-	Object::_properties = op;
-	N = normalize(cross(C-B,A-B)); // Compute the face normal
-
-}
-
-
-Triangle::Triangle(ObjectProperties& op,
-				   vec3& va, vec3& vb, vec3& vc,
-			 	   vec3& vaNorm, vec3& vbNorm, vec3& vcNorm,
-				   vec2& auv, vec2& buv, vec2& cuv)
-: Object(), A(va), B(vb), C(vc),
-  	  	    AN(vaNorm), BN(vbNorm), CN(vcNorm),
-  	  	  	Auv(auv), Buv(buv), Cuv(cuv)
-{
-	Object::_properties = op;
-	N = normalize(cross(C-B,A-B)); // Compute the face normal
+	N = normalize(cross(C.Position-B.Position,A.Position-B.Position)); // Compute the face normal
 }
 
 
 
 
-
-Triangle::Triangle(vec3& va, vec3& vb, vec3& vc,
-			 	   vec3& vaNorm, vec3& vbNorm, vec3& vcNorm,
-				   vec2& auv, vec2& buv, vec2& cuv)
-: Object(), A(va), B(vb), C(vc),
-  	  	    AN(vaNorm), BN(vbNorm), CN(vcNorm),
-  	  	  	Auv(auv), Buv(buv), Cuv(cuv)
-{
-	N = normalize(cross(C-B,A-B)); // Compute the face normal
-}
+//Triangle::Triangle(ObjectProperties& op, vec3& va, vec3& vb, vec3& vc, vec2& auv, vec2& buv, vec2& cuv)
+//: Object(), A(va), B(vb), C(vc), Auv(auv), Buv(buv), Cuv(cuv)
+//{
+//
+//	Object::_properties = op;
+//	N = normalize(cross(C-B,A-B)); // Compute the face normal
+//	AN = vec3(0.0f, 0.0f, 0.0f);
+//	BN = vec3(0.0f, 0.0f, 0.0f);
+//	CN = vec3(0.0f, 0.0f, 0.0f);
+//
+//}
+//
+//
+//
+//Triangle::Triangle(ObjectProperties& op, vec3& va, vec3& vb, vec3& vc, vec3& vaNorm, vec3& vbNorm, vec3& vcNorm)
+//: Object(), A(va), B(vb), C(vc), AN(vaNorm), BN(vbNorm), CN(vcNorm)
+//{
+//	Object::_properties = op;
+//	N = normalize(cross(C-B,A-B)); // Compute the face normal
+//
+//}
+//
+//
+//Triangle::Triangle(ObjectProperties& op,
+//				   vec3& va, vec3& vb, vec3& vc,
+//			 	   vec3& vaNorm, vec3& vbNorm, vec3& vcNorm,
+//				   vec2& auv, vec2& buv, vec2& cuv)
+//: Object(), A(va), B(vb), C(vc),
+//  	  	    AN(vaNorm), BN(vbNorm), CN(vcNorm),
+//  	  	  	Auv(auv), Buv(buv), Cuv(cuv)
+//{
+//	Object::_properties = op;
+//	N = normalize(cross(C-B,A-B)); // Compute the face normal
+//}
+//
+//
+//
+//
+//
+//Triangle::Triangle(vec3& va, vec3& vb, vec3& vc,
+//			 	   vec3& vaNorm, vec3& vbNorm, vec3& vcNorm,
+//				   vec2& auv, vec2& buv, vec2& cuv)
+//: Object(), A(va), B(vb), C(vc),
+//  	  	    AN(vaNorm), BN(vbNorm), CN(vcNorm),
+//  	  	  	Auv(auv), Buv(buv), Cuv(cuv)
+//{
+//	N = normalize(cross(C-B,A-B)); // Compute the face normal
+//}
 
 
 Triangle::~Triangle()
@@ -104,15 +108,15 @@ Triangle::__iRay2(const Ray& r,
 	GLfloat det, inv_det;
 	GLfloat u, v, t;
 
-	edge1 = B-A;
-	edge2 = C-A;
+	edge1 = B.Position-A.Position;
+	edge2 = C.Position-A.Position;
 
 	pvec = cross(r.direction, edge2);
 	det = dot(edge1, pvec);
 
 	if (det > EPSILON) {
 
-		tvec = r.origin - A;
+		tvec = r.origin - A.Position;
 		u = dot(tvec, pvec);
 		if (u < 0.0f || u > det)
 			return false;
@@ -126,7 +130,7 @@ Triangle::__iRay2(const Ray& r,
 
 	else if (det < -EPSILON)
 	{
-		tvec = r.origin - A;
+		tvec = r.origin - A.Position;
 
 		u = dot(tvec, pvec);
 		if (u > 0.0f || u < det)
@@ -163,12 +167,12 @@ Triangle::__iRay2(const Ray& r,
 			*normal = this->N;
 		}
 		else {
-			*normal = (1.f-u-v)*AN + u*BN + v*CN;
+			*normal = (1.f-u-v)*A.Normal + u*B.Normal + v*C.Normal;
 		}
 	}
 
 	vec2 uv;
-	uv = (1.f-u-v)*Auv + u*Buv + v*Cuv;
+	uv = (1.f-u-v)*A.TexCoords + u*B.TexCoords + v*C.TexCoords;
 	if (texColors) {
 		texColors->_ambientTexColor  = this->getAmbientTextureColor(uv);
 		texColors->_diffuseTexColor  = this->getDiffuseTextureColor(uv);
