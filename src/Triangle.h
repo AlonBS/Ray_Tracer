@@ -20,6 +20,7 @@ private:
 
 		Vertex A, B, C;
 		vec3 N;
+		mat3 TBN_A, TBN_B, TBN_C;
 
 //		vec3 A,B,C ; 			// This triangle vertices
 //		vec3 AN,BN,CN ; 		// Normals to the above vertices, respectively.

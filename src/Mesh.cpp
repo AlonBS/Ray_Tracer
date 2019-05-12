@@ -69,10 +69,6 @@ Mesh::Mesh(vector<Vertex>& vertices,
 
 	}
 
-	for (Vertex v : vertices) {
-		printVec3("POS", v.Position);
-	}
-
 //	_vertices = vertices; // Yes - this is shit, but a must for now
 	__triangulate(vertices, indices);
 }
@@ -88,17 +84,26 @@ Mesh::~Mesh()
 	_triangles.clear();
 
 
+	__deleteTexture(_textures.ambientTexture);
+	__deleteTexture(_textures.diffuseTexture);
+	__deleteTexture(_textures.specularTexture);
+	__deleteTexture(_textures.normalsMap);
+
+	// Other textures are held by scene (since can be shared by multiple objects)
+}
+
+void Mesh::__deleteTexture(Image *&texture)
+{
+	if (texture) {
+		delete(texture);
+		texture = nullptr;
+	}
 }
 
 
 void
 Mesh::__triangulate(vector<Vertex>& vertices, vector<GLuint>& indices)
 {
-	for (Vertex v : vertices) {
-		printVec3("POS", v.Position);
-	}
-
-
 	for (GLuint i = 0 ; i < indices.size() ; i+=3)
 	{
 		this->_triangles.push_back(new Triangle(vertices[indices[i  ]],

@@ -13,14 +13,20 @@ Triangle::Triangle(Vertex& va, Vertex& vb, Vertex& vc)
 : Object(), A(std::move(va)), B(std::move(vb)), C(std::move(vc))
 {
 	N = normalize(cross(C.Position-B.Position,A.Position-B.Position)); // Compute the face normal
+	TBN_A = __calcTBNMat(A);
+	TBN_B = __calcTBNMat(B);
+	TBN_C = __calcTBNMat(C);
 }
 
 
 Triangle::Triangle(ObjectProperties& op, Vertex& va, Vertex& vb, Vertex& vc)
-: Object(), A(std::move(va)), B(std::move(vb)), C(std::move(vc))
+: Object(), A((va)), B((vb)), C((vc)) //A(std::move(va)), B(std::move(vb)), C(std::move(vc))
 {
 	Object::_properties = op;
 	N = normalize(cross(C.Position-B.Position,A.Position-B.Position)); // Compute the face normal
+	TBN_A = __calcTBNMat(A);
+	TBN_B = __calcTBNMat(B);
+	TBN_C = __calcTBNMat(C);
 }
 
 
@@ -189,10 +195,7 @@ Triangle::__iRay2(const Ray& r,
 
 	if (TBN) {
 
-		mat3 TBN_A = __calcTBNMat(A);
-		mat3 TBN_B = __calcTBNMat(B);
-		mat3 TBN_C = __calcTBNMat(C);
-		mat3 TBN = (1.f-u-v)*TBN_A + u*TBN_B + v*TBN_C;
+		*TBN = (1.f-u-v)*TBN_A + u*TBN_B + v*TBN_C;
 	}
 
 	++rayTracerStats.numOfHits;
@@ -210,7 +213,7 @@ mat3 Triangle::__calcTBNMat(const Vertex& v)
 	T = normalize(T - dot(T, N) * N);
 	// then retrieve perpendicular vector B with the cross product of T and N
 	vec3 B = cross(N, T);
-	mat3 TBN = mat3(T, B, N);
+	return mat3(T, B, N);
 }
 
 

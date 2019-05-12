@@ -26,10 +26,9 @@ public:
 						  const ObjectTransforms& ot,
 						  Image* texture,
 						  EnvMaps* envMaps,
-    					  vector<Mesh*>& modelMeshes,
-						  vector<Image*>& modelTextures);
+    					  vector<Mesh*>& modelMeshes);
 
-    static void FreeTextures();
+//    static void FreeTextures();
 
 private:
 
@@ -53,7 +52,7 @@ private:
 
 
     static Image* loadMaterialTextures(aiMaterial* mat, aiTextureType type);
-    static vector<Texture*> _loadedTextures; // We store all the textures loaded for this module, to avoid load duplication
+    static vector<Texture> _loadedTextures; // We store all the textures loaded for this module, to avoid load duplication
     static string _directory;
 };
 

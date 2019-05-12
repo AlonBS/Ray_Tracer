@@ -82,11 +82,6 @@ public:
 	BVH* getBVH() { return bvh;}
 
 	void addTexture(Image *texture) { _textures.push_back(texture); }
-	void addTextures(vector<Image*>& textures)
-	{
-		_textures.reserve(_textures.size() + textures.size());
-		_textures.insert(_textures.end(), textures.begin(), textures.end());
-	}
 	void addEnvMap(Image *envMap) { _envMaps.push_back(envMap); }
 
 	bool hasSkybox() { return _skyboxIndex >= 0;}

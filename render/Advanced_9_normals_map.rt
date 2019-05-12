@@ -2,7 +2,8 @@
 # Example of a normals bump maps
 
 size 1280 720
-camera 0 0 7 0 0 0 0 1 0 60
+#size 100 100
+camera 0 0 3 0 0 0 0 1 0 60
 attenuation 1 0.0 0.0
 
 maxDepth 1

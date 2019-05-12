@@ -22,18 +22,18 @@ ObjectProperties Model::_objectProperties{};
 ObjectTransforms Model::_objectTransforms{};
 Image* Model::_texture = nullptr;
 EnvMaps* Model::_envMaps = nullptr;
-vector<Model::Texture*> Model::_loadedTextures{}; // We store all the textures loaded for this module, to avoid load duplication
+vector<Model::Texture> Model::_loadedTextures{}; // We store all the textures loaded for this module, to avoid load duplication
 string Model::_directory{};
 
 
-void Model::FreeTextures()
-{
-	for (Texture * t : _loadedTextures) {
-		delete(t->texture);
-		delete(t);
-		t = nullptr;
-	}
-}
+//void Model::FreeTextures()
+//{
+//	for (Texture * t : _loadedTextures) {
+//		delete(t->texture);
+//		delete(t);
+//		t = nullptr;
+//	}
+//}
 
 
 void
@@ -42,12 +42,9 @@ Model::loadModel(string const &path,
 				 const ObjectTransforms& ot,
 				 Image* texture,
 				 EnvMaps* envMaps,
-				 vector<Mesh*>& modelMeshes,
-				 vector<Image*>& modelTextures)
+				 vector<Mesh*>& modelMeshes)
 
 {
-	_meshes.clear();
-	_loadedTextures.clear();
 	_objectProperties = op;
 	_objectTransforms = ot;
 	_texture = texture;
@@ -57,7 +54,21 @@ Model::loadModel(string const &path,
 	// read file via ASSIMP
 	Assimp::Importer importer;
 	//const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
-	const aiScene* scene = importer.ReadFile(path, aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
+
+	uint importFlags = aiProcess_ValidateDataStructure |
+					   aiProcess_Triangulate |
+					   aiProcess_JoinIdenticalVertices |
+					   aiProcess_RemoveRedundantMaterials |
+					   aiProcess_FixInfacingNormals |
+					   aiProcess_SortByPType |
+					   aiProcess_OptimizeMeshes;
+
+
+//					   aiProcess_CalcTangentSpace
+	//aiProcess_FlipUVs
+
+
+	const aiScene* scene = importer.ReadFile(path,  aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
 	// check for errors
 	if(!scene || (scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) || !scene->mRootNode) // if is Not Zero
 	{
@@ -73,9 +84,9 @@ Model::loadModel(string const &path,
 	processNode(scene->mRootNode, scene);
 
 	modelMeshes = _meshes;
-	for (Texture* img : _loadedTextures) {
-		modelTextures.push_back(img->texture);
-	}
+
+	_meshes.clear();
+	_loadedTextures.clear();
 }
 
 // processes a node in a recursive fashion. Processes each individual mesh located at the node and repeats this process on its children nodes (if any).
@@ -114,7 +125,7 @@ Model::processMesh(aiMesh *mesh, const aiScene *scene)
 	// Walk through each of the mesh's vertices
 	for(unsigned int i = 0; i < mesh->mNumVertices; i++)
 	{
-		Vertex vertex;
+		Vertex vertex{};
 		glm::vec3 vector; // we declare a placeholder vector since assimp uses its own vector class that doesn't directly convert to glm's vec3 class so we transfer the data to this placeholder glm::vec3 first.
 		// positions
 		vector.x = mesh->mVertices[i].x;
@@ -202,7 +213,6 @@ Model::processMesh(aiMesh *mesh, const aiScene *scene)
 		diffuseTexture = loadMaterialTextures(material, aiTextureType_DIFFUSE);
 		// 3. Specular maps
 		specularTexture = loadMaterialTextures(material, aiTextureType_SPECULAR);
-
 		// 4. Normals Map
 		normalsMap = loadMaterialTextures(material, aiTextureType_HEIGHT);
 	}
@@ -241,22 +251,22 @@ Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type)
 	GLboolean skip = false;
 	for(GLuint j = 0; j < _loadedTextures.size(); ++j)
 	{
-		if(_loadedTextures[j]->name.compare(str.C_Str()) == 0)
+		if(_loadedTextures[j].name.compare(str.C_Str()) == 0)
 		{
-			texture = _loadedTextures[j]->texture;
+			texture = _loadedTextures[j].texture;
 			skip = true; // A texture with the same filepath has already been loaded, continue to next one. (optimization)
 			break;
 		}
 	}
 	if(!skip)
 	{   // If texture hasn't been loaded already, load it
-		Texture *loadedTexture = new Texture();
-		loadedTexture->name = string(str.C_Str());
-		loadedTexture->texture = new Image(0, 0);
-		string path = _directory + "/" + loadedTexture->name;
-		loadedTexture->texture->loadImage(path);
+		Texture loadedTexture = Texture();
+		loadedTexture.name = string(str.C_Str());
+		loadedTexture.texture = new Image(0, 0);
+		string path = _directory + "/" + loadedTexture.name;
+		loadedTexture.texture->loadImage(path);
 
-		texture = loadedTexture->texture;
+		texture = loadedTexture.texture;
 		_loadedTextures.push_back(loadedTexture);  // Store it as texture loaded for entire model, to ensure we won't unnecesery load duplicate textures.
 	}
 

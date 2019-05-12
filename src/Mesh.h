@@ -103,6 +103,7 @@ public:
 
 private:
 
+	void __deleteTexture(Image *&texture);
 
 	void __triangulate(vector<Vertex>& vertices, vector<GLuint>& indices);
 
