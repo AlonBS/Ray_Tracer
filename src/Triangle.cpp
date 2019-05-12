@@ -91,7 +91,6 @@ bool Triangle::intersectsRay(const Ray& r, GLfloat* dist, vec3* point, vec3* nor
 bool
 Triangle::intersectsRayM(const Ray& r, GLfloat* dist, vec3* point, vec3* normal, vec2* texCoords, mat3* TBN)
 {
-	cout << "A" << endl;
 	return __iRay2(r, dist, point, normal, nullptr, nullptr, texCoords, TBN);
 //	res2 = __iRay2(r, &dist2, &point2, &norm2, nullptr, nullptr, &texCoords2);
 }
@@ -110,8 +109,6 @@ Triangle::__iRay2(const Ray& r,
 	vec3 edge1, edge2, tvec, pvec, qvec;
 	GLfloat det, inv_det;
 	GLfloat u, v, t;
-
-	cout << "HERE" << endl;
 
 	edge1 = B.Position-A.Position;
 	edge2 = C.Position-A.Position;

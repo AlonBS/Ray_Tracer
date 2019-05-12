@@ -82,7 +82,6 @@ bool BVH::intersectsRay(const Ray &r,
 	if (minDist < closestT) {
 		return false;
 	}
-	cout << "SSS" << endl;
 
 	priority_queue<BVH::Octree::QueueElement> queue;
 	queue.push(BVH::Octree::QueueElement(octree->root, 0));
@@ -97,10 +96,7 @@ bool BVH::intersectsRay(const Ray &r,
 				vec3 tNormal;
 				ObjectTexColors tTexColors{};
 				ObjectProperties tProperties{};
-				cout << "4" << endl;
 				if (e->mesh->intersectsRay(r, dist, &tPoint, &tNormal, &tTexColors, &tProperties)) {
-
-					cout << "5" << endl;
 
 					if (*dist < closestHit) {
 						// Notice we only update closestHit upon intersection with object (mesh), NOT extents

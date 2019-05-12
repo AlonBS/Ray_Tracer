@@ -69,6 +69,10 @@ Mesh::Mesh(vector<Vertex>& vertices,
 
 	}
 
+	for (Vertex v : vertices) {
+		printVec3("POS", v.Position);
+	}
+
 //	_vertices = vertices; // Yes - this is shit, but a must for now
 	__triangulate(vertices, indices);
 }
@@ -90,6 +94,11 @@ Mesh::~Mesh()
 void
 Mesh::__triangulate(vector<Vertex>& vertices, vector<GLuint>& indices)
 {
+	for (Vertex v : vertices) {
+		printVec3("POS", v.Position);
+	}
+
+
 	for (GLuint i = 0 ; i < indices.size() ; i+=3)
 	{
 		this->_triangles.push_back(new Triangle(vertices[indices[i  ]],
@@ -115,13 +124,12 @@ Mesh::intersectsRay(const Ray &r,
 
 	mat3 TBN;
 
-	cout << "1" << endl;
 	for (Triangle *t : _triangles) {
 
 		/* When we iterate over triangles as part of mesh - we take the properties of the mesh
 		 * and not the triangle. In fact, this triangle doesn't have other but default properties
 		 */
-		cout << "2" << endl;
+
 		if (t->intersectsRayM(r, &tDist, &tP, &tN, &ttC, &TBN)) {
 
 			if (tDist < minDist) {

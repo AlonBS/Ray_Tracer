@@ -83,7 +83,6 @@ private:
 
 					for (const auto& v : t->getVerticesPos())
 					{
-						printVec3("V", v);
 						GLfloat d = dot(PLANE_SET_NORMALS[i], v);
 						dists[i].dNear = glm::min(dists[i].dNear, d);
 						dists[i].dFar  = glm::max(dists[i].dFar, d);

@@ -49,7 +49,7 @@ pushTransform
 #	bindTexture 0
 #	bindNormalsMap 1
 	model ./3ds/cube/cube.obj
-	sphere 0 0 0 1
+#	sphere 0 0 0 1
 
 #	plain R
 
