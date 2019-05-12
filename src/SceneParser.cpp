@@ -102,8 +102,7 @@ set<string> SceneParser::general{Commands.size, Commands.maxdepth, Commands.skyb
 string 	    SceneParser::camera = Commands.camera;
 set<string> SceneParser::geometry{Commands.sphere, Commands.cylinder, Commands.box, Commands.cone,
 								  Commands.plain, Commands.maxVerts, Commands.maxVertNorms,
-								  Commands.vertexSimple, Commands.vertex, /*Commands.vertexNormal, Commands.vertexTex, Commands.vertexNormTex, Commands.tri,
-								  Commands.triNormal, Commands.triTex, Commands.triNormTex,*/
+								  Commands.vertexSimple, Commands.vertex, Commands.tri,
 								  Commands.texture, Commands.bindTexture, Commands.unbindTexture,
 								  Commands.bindNormalsMap, Commands.unbindNormalsMap,
 								  Commands.envMap, Commands.bindEnvMaps, Commands.unbindEnvMaps,
@@ -643,14 +642,25 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		Vertex B = vertices[values[1]];
 		Vertex C = vertices[values[2]];
 
+
+
 		A.Position = ot._transform * vec4(A.Position, 1.0f);
-		A.Position = ot._invTransposeTrans * A.Normal;
+		A.Normal = ot._invTransposeTrans * A.Normal;
+		A.Tangent = ot._invTransposeTrans * A.Tangent;
+		A.Bitangent = ot._invTransposeTrans * A.Bitangent;
 		B.Position = ot._transform * vec4(B.Position, 1.0f);
-		B.Position = ot._invTransposeTrans * B.Normal;
+		B.Normal = ot._invTransposeTrans * B.Normal;
+		B.Tangent = ot._invTransposeTrans * B.Tangent;
+		B.Bitangent = ot._invTransposeTrans * B.Bitangent;
 		C.Position = ot._transform * vec4(C.Position, 1.0f);
-		C.Position = ot._invTransposeTrans * C.Normal;
+		C.Normal = ot._invTransposeTrans * C.Normal;
+		C.Tangent = ot._invTransposeTrans * C.Tangent;
+		C.Bitangent = ot._invTransposeTrans * C.Bitangent;
 
 		Object *triangle = new Triangle(op, A, B, C);
+		if (textureIsBound) {
+			triangle->setTextures(boundTexture, boundNormalMap);
+		}
 		scene->addObject(triangle);
 
 	}

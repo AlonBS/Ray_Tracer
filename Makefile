@@ -41,7 +41,8 @@ all: $(SRCS) $(PROG)
 $(PROG): $(OBJS)
 	$(CC) $(CFLAGS) $(OBJS) -o $@ $(INCFLAGS) $(LINKFLAGS)
 
-.cpp.o:
+%.o: %.cpp %.h
+#	$(CC) $(CFLAGS) $^ -c -o $@ $(INCFLAGS)
 	$(CC) $(CFLAGS) $< -c -o $@ $(INCFLAGS)
 
 depend:

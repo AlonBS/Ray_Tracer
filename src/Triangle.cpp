@@ -27,6 +27,7 @@ Triangle::Triangle(ObjectProperties& op, Vertex& va, Vertex& vb, Vertex& vc)
 	TBN_A = __calcTBNMat(A);
 	TBN_B = __calcTBNMat(B);
 	TBN_C = __calcTBNMat(C);
+
 }
 
 
@@ -185,6 +186,7 @@ Triangle::__iRay2(const Ray& r,
 		texColors->_ambientTexColor  = this->getAmbientTextureColor(uv);
 		texColors->_diffuseTexColor  = this->getDiffuseTextureColor(uv);
 		texColors->_specularTexColor = this->getSpecularTextureColor(uv);
+
 	}
 	if (texCoords) {
 		*texCoords = uv;

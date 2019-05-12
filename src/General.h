@@ -140,6 +140,18 @@ printVec3(const string& name, const vec3& vec)
 
 
 inline void
+printVertex(const string& name, const Vertex& vec)
+{
+	cout << name << endl;
+	printVec3("\tPos: ", vec.Position);
+	printVec3("\tNor: ", vec.Normal);
+	printVec2("\tTex: ", vec.TexCoords);
+	printVec3("\tTan: ", vec.Tangent);
+	printVec3("\tBTa: ", vec.Bitangent);
+}
+
+
+inline void
 printMat4(const string& name, const mat4& mat)
 {
 	cout << name << ":" << endl;

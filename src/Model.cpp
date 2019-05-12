@@ -61,14 +61,13 @@ Model::loadModel(string const &path,
 					   aiProcess_RemoveRedundantMaterials |
 					   aiProcess_FixInfacingNormals |
 					   aiProcess_SortByPType |
-					   aiProcess_OptimizeMeshes;
+					   aiProcess_OptimizeMeshes |
+					   aiProcess_CalcTangentSpace;
 
-
-//					   aiProcess_CalcTangentSpace
 	//aiProcess_FlipUVs
 
 
-	const aiScene* scene = importer.ReadFile(path,  aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_JoinIdenticalVertices);
+	const aiScene* scene = importer.ReadFile(path, importFlags);
 	// check for errors
 	if(!scene || (scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE) || !scene->mRootNode) // if is Not Zero
 	{
@@ -162,13 +161,12 @@ Model::processMesh(aiMesh *mesh, const aiScene *scene)
 			vector.x = mesh->mTangents[i].x;
 			vector.y = mesh->mTangents[i].y;
 			vector.z = mesh->mTangents[i].z;
-			vertex.Tangent = vector;
+			vertex.Tangent = normalize(_objectTransforms._invTransposeTrans * vector);
 			// bitangent
 			vector.x = mesh->mBitangents[i].x;
 			vector.y = mesh->mBitangents[i].y;
 			vector.z = mesh->mBitangents[i].z;
-			vertex.Bitangent = vector;
-			vertices.push_back(vertex);
+			vertex.Bitangent = normalize(_objectTransforms._invTransposeTrans * vector);
 		}
 
 		vertices.push_back(vertex);
@@ -178,8 +176,9 @@ Model::processMesh(aiMesh *mesh, const aiScene *scene)
 	{
 		aiFace face = mesh->mFaces[i];
 		// retrieve all indices of the face and store them in the indices vector
-		for(unsigned int j = 0; j < face.mNumIndices; j++)
+		for(unsigned int j = 0; j < face.mNumIndices; j++) {
 			indices.push_back(face.mIndices[j]);
+		}
 	}
 
 
