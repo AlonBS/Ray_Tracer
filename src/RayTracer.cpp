@@ -219,7 +219,7 @@ Intersection RayTracer::intersectScene(Scene & scene, Ray& ray)
 	// the primitives (which is rather quickly, since it's a single function call (and also BBox optimized)
 	// and then we move to the complex objects (models), and we can use the closest intersection when testing
 	// against extents (and not meshes).
-	for (Object *object : scene.getObjects()) {
+	for (auto& object : scene.getObjects()) {
 
 		if (object->bBoxIntersectsRay(ray, &bboxDist)) {
 
@@ -360,7 +360,7 @@ bool RayTracer::isVisibleToLight(Scene& scene, Ray& shadowRay, GLfloat limit)
 	GLfloat dist;
 	GLfloat bboxDist;
 
-	for (Object * o : scene.getObjects()) {
+	for (auto& o : scene.getObjects()) {
 
 		if (o->bBoxIntersectsRay(shadowRay, &bboxDist)) {
 

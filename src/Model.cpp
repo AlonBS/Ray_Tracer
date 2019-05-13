@@ -92,6 +92,7 @@ Model::loadModel(string const &path,
 void
 Model::processNode(aiNode *node, const aiScene *scene)
 {
+	cout << "MESHES COUNT:" << node->mNumMeshes << endl;
 	// process each mesh located at the current node
 	for(unsigned int i = 0; i < node->mNumMeshes; i++)
 	{
@@ -116,7 +117,7 @@ Model::processMesh(aiMesh *mesh, const aiScene *scene)
 	vector<Vertex> vertices;
 	vector<unsigned int> indices;
 	MeshProperties properties = {};
-	Image *ambientTexture, *diffuseTexture, *specularTexture, *normalsMap;
+	std::shared_ptr<Image> ambientTexture, diffuseTexture, specularTexture, normalsMap;
 	ambientTexture = diffuseTexture = specularTexture = normalsMap = nullptr;
 
 	properties._ambient = vec3(1.0f, 1.0f, 1.0f);
@@ -220,12 +221,12 @@ Model::processMesh(aiMesh *mesh, const aiScene *scene)
 	// return a mesh object created from the extracted mesh data
 	ObjectProperties op = _objectProperties * properties;
 	MeshTextures mt = {
-			ambientTexture : ambientTexture,
-			diffuseTexture : diffuseTexture,
+			ambientTexture  : ambientTexture,
+			diffuseTexture  : diffuseTexture,
 			specularTexture : specularTexture,
-			generalTexture : _texture,
-			normalsMap : normalsMap,
-			envMaps : _envMaps
+			normalsMap      : normalsMap,
+			generalTexture  : _texture,
+			envMaps         : _envMaps
 	};
 	//return new Mesh(vertices, indices, op, ambientTexture, diffuseTexture, specularTexture, _texture, _envMaps);
 	return new Mesh(vertices, indices, op, mt);
@@ -233,7 +234,7 @@ Model::processMesh(aiMesh *mesh, const aiScene *scene)
 
 
 
-Image*
+std::shared_ptr<Image>
 Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type)
 {
 	cout << mat->GetTextureCount(type) << endl;
@@ -241,7 +242,7 @@ Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type)
 		return nullptr;
 	}
 
-	Image *texture = nullptr;
+	std::shared_ptr<Image> texture = nullptr;
 	aiString str;
 
 	mat->GetTexture(type, 0, &str); // Currenly - we support only 1 texture of each type.
@@ -261,7 +262,7 @@ Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type)
 	{   // If texture hasn't been loaded already, load it
 		Texture loadedTexture = Texture();
 		loadedTexture.name = string(str.C_Str());
-		loadedTexture.texture = new Image(0, 0);
+		loadedTexture.texture = std::make_shared<Image>(0, 0);
 		string path = _directory + "/" + loadedTexture.name;
 		loadedTexture.texture->loadImage(path);
 

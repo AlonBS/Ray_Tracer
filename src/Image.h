@@ -58,6 +58,7 @@ public:
 	void setPixel(int col, int row, glm::vec3& rgbColors);
 
 	glm::vec3 getPixel(int col, int row);
+	glm::vec3 getPixel(int col, int row) const;
 
 	int getWidth() { return this->width; }
 	int getHeight() { return this->height; }

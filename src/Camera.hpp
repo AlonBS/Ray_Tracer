@@ -62,6 +62,10 @@ public:
 
 	Ray generateRay(GLfloat i, GLfloat j) {
 
+		return static_cast<const Camera &>(*this).generateRay(i,j);
+	}
+
+	Ray generateRay(GLfloat i, GLfloat j) const {
 		GLfloat hw = width / 2;
 		GLfloat hh = height / 2;
 

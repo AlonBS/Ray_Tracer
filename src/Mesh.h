@@ -32,13 +32,12 @@ typedef struct EnvMaps {
 
 typedef struct MeshTextures {
 
-	Image *ambientTexture;
-	Image *diffuseTexture;
-	Image *specularTexture;
+	std::shared_ptr<Image> ambientTexture;
+	std::shared_ptr<Image> diffuseTexture;
+	std::shared_ptr<Image> specularTexture;
+	std::shared_ptr<Image> normalsMap;
+
 	Image *generalTexture;
-
-	Image *normalsMap;
-
 	EnvMaps *envMaps;
 
 }MeshTextures ;
@@ -76,11 +75,6 @@ public:
 		 vector<GLuint>& indices,
 		 ObjectProperties& properties,
 		 MeshTextures& textures);
-//		 Image *ambientTexture,
-//		 Image *diffuseTexture,
-//		 Image *specualrTexture,
-//		 Image *generalTexture,
-//		 EnvMaps &envMaps);
 
 	virtual ~Mesh();
 

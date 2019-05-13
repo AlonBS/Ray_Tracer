@@ -448,7 +448,8 @@ SceneParser::handleCameraCommand(stringstream& s, string& cmd)
 	vec3 upInit  = glm::vec3(values[6], values[7], values[8]);
 	//upinit = Transform::upvector(upinit, eyeinit);
 	GLfloat fovy = values[9];
-	scene->camera() = Camera(eyeInit, center, upInit, fovy, scene->width(), scene->height());
+	scene->addCamera(make_unique<Camera>(eyeInit, center, upInit, fovy, scene->width(), scene->height()));
+//	scene->camera() = Camera);
 //	transformsStack.top() = lookAt(eyeInit,center,upInit);
 }
 
@@ -475,12 +476,12 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		ObjectTransforms ot{};
 		fillObjectInfo(&op, &ot, &objectTransformation);
 
-		Object *sphere = new Sphere(op, ot, center, radius);
+		unique_ptr<Object> sphere = make_unique<Sphere>(op, ot, center, radius);
 		if (textureIsBound) {
 			sphere->setTextures(boundTexture, boundNormalMap);
 		}
 		sphere->computeBoundingBox();
-		scene->addObject(sphere);
+		scene->addObject(move(sphere));
 	}
 
 	else if (cmd == Commands.cylinder) {
@@ -496,12 +497,12 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		ObjectTransforms ot{};
 		fillObjectInfo(&op, &ot, &objectTransformation);
 
-		Object *cylinder = new Cylinder(op, ot, center, height, radius);
+		unique_ptr<Object> cylinder = make_unique<Cylinder>(op, ot, center, height, radius);
 		if (textureIsBound) {
 			cylinder->setTextures(boundTexture, boundNormalMap);
 		}
 		cylinder->computeBoundingBox();
-		scene->addObject(cylinder);
+		scene->addObject(move(cylinder));
 	}
 
 	else if (cmd == Commands.box) {
@@ -513,11 +514,11 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		ObjectTransforms ot{};
 		fillObjectInfo(&op, &ot);
 
-		Object *box = new Box(op, ot, minBound, maxBound);
+		unique_ptr<Object> box = make_unique<Box>(op, ot, minBound, maxBound);
 		if (textureIsBound) {
 			box->setTextures(boundTexture, boundNormalMap);
 		}
-		scene->addObject(box);
+		scene->addObject(move(box));
 	}
 
 
@@ -534,12 +535,12 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		ObjectTransforms ot{};
 		fillObjectInfo(&op, &ot, &objectTransformation);
 
-		Object *cone = new Cone(op, ot, center, minCap, maxCap);
+		unique_ptr<Object> cone = make_unique<Cone>(op, ot, center, minCap, maxCap);
 		if (textureIsBound) {
 			cone->setTextures(boundTexture, boundNormalMap);
 		}
 		cone->computeBoundingBox();
-		scene->addObject(cone);
+		scene->addObject(move(cone));
 	}
 
 	else if (cmd == Commands.plain) {
@@ -568,11 +569,11 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		ObjectTransforms ot{};
 		fillObjectInfo(&op, &ot);
 
-		Object *plain = new Plain(op, ot, tp);
+		unique_ptr<Object> plain = make_unique<Plain>(op, ot, tp);
 		if (textureIsBound) {
 			plain->setTextures(boundTexture, boundNormalMap);
 		}
-		scene->addObject(plain);
+		scene->addObject(move(plain));
 	}
 
 
@@ -657,11 +658,11 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		C.Tangent = ot._invTransposeTrans * C.Tangent;
 		C.Bitangent = ot._invTransposeTrans * C.Bitangent;
 
-		Object *triangle = new Triangle(op, A, B, C);
+		unique_ptr<Object> triangle = make_unique<Triangle>(op, A, B, C);
 		if (textureIsBound) {
 			triangle->setTextures(boundTexture, boundNormalMap);
 		}
-		scene->addObject(triangle);
+		scene->addObject(move(triangle));
 
 	}
 

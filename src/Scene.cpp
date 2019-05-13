@@ -14,9 +14,9 @@ Scene::Scene() {
 
 Scene::~Scene() {
 
-	for (auto* o : _objects) {
-		delete o;
-	}
+//	for (auto* o : _objects) {
+//		delete o;
+//	}
 
 	// TODO - fix
 	for (auto* m : _meshes) {

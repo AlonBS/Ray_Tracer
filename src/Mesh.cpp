@@ -74,10 +74,10 @@ Mesh::~Mesh()
 	_triangles.clear();
 
 
-	__deleteTexture(_textures.ambientTexture);
-	__deleteTexture(_textures.diffuseTexture);
-	__deleteTexture(_textures.specularTexture);
-	__deleteTexture(_textures.normalsMap);
+//	__deleteTexture(_textures.ambientTexture);
+//	__deleteTexture(_textures.diffuseTexture);
+//	__deleteTexture(_textures.specularTexture);
+//	__deleteTexture(_textures.normalsMap);
 
 	// Other textures are held by scene (since can be shared by multiple objects)
 }
@@ -136,7 +136,7 @@ Mesh::intersectsRay(const Ray &r,
 
 					if (!_objectGlobalProperties.no_bump_maps && _textures.normalsMap) {
 
-						*normal = normalize(2.f*getTextureColor(_textures.normalsMap, ttC) - 1.0f);
+						*normal = normalize(2.f*getTextureColor(_textures.normalsMap.get(), ttC) - 1.0f);
 						*normal = normalize(TBN * (*normal));
 					}
 				}
@@ -213,17 +213,17 @@ Mesh::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, Obje
 
 vec3 Mesh::getAmbientTextureColor(vec2& uv)
 {
-	return getTextureColor(_textures.ambientTexture, uv) * super::getAmbientTextureColor(uv);
+	return getTextureColor(_textures.ambientTexture.get(), uv) * super::getAmbientTextureColor(uv);
 }
 
 vec3 Mesh::getDiffuseTextureColor(vec2& uv)
 {
-	return getTextureColor(_textures.diffuseTexture, uv) * super::getDiffuseTextureColor(uv);
+	return getTextureColor(_textures.diffuseTexture.get(), uv) * super::getDiffuseTextureColor(uv);
 }
 
 vec3 Mesh::getSpecularTextureColor(vec2& uv)
 {
-	return getTextureColor(_textures.specularTexture, uv) * super::getSpecularTextureColor(uv);
+	return getTextureColor(_textures.specularTexture.get(), uv) * super::getSpecularTextureColor(uv);
 }
 
 

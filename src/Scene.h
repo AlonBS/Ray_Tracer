@@ -34,9 +34,9 @@ private:
 	GLuint 							_width, _height;
 	GLuint			 				_maxDepth;
 
-	Camera							_camera;
+	std::unique_ptr<Camera>			_camera;
 
-	std::vector<Object*> 	  		_objects;
+	std::vector<std::unique_ptr<Object>> 	  		_objects;
 	std::vector<Mesh*>				_meshes;
 	std::vector<Image*>				_textures;
 	std::vector<Image*>				_envMaps;
@@ -66,11 +66,25 @@ public:
 	GLuint& maxDepth() { return _maxDepth;}
 	const GLuint& maxDepth() const { return _maxDepth;}
 
-	Camera& camera() {return _camera;}
+	void addCamera(std::unique_ptr<Camera> camera) { _camera = move(camera);}
+
+	auto camera() -> const Camera& {return *_camera.get(); }
+
+	Camera*& cameraAA() {return  _camera.get()->center; }
+
+//	auto bibi()  ->  Camera*& {return _camera.get(); }
+
+	const int*& foo()
+	{
+		const int* a = new int(3);
+		return a;
+	}
 
 
-	void addObject(Object *obj) { _objects.push_back(obj); }
-	std::vector<Object*>& getObjects() { return _objects; }
+
+
+	void addObject(std::unique_ptr<Object> obj) { _objects.push_back(move(obj)); }
+	const std::vector<std::unique_ptr<Object>>& getObjects() const { return _objects; }
 
 	// TODO - FIX
 	void addMeshes(vector<Mesh*>& meshes)

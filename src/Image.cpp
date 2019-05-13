@@ -32,6 +32,7 @@ Image::Image(int width, int height)
 Image::~Image() {
 
 	FreeImage_Unload(this->bitmap);
+	this->bitmap = nullptr;
 }
 
 void Image::setPixel(int col, int row, glm::vec3& rgbColors)
@@ -53,6 +54,12 @@ void Image::setPixel(int col, int row, glm::vec3& rgbColors)
 }
 
 vec3 Image::getPixel(int col, int row)
+{
+	//return const_cast<vec3>(static_cast<const Image &>(*this).getPixel(col, row));
+	return static_cast<const Image &>(*this).getPixel(col, row);
+}
+
+vec3 Image::getPixel(int col, int row) const
 {
 	vec3 color;
 	RGBQUAD pixel;

@@ -38,7 +38,7 @@ private:
 
     struct Texture {
 
-    	Image *texture;
+    	std::shared_ptr<Image> texture;
     	string name;
     };
 
@@ -51,7 +51,7 @@ private:
 
 
 
-    static Image* loadMaterialTextures(aiMaterial* mat, aiTextureType type);
+    static std::shared_ptr<Image> loadMaterialTextures(aiMaterial* mat, aiTextureType type);
     static vector<Texture> _loadedTextures; // We store all the textures loaded for this module, to avoid load duplication
     static string _directory;
 };
