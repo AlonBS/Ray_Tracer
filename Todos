@@ -80,8 +80,12 @@ version 5 notes:
 - Fixed a bug where meshes textures cannot be shared
 - Fixed a bug where meshes where not cleaned propely. 
 - Added normals mapping - and texture per mesh. 
-- moved to smart pointers
-- improved const mechanisms and interfaces 
+- C++ inhancments:
+	- moved to smart pointers
+	- used move mechanisms
+	- handled const and references
 
+- improved const mechanisms and interfaces 
+- 
 
 
