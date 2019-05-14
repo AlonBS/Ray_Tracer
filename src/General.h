@@ -267,7 +267,7 @@ inline void cubeMap(vec3& v, GLuint *index, vec2 *uv)
 
 
 inline vec3
-getTextureColor(const Image *texture, vec2& uv)
+getTextureColor(const Image *texture, const vec2& uv)
 {
 	if (!texture) {
 		return COLOR_WHITE;

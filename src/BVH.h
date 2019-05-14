@@ -35,7 +35,7 @@ class BVH
 {
 
 public:
-	BVH(vector<Mesh*>& meshes);
+	BVH(vector<shared_ptr<const Mesh>>& meshes);
 	~BVH();
 
 	bool intersectsRay(const Ray &r,
@@ -53,8 +53,6 @@ private:
 
 	static const GLuint NUM_OF_SET_NORMALS = 7;
 	static const vec3 PLANE_SET_NORMALS[NUM_OF_SET_NORMALS];
-
-	vector<Mesh*> meshes;
 
 	struct Extents
 	{
@@ -74,7 +72,7 @@ private:
 			}
 		}
 
-		void build(const Mesh* mesh)
+		void build(shared_ptr<const Mesh>& mesh)
 		{
 			for (uint8_t i = 0; i < NUM_OF_SET_NORMALS; ++i) {
 
@@ -116,7 +114,7 @@ private:
 		bool intersect(const GLfloat[], const GLfloat[], GLfloat*, GLfloat*) const;
 
 		SlabDist dists [NUM_OF_SET_NORMALS];
-		const Mesh* mesh;
+		shared_ptr<const Mesh> mesh;
 	};
 
 
@@ -171,7 +169,7 @@ private:
 	};
 
 
-	Extents __buildSceneExtents(std::vector<Mesh*>& meshes);
+	Extents __buildSceneExtents(vector<shared_ptr<const Mesh>>& meshes);
 
 
 	std::vector<Extents> extentsList;

@@ -17,7 +17,7 @@ using namespace std;
 
 
 
-vector<Mesh*> Model::_meshes {};
+vector<shared_ptr<const Mesh>> Model::_meshes {};
 ObjectProperties Model::_objectProperties{};
 ObjectTransforms Model::_objectTransforms{};
 Image* Model::_texture = nullptr;
@@ -42,7 +42,7 @@ Model::loadModel(string const &path,
 				 const ObjectTransforms& ot,
 				 Image* texture,
 				 EnvMaps* envMaps,
-				 vector<Mesh*>& modelMeshes)
+				 OUT vector<shared_ptr<const Mesh>>& modelMeshes)
 
 {
 	_objectProperties = op;
@@ -92,7 +92,6 @@ Model::loadModel(string const &path,
 void
 Model::processNode(aiNode *node, const aiScene *scene)
 {
-	cout << "MESHES COUNT:" << node->mNumMeshes << endl;
 	// process each mesh located at the current node
 	for(unsigned int i = 0; i < node->mNumMeshes; i++)
 	{
@@ -110,7 +109,7 @@ Model::processNode(aiNode *node, const aiScene *scene)
 }
 
 
-Mesh*
+shared_ptr<const Mesh>
 Model::processMesh(aiMesh *mesh, const aiScene *scene)
 {
 	// data to fill
@@ -229,7 +228,7 @@ Model::processMesh(aiMesh *mesh, const aiScene *scene)
 			envMaps         : _envMaps
 	};
 	//return new Mesh(vertices, indices, op, ambientTexture, diffuseTexture, specularTexture, _texture, _envMaps);
-	return new Mesh(vertices, indices, op, mt);
+	return make_shared<const Mesh>(vertices, indices, op, mt);
 }
 
 

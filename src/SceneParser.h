@@ -119,11 +119,10 @@ private:
 //	static vector<glm::vec3> verticesNormTexN;
 //	static vector<glm::vec2> verticesNormTexT;
 
-	static Image *boundTexture;
+	static const Image *boundTexture;
 	static bool textureIsBound;
-	static Image* boundNormalMap;
+//	static const Image* boundNormalMap;
 	static EnvMaps boundEnvMaps;
-	static bool envMapsAreBound;
 
 	/***********************************************************************/
 

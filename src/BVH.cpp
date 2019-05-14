@@ -23,8 +23,7 @@ const vec3 BVH::PLANE_SET_NORMALS[BVH::NUM_OF_SET_NORMALS] = {
 GLuint BVH::Octree::maxDepth = 0;
 
 
-BVH::BVH(std::vector<Mesh*>& meshes)
-: meshes(meshes)
+BVH::BVH(vector<shared_ptr<const Mesh>>& meshes)
 {
 
 	Extents sceneExtents = __buildSceneExtents(meshes); // that's the extent of the entire scene which we need to compute for the octree
@@ -130,7 +129,7 @@ bool BVH::intersectsRay(const Ray &r,
 }
 
 
-BVH::Extents BVH::__buildSceneExtents(std::vector<Mesh*>& meshes)
+BVH::Extents BVH::__buildSceneExtents(vector<shared_ptr<const Mesh>>& meshes)
 {
 	Extents sceneExtents;
 

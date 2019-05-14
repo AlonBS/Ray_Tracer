@@ -51,7 +51,7 @@ Object::~Object() {
 }
 
 
-void Object::setTextures(Image *texture, Image *normalsMap)
+void Object::setTextures(shared_ptr<const Image>& texture, shared_ptr<const Image>* normalsMap)
 {
 	if (texture == nullptr)
 		return;
@@ -87,30 +87,30 @@ void Object::print() const
 }
 
 
-vec3 Object::getAmbientTextureColor(vec2& uv)
+vec3 Object::getAmbientTextureColor(const vec2& uv) const
 {
-	return getTextureColor(this->_ambientTexture, uv);
+	return getTextureColor(this->_ambientTexture.get(), uv);
 }
 
-vec3 Object::getDiffuseTextureColor(vec2& uv)
+vec3 Object::getDiffuseTextureColor(const vec2& uv) const
 {
-	return getTextureColor(this->_diffuseTexture, uv);
+	return getTextureColor(this->_diffuseTexture.get(), uv);
 }
 
-vec3 Object::getSpecularTextureColor(vec2& uv)
+vec3 Object::getSpecularTextureColor(const vec2& uv)
 {
-	return getTextureColor(this->_speularTexture, uv);
+	return getTextureColor(this->_speularTexture.get(), uv);
 }
 
 
 bool Object::hasNormalsMap() { return this->_normalsMap != nullptr;}
 vec3 Object::getNormalFromMap(vec2& uv)
 {
-	return getTextureColor(this->_normalsMap, uv);
+	return getTextureColor(this->_normalsMap.get(), uv);
 }
 
 
-bool Object::bBoxIntersectsRay(const Ray& r, GLfloat* t_near)
+bool Object::bBoxIntersectsRay(const Ray& r, GLfloat* t_near) const
 {
 	if (!bbox) {
 		*t_near = -INFINITY;
@@ -118,6 +118,11 @@ bool Object::bBoxIntersectsRay(const Ray& r, GLfloat* t_near)
 	}
 
 	return bbox->intersectsRay(r, t_near);
+}
+
+bool bBoxIntersectsRay(const Ray& tr, GLfloat* t_near)
+{
+	return static_cast<const Object &>(*this).bBoxIntersectsRay(tr, t_near);
 }
 
 

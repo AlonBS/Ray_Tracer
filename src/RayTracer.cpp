@@ -219,7 +219,7 @@ Intersection RayTracer::intersectScene(Scene & scene, Ray& ray)
 	// the primitives (which is rather quickly, since it's a single function call (and also BBox optimized)
 	// and then we move to the complex objects (models), and we can use the closest intersection when testing
 	// against extents (and not meshes).
-	for (auto& object : scene.getObjects()) {
+	for (const auto& object : scene.getObjects()) {
 
 		if (object->bBoxIntersectsRay(ray, &bboxDist)) {
 

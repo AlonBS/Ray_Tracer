@@ -22,11 +22,10 @@ class Object {
 
 private:
 
-
-	Image *_ambientTexture;
-	Image *_diffuseTexture;
-	Image *_speularTexture;
-	Image *_normalsMap;
+	shared_ptr<const Image> _ambientTexture;
+	shared_ptr<const Image> _diffuseTexture;
+	shared_ptr<const Image> _speularTexture;
+	shared_ptr<const Image> _normalsMap;
 
 protected:
 
@@ -57,19 +56,21 @@ public:
 	Object(const ObjectProperties& properties, const ObjectTransforms& transforms);
 	virtual ~Object();
 
-	void setTextures(Image *texture, Image *normalsMap=nullptr);
+	void setTextures(shared_ptr<const Image>& texture, shared_ptr<const Image>* normalsMap=nullptr);
 	friend std::ostream& operator<< (std::ostream& out, const Object & obj);
 	virtual void print() const;
 
-	virtual vec3 getAmbientTextureColor(vec2& uv);
-	virtual vec3 getDiffuseTextureColor(vec2& uv);
-	virtual vec3 getSpecularTextureColor(vec2& uv);
+	virtual vec3 getAmbientTextureColor(const vec2& uv) const;
+	virtual vec3 getDiffuseTextureColor(const vec2& uv) const;
+	virtual vec3 getSpecularTextureColor(const vec2& uv) const;
 
-	bool hasNormalsMap();
-	vec3 getNormalFromMap(vec2& uv);
+	bool hasNormalsMap() const;
+	vec3 getNormalFromMap(const vec2& uv) const ; // TODO - FIX THIS SHIT
 
 
-	virtual bool intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties) = 0;
+	virtual bool intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties) const = 0;
+
+	bool bBoxIntersectsRay(const Ray& tr, GLfloat* t_near) const;
 	bool bBoxIntersectsRay(const Ray& tr, GLfloat* t_near);
 	virtual void computeBoundingBox() { this->bbox = nullptr; }
 

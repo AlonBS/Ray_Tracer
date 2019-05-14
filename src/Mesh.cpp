@@ -82,13 +82,17 @@ Mesh::~Mesh()
 	// Other textures are held by scene (since can be shared by multiple objects)
 }
 
-void Mesh::__deleteTexture(Image *&texture)
+
+const vector<unique_ptr<const Image>>& Mesh::getTriangles() const
 {
-	if (texture) {
-		delete(texture);
-		texture = nullptr;
-	}
+	return _triangles;
 }
+
+const vector<unique_ptr<const Image>>& Mesh::getTriangles()
+{
+	return const_cast<vector<unique_ptr<const Triangle>>&>(static_cast<const Mesh &>(*this).getTriangles());
+}
+
 
 
 void
@@ -211,17 +215,17 @@ Mesh::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, Obje
 
 
 
-vec3 Mesh::getAmbientTextureColor(vec2& uv)
+vec3 Mesh::getAmbientTextureColor(vec2& uv) const
 {
 	return getTextureColor(_textures.ambientTexture.get(), uv) * super::getAmbientTextureColor(uv);
 }
 
-vec3 Mesh::getDiffuseTextureColor(vec2& uv)
+vec3 Mesh::getDiffuseTextureColor(vec2& uv) const
 {
 	return getTextureColor(_textures.diffuseTexture.get(), uv) * super::getDiffuseTextureColor(uv);
 }
 
-vec3 Mesh::getSpecularTextureColor(vec2& uv)
+vec3 Mesh::getSpecularTextureColor(vec2& uv) const
 {
 	return getTextureColor(_textures.specularTexture.get(), uv) * super::getSpecularTextureColor(uv);
 }

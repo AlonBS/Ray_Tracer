@@ -26,7 +26,7 @@ public:
 						  const ObjectTransforms& ot,
 						  Image* texture,
 						  EnvMaps* envMaps,
-    					  vector<Mesh*>& modelMeshes);
+    					  vector<shared_ptr<const Mesh>>& modelMeshes);
 
 //    static void FreeTextures();
 
@@ -34,7 +34,7 @@ private:
 
     // processes a node in a recursive fashion. Processes each individual mesh located at the node and repeats this process on its children nodes (if any).
     static void processNode(aiNode *node, const aiScene *scene);
-    static Mesh* processMesh(aiMesh *mesh, const aiScene *scene);
+    static shared_ptr<const Mesh> processMesh(aiMesh *mesh, const aiScene *scene);
 
     struct Texture {
 
@@ -42,7 +42,7 @@ private:
     	string name;
     };
 
-    static vector<Mesh*> _meshes;
+    static vector<shared_ptr<const Mesh>> _meshes;
     static ObjectProperties _objectProperties;
     static ObjectTransforms _objectTransforms;
     static Image* _texture;

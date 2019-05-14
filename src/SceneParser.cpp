@@ -147,11 +147,10 @@ vector<Vertex> SceneParser::vertices{};
 //vector<glm::vec2> SceneParser::verticesNormTexT{};
 
 GLint SceneParser::lineNumber = 0;
-Image* SceneParser::boundTexture = nullptr;
+const Image* SceneParser::boundTexture = nullptr;
 bool SceneParser::textureIsBound = false;
-Image* SceneParser::boundNormalMap = nullptr;
+//Image* SceneParser::boundNormalMap = nullptr;
 EnvMaps SceneParser::boundEnvMaps {};
-bool SceneParser::envMapsAreBound = false;
 
 
 
@@ -397,10 +396,9 @@ SceneParser::readFile(const AdditionalRenderParams& params, const char* fileName
 //	verticesNormTexT.clear();
 	boundTexture = nullptr;
 	textureIsBound = false;
-	boundNormalMap = nullptr;
+//	boundNormalMap = nullptr;
 	boundEnvMaps.maps.clear();
 	boundEnvMaps = {};
-	envMapsAreBound = false;
 	clearObjectProps();
 	transformsStack = {};
 	attenuation = Attenuation{
@@ -478,10 +476,11 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 
 		unique_ptr<Object> sphere = make_unique<Sphere>(op, ot, center, radius);
 		if (textureIsBound) {
-			sphere->setTextures(boundTexture, boundNormalMap);
+//			sphere->setTextures(boundTexture, boundNormalMap);
+			sphere->setTextures(boundTexture);
 		}
 		sphere->computeBoundingBox();
-		scene->addObject(move(sphere));
+		scene->addObject(sphere);
 	}
 
 	else if (cmd == Commands.cylinder) {
@@ -499,10 +498,11 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 
 		unique_ptr<Object> cylinder = make_unique<Cylinder>(op, ot, center, height, radius);
 		if (textureIsBound) {
-			cylinder->setTextures(boundTexture, boundNormalMap);
+//			cylinder->setTextures(boundTexture, boundNormalMap);
+			cylinder->setTextures(boundTexture);
 		}
 		cylinder->computeBoundingBox();
-		scene->addObject(move(cylinder));
+		scene->addObject(cylinder);
 	}
 
 	else if (cmd == Commands.box) {
@@ -516,9 +516,10 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 
 		unique_ptr<Object> box = make_unique<Box>(op, ot, minBound, maxBound);
 		if (textureIsBound) {
-			box->setTextures(boundTexture, boundNormalMap);
+//			box->setTextures(boundTexture, boundNormalMap);
+			box->setTextures(boundTexture);
 		}
-		scene->addObject(move(box));
+		scene->addObject(box);
 	}
 
 
@@ -537,10 +538,11 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 
 		unique_ptr<Object> cone = make_unique<Cone>(op, ot, center, minCap, maxCap);
 		if (textureIsBound) {
-			cone->setTextures(boundTexture, boundNormalMap);
+//			cone->setTextures(boundTexture, boundNormalMap);
+			cone->setTextures(boundTexture);
 		}
 		cone->computeBoundingBox();
-		scene->addObject(move(cone));
+		scene->addObject(cone);
 	}
 
 	else if (cmd == Commands.plain) {
@@ -571,9 +573,10 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 
 		unique_ptr<Object> plain = make_unique<Plain>(op, ot, tp);
 		if (textureIsBound) {
-			plain->setTextures(boundTexture, boundNormalMap);
+//			plain->setTextures(boundTexture, boundNormalMap);
+			plain->setTextures(boundTexture);
 		}
-		scene->addObject(move(plain));
+		scene->addObject(plain);
 	}
 
 
@@ -660,9 +663,10 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 
 		unique_ptr<Object> triangle = make_unique<Triangle>(op, A, B, C);
 		if (textureIsBound) {
-			triangle->setTextures(boundTexture, boundNormalMap);
+//			triangle->setTextures(boundTexture, boundNormalMap);
+			triangle->setTextures(boundTexture);
 		}
-		scene->addObject(move(triangle));
+		scene->addObject(triangle);
 
 	}
 
@@ -737,7 +741,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		string textureFile;
 		s >> textureFile;
 
-		Image *texture = new Image(0, 0);
+		unique_ptr<Image> texture = make_unique<Image>(0, 0);
 		texture->loadImage(textureFile);
 
 		scene->addTexture(texture);
@@ -757,30 +761,30 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		boundTexture = nullptr;
 	}
 
-	else if (cmd == Commands.bindNormalsMap) {
+//	else if (cmd == Commands.bindNormalsMap) {
+//
+//			readValues(s, values);
+//			boundNormalMap = scene->getTexture(values[0]);
+//	}
 
-			readValues(s, values);
-			boundNormalMap = scene->getTexture(values[0]);
-	}
-
-	else if (cmd == Commands.unbindNormalsMap) {
-
-		boundNormalMap = nullptr;
-	}
+//	else if (cmd == Commands.unbindNormalsMap) {
+//
+//		boundNormalMap = nullptr;
+//	}
 
 	else if (cmd == Commands.envMap) {
 
 		string envMapFile;
 		s >> envMapFile;
 
-		Image *envMap = new Image(0, 0);
+		unique_ptr<Image> envMap = make_unique<Image>(0, 0);
 		envMap->loadImage(envMapFile);
-
 		scene->addEnvMap(envMap);
 	}
 
 	else if (cmd == Commands.bindEnvMaps) {
 
+		// TODO - FIX PROBLEM HERE using new readvalues.
 		readValues(s, values);
 		string envMapType;
 		s >> envMapType;
@@ -792,12 +796,10 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 			boundEnvMaps.refractiveIndex = values[0];
 		}
 
-		envMapsAreBound = true;
 	}
 
 	else if (cmd == Commands.unbindEnvMaps) {
 
-		envMapsAreBound = false;
 		boundEnvMaps.maps.clear();
 	}
 	else if (cmd == Commands.model) {
@@ -808,8 +810,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		ObjectTransforms ot;
 		fillObjectInfo(&op, &ot);
 
-		vector<Mesh*> modelMeshes{};
-		vector<Image*> modelTextures{};
+		vector<shared_ptr<const Mesh>> modelMeshes{};
 		Model::loadModel(modelFile, op, ot, boundTexture, &boundEnvMaps, modelMeshes);
 		scene->addMeshes(modelMeshes);
 	}

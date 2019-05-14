@@ -19,17 +19,17 @@ Scene::~Scene() {
 //	}
 
 	// TODO - fix
-	for (auto* m : _meshes) {
-		delete m;
-	}
+//	for (auto* m : _meshes) {
+//		delete m;
+//	}
 
-	for (auto* t : _textures) {
-		delete t;
-	}
+//	for (auto* t : _textures) {
+//		delete t;
+//	}
 
-	for (auto* e : _envMaps) {
-		delete e;
-	}
+//	for (auto* e : _envMaps) {
+//		delete e;
+//	}
 
 	for (auto* p : _pointLights) {
 		delete p;

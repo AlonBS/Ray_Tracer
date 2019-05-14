@@ -22,7 +22,7 @@ typedef struct MeshProperties : ObjectProperties {
 
 typedef struct EnvMaps {
 
-	vector<Image*> maps;
+	vector<shared_ptr<const Image>> maps;
 	bool refractiveMapping;
 	GLfloat refractiveIndex; // This could be different from refractive Index of the mesh.
 
@@ -32,17 +32,15 @@ typedef struct EnvMaps {
 
 typedef struct MeshTextures {
 
-	std::shared_ptr<Image> ambientTexture;
-	std::shared_ptr<Image> diffuseTexture;
-	std::shared_ptr<Image> specularTexture;
-	std::shared_ptr<Image> normalsMap;
+	shared_ptr<const Image> ambientTexture;
+	shared_ptr<const Image> diffuseTexture;
+	shared_ptr<const Image> specularTexture;
+	shared_ptr<const Image> normalsMap;
+	shared_ptr<const Image> generalTexture;
 
-	Image *generalTexture;
-	EnvMaps *envMaps;
+	vector<shared_ptr<const Image>> envMapsTextures;
 
 }MeshTextures ;
-
-
 
 
 
@@ -52,10 +50,13 @@ private:
 
 	using super = Object;
 
-	vector<Triangle*> _triangles;
+	vector<unique_ptr<const Triangle>> _triangles;
 //	vector<Vertex> _vertices;
 
 	MeshTextures _textures;
+	bool _envMapped = false;
+	bool _refractiveMapping;
+	GLfloat _envMapRefIndex;
 
 //	Image* _meshAmbientTexture;
 //	Image* _meshDiffuseTexture;
@@ -63,9 +64,7 @@ private:
 
 //	vector<Image*> _envMaps;
 
-	bool _envMapped = false;
-	bool _refractiveMapping;
-	GLfloat _envMapRefIndex;
+
 
 
 public:
@@ -78,26 +77,20 @@ public:
 
 	virtual ~Mesh();
 
-	virtual bool intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties);
+//	virtual bool intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties);
 	virtual bool intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties) const;
 
 
-	vec3 getAmbientTextureColor(vec2& uv);
-	vec3 getDiffuseTextureColor(vec2& uv);
-	vec3 getSpecularTextureColor(vec2& uv);
+	vec3 getAmbientTextureColor(vec2& uv) const ;
+	vec3 getDiffuseTextureColor(vec2& uv) const ;
+	vec3 getSpecularTextureColor(vec2& uv) const;
 
-	const vector<Triangle*>& getTriangles() const { return _triangles; }
-	const vector<Triangle*>& getTriangles() { return const_cast<vector<Triangle*>&>(static_cast<const Mesh &>(*this).getTriangles()); }
-
-//	const vector<Vertex>& getVertices() const { return _vertices; }
-//	const vector<Vertex>& getVertices() { return const_cast<vector<Vertex>&>(static_cast<const Mesh &>(*this).getVertices()); }
-
+	const vector<unique_ptr<const Image>>& getTriangles() const;
+	const vector<unique_ptr<const Image>>& getTriangles();
 
 	void print() const;
 
 private:
-
-	void __deleteTexture(Image *&texture);
 
 	void __triangulate(vector<Vertex>& vertices, vector<GLuint>& indices);
 

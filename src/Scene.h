@@ -30,27 +30,29 @@ private:
 
 	AdditionalRenderParams addParams;
 
+	GLuint 												_width, _height;
+	GLuint			 									_maxDepth;
 
-	GLuint 							_width, _height;
-	GLuint			 				_maxDepth;
+	unique_ptr<const Camera>				_camera;
+	vector<unique_ptr<const Object>> 	  	_objects;
 
-	std::unique_ptr<Camera>			_camera;
+	vector<shared_ptr<const Mesh>>			_meshes;
+	vector<shared_ptr<const Image>>			_textures;
+	vector<shared_ptr<const Image>>			_envMaps;
+	vector<const Image*>					_skybox; // Sub-vector of the above to save the need to fetch it everytime
+	GLint 								    _skyboxIndex;
 
-	std::vector<std::unique_ptr<Object>> 	  		_objects;
-	std::vector<Mesh*>				_meshes;
-	std::vector<Image*>				_textures;
-	std::vector<Image*>				_envMaps;
-	std::vector<Image*>				_skybox; // Sub-vector of the above to save the need to fetch it everytime
-	GLint 							_skyboxIndex;
-
-	std::vector<PointLight*>  		_pointLights;
-	std::vector<DirectionalLight*>  _directionalLights;
-	std::vector<AreaLight*>  		_areaLights;
+	vector<PointLight*>  		_pointLights;
+	vector<DirectionalLight*>  _directionalLights;
+	vector<AreaLight*>  		_areaLights;
 
 	Attenuation_t _attenuation;
 
 
 	BVH* bvh;
+
+
+
 
 
 public:
@@ -66,45 +68,53 @@ public:
 	GLuint& maxDepth() { return _maxDepth;}
 	const GLuint& maxDepth() const { return _maxDepth;}
 
-	void addCamera(std::unique_ptr<Camera> camera) { _camera = move(camera);}
+	void addCamera(unique_ptr<Camera> camera) { _camera = move(camera);}
 
-	auto camera() -> const Camera& {return *_camera.get(); }
-
-	Camera*& cameraAA() {return  _camera.get()->center; }
-
-//	auto bibi()  ->  Camera*& {return _camera.get(); }
-
-	const int*& foo()
-	{
-		const int* a = new int(3);
-		return a;
-	}
+	auto camera() const -> const Camera& {return *_camera.get(); }
 
 
+	void addObject(unique_ptr<Object>& obj) { _objects.push_back(move(obj)); }
+	const vector<unique_ptr<const Object>>& getObjects() const { return _objects; }
 
-
-	void addObject(std::unique_ptr<Object> obj) { _objects.push_back(move(obj)); }
-	const std::vector<std::unique_ptr<Object>>& getObjects() const { return _objects; }
-
-	// TODO - FIX
-	void addMeshes(vector<Mesh*>& meshes)
+	void addMeshes(vector<shared_ptr<const Mesh>>& meshes)
 	{
 		_meshes.reserve(_meshes.size() + meshes.size());
-		_meshes.insert(_meshes.end(), meshes.begin(), meshes.end());
+		_meshes.insert(_meshes.end(), make_move_iterator(meshes.begin()), make_move_iterator(meshes.end()));
 	}
 
 	BVH* getBVH() { return bvh;}
 
-	void addTexture(Image *texture) { _textures.push_back(texture); }
-	void addEnvMap(Image *envMap) { _envMaps.push_back(envMap); }
+	void addTexture(shared_ptr<Image>& texture) { _textures.push_back(move(texture)); }
+	shared_ptr<const Image> getTexture(uint i) const { assert(i < _textures.size()); return _textures[i]; }
 
-	bool hasSkybox() { return _skyboxIndex >= 0;}
-	void setSkyBox(GLuint index) { _skybox = getEnvMaps(index); _skyboxIndex = index;}
-	Image* getSkyboxTexture(GLuint index) { assert(index < 6); return _skybox[index];}
+	void addEnvMap(shared_ptr<Image>& envMap) { _envMaps.push_back(move(envMap)); }
+	vector<shared_ptr<const Image>> getEnvMapsImages(uint i) const
+	{
+		return vector<shared_ptr<const Image>>(_envMaps.begin() +6*i, _envMaps.end() + 6*i + 6);
+//		assert (6*i < _envMaps.size());
+//		vector<const Image*> retVal{};
+//		for (int j = 6*i ; j < 6*i+6 ; ++j) {
+//			retVal.push_back(_envMaps[i].get());
+//		}
+//		return retVal;
+	}
+
+	bool hasSkybox() const { return _skyboxIndex >= 0;}
+	void setSkyBox(GLuint index)
+	{
+		for (const auto & emi: getEnvMapsImages(index)) {
+			_skybox.push_back(emi.get());
+		}
+		_skyboxIndex = index;
+	}
+
+	const Image* getSkyboxTexture(GLuint index) const
+	{
+		assert(index < 6);
+		return _skybox[index];
+	}
 
 
-	Image* getTexture(uint i) { assert(i < _textures.size()); return _textures[i]; }
-	vector<Image*> getEnvMaps(uint i) { assert (6*i < _envMaps.size()); return vector<Image*> (_envMaps.begin() + 6*i, _envMaps.begin() + 6*i + 6); }
 
 	void addPointLight(PointLight *light) { _pointLights.push_back(light); }
 	std::vector<PointLight*>& getPointLights() { return _pointLights; }
