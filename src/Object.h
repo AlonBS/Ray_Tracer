@@ -74,11 +74,6 @@ public:
 	bool bBoxIntersectsRay(const Ray& tr, GLfloat* t_near);
 	virtual void computeBoundingBox() { this->bbox = nullptr; }
 
-	auto properties() -> ObjectProperties& { return _properties; };
-	auto transform() -> mat4& { return _transforms._transform; }
-	auto invTransform() -> mat4& { return _transforms._invTransform; }
-	auto invTransposeTrans() -> mat3& { return _transforms._invTransposeTrans; }
-
 
 	static void setFaceNormals() { _objectGlobalProperties.face_normals = true;}
 	static void setNoBumpMaps() { _objectGlobalProperties.no_bump_maps = true;}

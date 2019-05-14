@@ -2,7 +2,7 @@
 
 using namespace glm;
 
-bool AABB::intersectsRay(const Ray& tr, GLfloat* t_near)
+bool AABB::intersectsRay(const Ray& tr, GLfloat* t_near) const
 {
 
 	GLfloat tmin, tmax, tymin, tymax, tzmin, tzmax;

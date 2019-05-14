@@ -63,7 +63,15 @@ public:
 	std::vector<vec3> _positions;
 
 
-	AreaLight(vec3& color, GLfloat& intensity, vec3& _center, GLfloat& radius, mat4& transform, GLuint samples, bool smartRandom=true);
+	AreaLight(
+			vec3& color,
+			GLfloat& intensity,
+			vec3& _center,
+			GLfloat& radius,
+			mat4& transform,
+			GLuint samples,
+			bool smartRandom=true);
+
 	virtual ~AreaLight() {}
 };
 

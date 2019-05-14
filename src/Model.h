@@ -24,8 +24,8 @@ public:
     static void loadModel(string const &path,
     					  const ObjectProperties& op,
 						  const ObjectTransforms& ot,
-						  Image* texture,
-						  EnvMaps* envMaps,
+						  shared_ptr<const Image> texture,
+						  EnvMaps& envMaps,
     					  vector<shared_ptr<const Mesh>>& modelMeshes);
 
 //    static void FreeTextures();
@@ -45,8 +45,8 @@ private:
     static vector<shared_ptr<const Mesh>> _meshes;
     static ObjectProperties _objectProperties;
     static ObjectTransforms _objectTransforms;
-    static Image* _texture;
-    static EnvMaps* _envMaps;
+    static shared_ptr<const Image> _texture;
+    static EnvMaps _envMaps;
 
 
 

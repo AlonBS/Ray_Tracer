@@ -37,8 +37,8 @@ Image::~Image() {
 
 void Image::setPixel(int col, int row, glm::vec3& rgbColors)
 {
-///	assert(row >= 0 && row < height);
-///	assert(col >= 0 && col < width);
+	assert(row >= 0 && row < height);
+	assert(col >= 0 && col < width);
 
 	RGBQUAD color;
 
@@ -55,12 +55,13 @@ void Image::setPixel(int col, int row, glm::vec3& rgbColors)
 
 vec3 Image::getPixel(int col, int row)
 {
-	//return const_cast<vec3>(static_cast<const Image &>(*this).getPixel(col, row));
 	return static_cast<const Image &>(*this).getPixel(col, row);
 }
 
 vec3 Image::getPixel(int col, int row) const
 {
+	assert(row >= 0 && row < height);
+	assert(col >= 0 && col < width);
 	vec3 color;
 	RGBQUAD pixel;
 

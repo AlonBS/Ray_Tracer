@@ -32,7 +32,6 @@ namespace po = ::boost::program_options;
 bool singleThreaded = false;
 string resultFormat;
 fs::path outputDirectory;
-bool generateStats = false;
 bool dryrun = false;
 
 
@@ -205,12 +204,13 @@ static void render_scene(string fileName)
 	img->saveImage(output);
 
 	if (generateStats) {
+		RayTracerStats& rts = getStats();
 		cout << "\tAdditional Stats: " << endl;
 		cout << "\t==================" << endl;
-		cout << "\t - Number of rays generated:               " << rayTracerStats.numOfRays << endl;
-		cout << "\t - Number of intersection tests performed: " << rayTracerStats.numOfIntersectTests << endl;
-		cout << "\t - Number of hits:                         " << rayTracerStats.numOfHits << endl;
-		cout << "\t - Hits to tests ratio:                    " << setprecision(2) << rayTracerStats.numOfHits / (GLfloat)rayTracerStats.numOfIntersectTests * 100.0 << "%" << endl;
+		cout << "\t - Number of rays generated:               " << rts.numOfRays << endl;
+		cout << "\t - Number of intersection tests performed: " << rts.numOfIntersectTests << endl;
+		cout << "\t - Number of hits:                         " << rts.numOfHits << endl;
+		cout << "\t - Hits to tests ratio:                    " << setprecision(2) << rts.numOfHits / (GLfloat)rts.numOfIntersectTests * 100.0 << "%" << endl;
 
 		cout << endl;
 	}

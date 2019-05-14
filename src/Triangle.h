@@ -29,7 +29,15 @@ private:
 //		vec3 Atan, Btan, Ctan;  // Tangent to vertices
 
 
-		bool __iRay2(const Ray& r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties, vec2* texCoords=nullptr, mat3* TBN=nullptr);
+		bool __iRay2(
+				const Ray& r,
+				GLfloat* dist,
+				vec3* point,
+				vec3* normal,
+				ObjectTexColors* texColors,
+				ObjectProperties* properties,
+				vec2* texCoords=nullptr,
+				mat3* TBN=nullptr) const;
 
 		mat3 __calcTBNMat(const Vertex& v);
 
@@ -52,9 +60,22 @@ public:
 
 	virtual ~Triangle();
 
-	virtual bool intersectsRay(const Ray& r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties);
+	virtual bool intersectsRay(
+			const Ray& r,
+			GLfloat* dist,
+			vec3* point,
+			vec3* normal,
+			ObjectTexColors* texColors,
+			ObjectProperties* properties) const;
 
-	bool intersectsRayM(const Ray& r, GLfloat* dist, vec3* point, vec3* normal, vec2* texCoords, mat3* TBN);
+
+	bool intersectsRayM(
+			const Ray& r,
+			GLfloat* dist,
+			vec3* point,
+			vec3* normal,
+			vec2* texCoords,
+			mat3* TBN) const;
 
 	virtual void print() const;
 

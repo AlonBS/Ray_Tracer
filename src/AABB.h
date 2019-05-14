@@ -23,7 +23,7 @@ struct AABB {
 
 	AABB(){ }
 
-	AABB(vec3 & minBound, vec3& maxBound)
+	AABB(const vec3 & minBound, const vec3& maxBound)
 	{
 		bounds[0] = {minBound};
 		bounds[1] = {maxBound};
@@ -31,7 +31,7 @@ struct AABB {
 
 	vec3 centroid() const { return (bounds[0] + bounds[1]) * 0.5f; }
 
-	bool intersectsRay(const Ray& tr, GLfloat* t_near);
+	bool intersectsRay(const Ray& tr, GLfloat* t_near) const;
 
 	void print() const;
 };

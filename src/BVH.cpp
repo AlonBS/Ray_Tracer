@@ -32,7 +32,7 @@ BVH::BVH(vector<shared_ptr<const Mesh>>& meshes)
 	Octree::maxDepth = glm::min(16.0, ceil(pow(meshes.size(), (1.0 / 8.0))));
 
 	// Now that we have the extents of the scene we can start building our octree
-	octree = new Octree(sceneExtents);
+	octree = make_unique<Octree>(sceneExtents);
 	for (uint32_t i = 0; i < meshes.size(); ++i) {
 		octree->insert(&extentsList[i]);
 	}
@@ -44,7 +44,7 @@ BVH::BVH(vector<shared_ptr<const Mesh>>& meshes)
 
 BVH::~BVH()
 {
-	delete octree;
+//	delete octree;
 }
 
 bool BVH::intersectsRay(const Ray &r,
@@ -56,7 +56,18 @@ bool BVH::intersectsRay(const Ray &r,
 						ObjectProperties* properties,
 						bool shadowRay)
 {
+	return static_cast<const BVH &>(*this).intersectsRay(r, minDist, dist, point, normal, texColors, properties, shadowRay);
+}
 
+bool BVH::intersectsRay(const Ray &r,
+						const GLfloat &minDist,
+						GLfloat* dist,
+						vec3* point,
+						vec3* normal,
+						ObjectTexColors* texColors,
+						ObjectProperties* properties,
+						bool shadowRay) const
+{
 	bool intersected = false;
 	GLfloat closestHit = minDist;
 
@@ -126,6 +137,7 @@ bool BVH::intersectsRay(const Ray &r,
 	}
 
 	return intersected;
+
 }
 
 

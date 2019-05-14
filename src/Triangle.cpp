@@ -88,7 +88,13 @@ Triangle::~Triangle()
 }
 
 
-bool Triangle::intersectsRay(const Ray& r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties)
+bool Triangle::intersectsRay(
+		const Ray& r,
+		GLfloat* dist,
+		vec3* point,
+		vec3* normal,
+		ObjectTexColors* texColors,
+		ObjectProperties* properties) const
 {
 	return __iRay2(r, dist, point, normal, texColors, properties);
 }
@@ -96,7 +102,13 @@ bool Triangle::intersectsRay(const Ray& r, GLfloat* dist, vec3* point, vec3* nor
 
 
 bool
-Triangle::intersectsRayM(const Ray& r, GLfloat* dist, vec3* point, vec3* normal, vec2* texCoords, mat3* TBN)
+Triangle::intersectsRayM(
+		const Ray& r,
+		GLfloat* dist,
+		vec3* point,
+		vec3* normal,
+		vec2* texCoords,
+		mat3* TBN) const
 {
 	return __iRay2(r, dist, point, normal, nullptr, nullptr, texCoords, TBN);
 //	res2 = __iRay2(r, &dist2, &point2, &norm2, nullptr, nullptr, &texCoords2);
@@ -104,18 +116,21 @@ Triangle::intersectsRayM(const Ray& r, GLfloat* dist, vec3* point, vec3* normal,
 
 
 bool
-Triangle::__iRay2(const Ray& r,
-				  GLfloat* dist,
-				  vec3* point,
-				  vec3* normal,
-				  ObjectTexColors* texColors,
-				  ObjectProperties* properties,
-				  vec2* texCoords,
-				  mat3* TBN)
+Triangle::__iRay2(
+		const Ray& r,
+		GLfloat* dist,
+		vec3* point,
+		vec3* normal,
+		ObjectTexColors* texColors,
+		ObjectProperties* properties,
+		vec2* texCoords,
+		mat3* TBN) const
 {
 	vec3 edge1, edge2, tvec, pvec, qvec;
 	GLfloat det, inv_det;
 	GLfloat u, v, t;
+
+	updateStats(INCREMENT_INTERSECTION_TESTS_COUNT);
 
 	edge1 = B.Position-A.Position;
 	edge2 = C.Position-A.Position;
@@ -200,7 +215,7 @@ Triangle::__iRay2(const Ray& r,
 		*TBN = (1.f-u-v)*TBN_A + u*TBN_B + v*TBN_C;
 	}
 
-	++rayTracerStats.numOfHits;
+	updateStats(INCREMENT_HITS_COUNT);
 
 	return true;
 

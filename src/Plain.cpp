@@ -5,15 +5,21 @@
 using namespace glm;
 
 
-bool Plain::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties)
+bool Plain::intersectsRay(
+		const Ray &r,
+		GLfloat* dist,
+		vec3* point,
+		vec3* normal,
+		ObjectTexColors* texColors,
+		ObjectProperties* properties) const
 {
 
 	GLfloat t = INFINITY;
 	vec3 ip, ip2;
 	vec3 n;
-	Ray tr = this->invTransform() * r; // Transformed ray
+	Ray tr = this->_transforms._invTransform * r; // Transformed ray
 
-	++rayTracerStats.numOfIntersectTests;
+	updateStats(INCREMENT_INTERSECTION_TESTS_COUNT);
 
 	GLfloat nDotD = glm::dot(N, tr.direction);
 	if (abs(nDotD) < EPSILON) { /* Ray and plain are parallel - no intersection */
@@ -29,11 +35,11 @@ bool Plain::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal
 	n = N;
 
 	// normals transformation
-	n = normalize(this->invTransposeTrans() * n);
+	n = normalize(this->_transforms._invTransposeTrans * n);
 
 	// M * p - to transform point back
 	ip2 = ip;
-	ip = vec3(this->transform() * vec4(ip, 1.0f));
+	ip = vec3(this->_transforms._transform * vec4(ip, 1.0f));
 	// The distance is the length of the original intersection point with the origin of the non transformed ray.
 	*dist = length(ip - r.origin);
 
@@ -52,7 +58,7 @@ bool Plain::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal
 		if (!_objectGlobalProperties.no_bump_maps) {
 			if (hasNormalsMap()) {
 				*normal = normalize(2.f*this->getNormalFromMap(uv) - 1.0f); // Note we don't need to apply normals transformation here
-				*normal = normalize(this->invTransposeTrans() * *normal);
+				*normal = normalize(this->_transforms._invTransposeTrans * *normal); // TODO - remove this
 //				printVec3("NORM", *normal);
 			}
 		}
@@ -64,16 +70,16 @@ bool Plain::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal
 
 
 	if (properties) {
-		*properties = this->properties();
+		*properties = this->_properties;
 	}
 
-	++rayTracerStats.numOfHits;
+	updateStats(INCREMENT_HITS_COUNT);
 	return true;
 
 }
 
 
-vec2 Plain::_textureAt(const vec3& point)
+vec2 Plain::_textureAt(const vec3& point) const
 {
 	vec2 uv {};
 

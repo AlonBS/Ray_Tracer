@@ -15,9 +15,7 @@
 
 #include <glm/glm.hpp>
 
-class Pixel {
-
-public:
+struct Pixel {
 
 	BYTE r;
 	BYTE g;
@@ -62,7 +60,6 @@ public:
 
 	int getWidth() { return this->width; }
 	int getHeight() { return this->height; }
-
 	int getWidth() const { return this->width; }
 	int getHeight() const { return this->height; }
 

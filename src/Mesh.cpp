@@ -38,7 +38,7 @@ Mesh::Mesh(vector<Vertex>& vertices,
 : Object()
 {
 	super::setTextures(meshTextures.generalTexture);
-	super::properties() = properties;
+	_properties = properties;
 
 
 	_textures.ambientTexture = meshTextures.ambientTexture;
@@ -46,18 +46,21 @@ Mesh::Mesh(vector<Vertex>& vertices,
 	_textures.specularTexture = meshTextures.specularTexture;
 	_textures.normalsMap = meshTextures.normalsMap;
 
-	if (meshTextures.envMaps) {
 
-		_envMapped = meshTextures.envMaps->maps.size() > 0;
-		if (_envMapped) {
-			_refractiveMapping = meshTextures.envMaps->refractiveMapping;
-			if (_refractiveMapping) {
-				_envMapRefIndex = meshTextures.envMaps->refractiveIndex;
-			}
-			_textures.envMaps = meshTextures.envMaps;
-		}
-
-	}
+	_textures.envMaps = meshTextures.envMaps;
+	_envMapped = meshTextures.envMaps.maps.size() > 0;
+//	if (meshTextures.envMaps) {
+//
+//		_envMapped = meshTextures.envMaps->maps.size() > 0;
+//		if (_envMapped) {
+//			_textures.envMaps.refractiveMapping = meshTextures.envMaps->refractiveMapping;
+//			if (_refractiveMapping) {
+//				_envMapRefIndex = meshTextures.envMaps->refractiveIndex;
+//			}
+//			_textures.envMaps = meshTextures.envMaps;
+//		}
+//
+//	}
 
 //	_vertices = vertices; // Yes - this is shit, but a must for now
 	__triangulate(vertices, indices);
@@ -66,10 +69,10 @@ Mesh::Mesh(vector<Vertex>& vertices,
 
 Mesh::~Mesh()
 {
-	for (Triangle *t : _triangles) {
-		delete(t);
-		t = nullptr;
-	}
+//	for (Triangle *t : _triangles) {
+//		delete(t);
+//		t = nullptr;
+//	}
 
 	_triangles.clear();
 
@@ -83,12 +86,12 @@ Mesh::~Mesh()
 }
 
 
-const vector<unique_ptr<const Image>>& Mesh::getTriangles() const
+const vector<unique_ptr<const Triangle>>& Mesh::getTriangles() const
 {
 	return _triangles;
 }
 
-const vector<unique_ptr<const Image>>& Mesh::getTriangles()
+const vector<unique_ptr<const Triangle>>& Mesh::getTriangles()
 {
 	return const_cast<vector<unique_ptr<const Triangle>>&>(static_cast<const Mesh &>(*this).getTriangles());
 }
@@ -100,20 +103,21 @@ Mesh::__triangulate(vector<Vertex>& vertices, vector<GLuint>& indices)
 {
 	for (GLuint i = 0 ; i < indices.size() ; i+=3)
 	{
-		this->_triangles.push_back(new Triangle(vertices[indices[i  ]],
-											    vertices[indices[i+1]],
-											    vertices[indices[i+2]]));
+		this->_triangles.push_back(make_unique<const Triangle>(vertices[indices[i  ]],
+											    			   vertices[indices[i+1]],
+															   vertices[indices[i+2]]));
 	}
 }
 
 
 bool
-Mesh::intersectsRay(const Ray &r,
-					GLfloat* dist,
-					vec3* point,
-					vec3* normal,
-					ObjectTexColors* texColors,
-					ObjectProperties* properties)
+Mesh::intersectsRay(
+		const Ray &r,
+		GLfloat* dist,
+		vec3* point,
+		vec3* normal,
+		ObjectTexColors* texColors,
+		ObjectProperties* properties) const
 {
 	GLfloat minDist = INFINITY;
 
@@ -123,7 +127,7 @@ Mesh::intersectsRay(const Ray &r,
 
 	mat3 TBN;
 
-	for (Triangle *t : _triangles) {
+	for (auto & t : _triangles) {
 
 		/* When we iterate over triangles as part of mesh - we take the properties of the mesh
 		 * and not the triangle. In fact, this triangle doesn't have other but default properties
@@ -162,17 +166,17 @@ Mesh::intersectsRay(const Ray &r,
 												vec3 norm;
 												GLfloat eta;
 
-						if (_refractiveMapping) { //
+						if (_textures.envMaps.refractiveMapping) { //
 
 							if (nDotD > EPSILON) { // Going out of the object
 								dir = r.direction;
 								norm = -tN;
-								eta = _envMapRefIndex / VOID_INDEX;
+								eta = _textures.envMaps.refractiveIndex / VOID_INDEX;
 							}
 							else {
 								dir = r.direction; // TODO - consider -rayDir
 								norm = tN;
-								eta = VOID_INDEX / _envMapRefIndex;
+								eta = VOID_INDEX / _textures.envMaps.refractiveIndex;
 							}
 
 							refDir = normalize(glm::refract(dir, norm, eta));
@@ -186,7 +190,7 @@ Mesh::intersectsRay(const Ray &r,
 						if (vec3IsValid(refDir)) {
 
 							cubeMap(refDir, &index, &uv);
-							vec3 envColor = getTextureColor(_textures.envMaps->maps[index], uv);
+							vec3 envColor = getTextureColor(_textures.envMaps.maps[index].get(), uv);
 
 							texColors->_ambientTexColor  *= envColor;
 							texColors->_diffuseTexColor  *= envColor;
@@ -206,11 +210,15 @@ Mesh::intersectsRay(const Ray &r,
 
 
 bool
-Mesh::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties) const
+Mesh::intersectsRay(
+		const Ray &r,
+		GLfloat* dist,
+		vec3* point,
+		vec3* normal,
+		ObjectTexColors* texColors,
+		ObjectProperties* properties)
 {
-	Mesh* m = (Mesh*)(this);
-	return m->intersectsRay(r, dist, point, normal, texColors, properties);
-
+	return static_cast<const Mesh&>(*this).intersectsRay(r, dist, point, normal, texColors, properties);
 }
 
 

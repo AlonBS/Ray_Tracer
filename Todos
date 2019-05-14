@@ -86,6 +86,6 @@ version 5 notes:
 	- handled const and references
 
 - improved const mechanisms and interfaces 
-- 
+- Fixed bug when counting statistics. Also changed mechanism not to count anything if flag is off, to save expansive atomic locks. 
 
 

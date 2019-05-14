@@ -26,7 +26,7 @@ private:
 	GLfloat radius;
 
 
-	vec3 _normalAt(const vec3& point, bool minCapIntersect, bool maxCapIntersect);
+	vec3 _normalAt(const vec3& point, bool minCapIntersect, bool maxCapIntersect) const;
 
 public:
 
@@ -35,13 +35,18 @@ public:
 	: Object(properties, transforms),
 	  center(center), minCap(minCap), maxCap(maxCap), height(maxCap - minCap)
 	{
-//		radius = sqrt(glm::max(abs(maxCap), abs(minCap)));
 		radius = glm::max(abs(maxCap), abs(minCap)); // TODO - consider
 	}
 
 	virtual ~Cone() {}
 
-	virtual bool intersectsRay(const Ray& r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties);
+	virtual bool intersectsRay(
+			const Ray& r,
+			GLfloat* dist,
+			vec3* point,
+			vec3* normal,
+			ObjectTexColors* texColors,
+			ObjectProperties* properties) const;
 
 	virtual void print() const;
 

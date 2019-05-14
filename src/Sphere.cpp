@@ -13,7 +13,13 @@ using namespace glm;
 
 
 
-bool Sphere::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties)
+bool Sphere::intersectsRay(
+		const Ray &r,
+		GLfloat* dist,
+		vec3* point,
+		vec3* normal,
+		ObjectTexColors* texColors,
+		ObjectProperties* properties) const
 {
 	// To find intersection between Ray and Sphere represented the following way:
 	// 	Sphere: (P - C )^2 - r^2 = 0
@@ -23,13 +29,14 @@ bool Sphere::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* norma
 	//  B: 2 * d * (o - c)
 	// 	C: (o -c)^2 - r^2
 
-	Ray tr = this->invTransform() * r; // Transformed ray
+	Ray tr = this->_transforms._invTransform * r; // Transformed ray
 	GLfloat A, B, C;
 	GLfloat discriminant, disc_root;
 	GLfloat t1, t2, t = INFINITY;
 	vec3    intersection_point;
 
-	++rayTracerStats.numOfIntersectTests;
+
+	updateStats(INCREMENT_INTERSECTION_TESTS_COUNT);
 
 
 	A = glm::dot(tr.direction, tr.direction);
@@ -73,10 +80,10 @@ bool Sphere::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* norma
 	// The normal at intersection point (to the canonical sphere)
 	vec3 n = vec3(intersection_point - center);
 	// The normal transformation fix
-	n = normalize(this->invTransposeTrans() * n);
+	n = normalize(this->_transforms._invTransposeTrans * n);
 
 	// M * p - to transform point back
-	intersection_point = vec3(this->transform() * vec4(intersection_point, 1.0f));
+	intersection_point = vec3(this->_transforms._transform * vec4(intersection_point, 1.0f));
 	// The distance is the length of the original intersection point with the origin of the non transformed ray.
 	*dist = length(intersection_point - r.origin);
 
@@ -97,10 +104,10 @@ bool Sphere::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* norma
 		texColors->_specularTexColor = this->getSpecularTextureColor(uv);
 	}
 	if (properties) {
-		*properties = this->properties();
+		*properties = this->_properties;
 	}
 
-	++rayTracerStats.numOfHits;
+	updateStats(INCREMENT_HITS_COUNT);
 	return true;
 }
 
@@ -134,7 +141,7 @@ void Sphere::computeBoundingBox()
 
 	for (vec3& v : verts) {
 
-		v = vec3 (this->transform() * vec4(v, 1.0f));;
+		v = vec3 (this->_transforms._transform * vec4(v, 1.0f));;
 
 		minBound = glm::min(v, minBound);
 		maxBound = glm::max(v, maxBound);

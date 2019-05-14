@@ -20,8 +20,8 @@ using namespace std;
 vector<shared_ptr<const Mesh>> Model::_meshes {};
 ObjectProperties Model::_objectProperties{};
 ObjectTransforms Model::_objectTransforms{};
-Image* Model::_texture = nullptr;
-EnvMaps* Model::_envMaps = nullptr;
+shared_ptr<const Image> Model::_texture = nullptr;
+EnvMaps Model::_envMaps = {};
 vector<Model::Texture> Model::_loadedTextures{}; // We store all the textures loaded for this module, to avoid load duplication
 string Model::_directory{};
 
@@ -40,14 +40,14 @@ void
 Model::loadModel(string const &path,
 				 const ObjectProperties& op,
 				 const ObjectTransforms& ot,
-				 Image* texture,
-				 EnvMaps* envMaps,
+				 shared_ptr<const Image> global_texture,
+				 EnvMaps& envMaps,
 				 OUT vector<shared_ptr<const Mesh>>& modelMeshes)
 
 {
 	_objectProperties = op;
 	_objectTransforms = ot;
-	_texture = texture;
+	_texture = global_texture;
 	_envMaps = envMaps;
 
 

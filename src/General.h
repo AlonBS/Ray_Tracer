@@ -86,15 +86,8 @@ typedef struct Intersection {
 }Intersection;
 
 
-typedef struct RayTracerStats {
 
-	atomic<GLuint64> numOfRays;
-	atomic<GLuint64> numOfIntersectTests;
-	atomic<GLuint64> numOfHits;
-
-}RayTracerStats;
-
-extern RayTracerStats rayTracerStats;
+//extern RayTracerStats rayTracerStats;
 //extern bool faceNormals;
 
 void clearStats();
@@ -194,7 +187,7 @@ inline bool rayIsValid(const Ray& ray)
 
 
 // Return the cube mapping of 'v' to 'uv' and 'index' for texture
-inline void cubeMap(vec3& v, GLuint *index, vec2 *uv)
+inline void cubeMap(const vec3& v, GLuint *index, vec2 *uv)
 {
   GLfloat absX = glm::abs(v.x);
   GLfloat absY = glm::abs(v.y);
@@ -273,13 +266,34 @@ getTextureColor(const Image *texture, const vec2& uv)
 		return COLOR_WHITE;
 	}
 
-	uv = glm::clamp(uv, 0.f + EPSILON, 1.f - EPSILON); // Textures at the edges tend to be not accurate
+	vec2 uv_clamped = glm::clamp(uv, 0.f + EPSILON, 1.f - EPSILON); // Textures at the edges tend to be not accurate
 
 	int w = texture->getWidth();
 	int h = texture->getHeight();
 
-	return texture->getPixel((int)(uv.x * w), (int) (uv.y * h));
+	return texture->getPixel((int)(uv_clamped.x * w), (int) (uv_clamped.y * h));
 }
+
+// STATS RELATED
+
+typedef struct RayTracerStats {
+
+	atomic<GLuint64> numOfRays;
+	atomic<GLuint64> numOfIntersectTests;
+	atomic<GLuint64> numOfHits;
+
+}RayTracerStats;
+
+
+extern bool generateStats;
+typedef enum StatsType {
+	INCREMENT_RAY_COUNT = 0,
+	INCREMENT_INTERSECTION_TESTS_COUNT,
+	INCREMENT_HITS_COUNT
+}StatsType;
+
+void updateStats(StatsType st);
+RayTracerStats& getStats();
 
 
 

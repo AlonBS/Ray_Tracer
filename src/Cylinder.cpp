@@ -12,7 +12,13 @@ using namespace glm;
 
 
 
-bool Cylinder::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties)
+bool Cylinder::intersectsRay(
+		const Ray &r,
+		GLfloat* dist,
+		vec3* point,
+		vec3* normal,
+		ObjectTexColors* texColors,
+		ObjectProperties* properties) const
 {
 	// To find intersection between Ray and canonical cylinder (aligned to the y-axis), we need to solve the following equation:
 	// 	Cylinder: x^2 + z^2 = R^2
@@ -22,7 +28,7 @@ bool Cylinder::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* nor
 	//  B: 2*o.x*d.x + 2*o.z*d.z
 	// 	C: o.x^2 + o.z^2 - r^2
 
-	Ray tr = this->invTransform() * r; // Transformed ray
+	Ray tr = this->_transforms._invTransform * r; // Transformed ray
 	GLfloat A, B, C;
 	GLfloat discriminant, disc_root;
 	GLfloat t_min = INFINITY, t_max = INFINITY;
@@ -32,7 +38,7 @@ bool Cylinder::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* nor
 	bool single_intersection = false;
 	bool minCapIntersection = false, maxCapIntersection = false;
 
-	++rayTracerStats.numOfIntersectTests;
+	updateStats(INCREMENT_INTERSECTION_TESTS_COUNT);
 
 	A = (tr.direction.x*tr.direction.x) + (tr.direction.z*tr.direction.z);
 	B = (2*tr.origin.x*tr.direction.x) + (2*tr.origin.z*tr.direction.z);
@@ -115,11 +121,11 @@ bool Cylinder::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* nor
 
 	// This is the normal at intersection point. (The Cylinder is aligned with the y-axis)
 	vec3 n = _normalAt(ip, minCapIntersection, maxCapIntersection);
-	n = normalize(this->invTransposeTrans() * n);
+	n = normalize(this->_transforms._invTransposeTrans * n);
 
 	// M * p - to transform point back
 	ip2 = ip; // for texture - we need the non transformed position
-	ip = vec3(this->transform() * vec4(ip, 1.0f));
+	ip = vec3(this->_transforms._transform * vec4(ip, 1.0f));
 	// The distance is the length of the original intersection point with the origin of the non transformed ray.
 	*dist = length(ip - r.origin);
 
@@ -139,17 +145,17 @@ bool Cylinder::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* nor
 		texColors->_specularTexColor = this->getSpecularTextureColor(uv);
 	}
 	if (properties) {
-		*properties = this->properties();
+		*properties = this->_properties;
 	}
 
 
-	++rayTracerStats.numOfHits;
+	updateStats(INCREMENT_HITS_COUNT);
 	return true;
 
 }
 
 
-vec3 Cylinder::_normalAt(const vec3& point, bool minCapIntersect, bool maxCapIntersect)
+vec3 Cylinder::_normalAt(const vec3& point, bool minCapIntersect, bool maxCapIntersect) const
 {
 	if (minCapIntersect)
 		return vec3 (0, -1, 0);
@@ -191,7 +197,7 @@ void Cylinder::computeBoundingBox()
 
 	for (vec3& v : verts) {
 
-		v = vec3 (this->transform() * vec4(v, 1.0f));;
+		v = vec3 (this->_transforms._transform * vec4(v, 1.0f));;
 
 		minBound = glm::min(v, minBound);
 		maxBound = glm::max(v, maxBound);

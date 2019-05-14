@@ -19,10 +19,10 @@ class Box: public Object {
 
 private:
 
-	vec3 _normalAt(const vec3 &point);
-	vec2 _textureAt(const vec3& point);
+	vec3 _normalAt(const vec3 &point) const;
+	vec2 _textureAt(const vec3& point) const;
 
-	vec3 bounds[2]; // Yes! public
+	vec3 bounds[2];
 
 public:
 
@@ -41,7 +41,13 @@ public:
 	}
 	virtual ~Box() {}
 
-	virtual bool intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties);
+	virtual bool intersectsRay(
+			const Ray &r,
+			GLfloat* dist,
+			vec3* point,
+			vec3* normal,
+			ObjectTexColors* texColors,
+			ObjectProperties* properties) const;
 
 	virtual void print() const;
 };

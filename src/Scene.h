@@ -30,29 +30,25 @@ private:
 
 	AdditionalRenderParams addParams;
 
-	GLuint 												_width, _height;
-	GLuint			 									_maxDepth;
+	GLuint 										_width, _height;
+	GLuint			 							_maxDepth;
 
-	unique_ptr<const Camera>				_camera;
-	vector<unique_ptr<const Object>> 	  	_objects;
+	unique_ptr<const Camera>					_camera;
+	vector<unique_ptr<const Object>> 	  		_objects;
 
-	vector<shared_ptr<const Mesh>>			_meshes;
-	vector<shared_ptr<const Image>>			_textures;
-	vector<shared_ptr<const Image>>			_envMaps;
-	vector<const Image*>					_skybox; // Sub-vector of the above to save the need to fetch it everytime
-	GLint 								    _skyboxIndex;
+	vector<shared_ptr<const Mesh>>				_meshes;
+	vector<shared_ptr<const Image>>				_textures;
+	vector<shared_ptr<const Image>>				_envMaps;
+	vector<const Image*>						_skybox; // Sub-vector of the above to save the need to fetch it everytime
+	GLint 								    	_skyboxIndex;
 
-	vector<PointLight*>  		_pointLights;
-	vector<DirectionalLight*>  _directionalLights;
-	vector<AreaLight*>  		_areaLights;
+	vector<unique_ptr<const PointLight>>  		_pointLights;
+	vector<unique_ptr<const DirectionalLight>>  _directionalLights;
+	vector<unique_ptr<const AreaLight>>  		_areaLights;
 
-	Attenuation_t _attenuation;
+	Attenuation_t 								_attenuation;
 
-
-	BVH* bvh;
-
-
-
+	unique_ptr<const BVH> 						_bvh;
 
 
 public:
@@ -82,7 +78,7 @@ public:
 		_meshes.insert(_meshes.end(), make_move_iterator(meshes.begin()), make_move_iterator(meshes.end()));
 	}
 
-	BVH* getBVH() { return bvh;}
+	const BVH* getBVH() const { return _bvh.get();}
 
 	void addTexture(shared_ptr<Image>& texture) { _textures.push_back(move(texture)); }
 	shared_ptr<const Image> getTexture(uint i) const { assert(i < _textures.size()); return _textures[i]; }
@@ -116,14 +112,14 @@ public:
 
 
 
-	void addPointLight(PointLight *light) { _pointLights.push_back(light); }
-	std::vector<PointLight*>& getPointLights() { return _pointLights; }
+	void addPointLight(unique_ptr<const PointLight>& light) { _pointLights.push_back(move(light)); }
+	const vector<unique_ptr<const PointLight>>& getPointLights() const { return _pointLights; }
 
-	void addDirectionalLight(DirectionalLight *light) { _directionalLights.push_back(light); }
-	std::vector<DirectionalLight*>& getDirectionalLights() { return _directionalLights; }
+	void addDirectionalLight(unique_ptr<const DirectionalLight>& light) { _directionalLights.push_back(move(light)); }
+	const vector<unique_ptr<const DirectionalLight>>& getDirectionalLights() const { return _directionalLights; }
 
-	void addAreaLight(AreaLight *light) { _areaLights.push_back(light); }
-	std::vector<AreaLight*>& getAreaLights() { return _areaLights; }
+	void addAreaLight(unique_ptr<const AreaLight>& light) { _areaLights.push_back(move(light)); }
+	const vector<unique_ptr<const AreaLight>>& getAreaLights() { return _areaLights; }
 
 	Attenuation_t& attenuation() { return _attenuation; }
 

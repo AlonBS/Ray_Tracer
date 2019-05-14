@@ -166,7 +166,8 @@ vec3 RayTracer::recursiveRayTrace(Scene& scene, Ray & ray, GLuint depth)
 {
 	vec3 color = COLOR_BLACK;
 
-	++rayTracerStats.numOfRays;
+	updateStats(INCREMENT_RAY_COUNT);
+	//++rayTracerStats.numOfRays;
 
 	if (depth == 0) {
 		return COLOR_BLACK;
@@ -287,7 +288,7 @@ vec3 RayTracer::computeLight(Scene& scene, Ray& r, Intersection& hit)
 	}
 
 	// Add point lights
-	for (PointLight* p : scene.getPointLights()) {
+	for (const unique_ptr<const PointLight>& p : scene.getPointLights()) {
 
 		srDir = normalize(p->_position - hit.point);
 		srOrigin = hit.point + 10 * EPSILON * srDir; // Move a little to avoid floating point errors
@@ -307,9 +308,9 @@ vec3 RayTracer::computeLight(Scene& scene, Ray& r, Intersection& hit)
 	}
 
 	// Add area lights
-	for (AreaLight* p : scene.getAreaLights()) {
+	for (const auto& p : scene.getAreaLights()) {
 
-		for (vec3& pos : p->_positions) {
+		for (const vec3& pos : p->_positions) {
 
 			srDir = normalize(pos - hit.point);
 			srOrigin = hit.point + 10 * EPSILON * srDir; // Move a little to avoid floating point errors
@@ -334,7 +335,7 @@ vec3 RayTracer::computeLight(Scene& scene, Ray& r, Intersection& hit)
 	}
 
 
-	for (DirectionalLight* p : scene.getDirectionalLights()) {
+	for (auto& p : scene.getDirectionalLights()) {
 
 		srDir = normalize(p->_direction);
 		srOrigin = hit.point + 10 * EPSILON * srDir; // Move a little to avoid floating point errors

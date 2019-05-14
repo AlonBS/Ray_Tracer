@@ -47,6 +47,15 @@ public:
 					   ObjectProperties* properties,
 					   bool shadowRay = false);
 
+	bool intersectsRay(const Ray &r,
+					   const GLfloat &minDist,
+					   GLfloat* dist,
+					   vec3* point,
+					   vec3* normal,
+					   ObjectTexColors* texColors,
+					   ObjectProperties* properties,
+					   bool shadowRay = false) const;
+
 
 
 private:
@@ -74,12 +83,12 @@ private:
 
 		void build(shared_ptr<const Mesh>& mesh)
 		{
-			for (uint8_t i = 0; i < NUM_OF_SET_NORMALS; ++i) {
-
+			for (uint8_t i = 0; i < NUM_OF_SET_NORMALS; ++i)
+			{
 				dists[i].dNear = INFINITY, dists[i].dFar = -INFINITY;
-				for (const auto& t : mesh->getTriangles()) {
-
-					for (const auto& v : t->getVerticesPos())
+				for (auto& t : mesh->getTriangles())
+				{
+					for (auto& v : t->getVerticesPos())
 					{
 						GLfloat d = dot(PLANE_SET_NORMALS[i], v);
 						dists[i].dNear = glm::min(dists[i].dNear, d);
@@ -102,7 +111,6 @@ private:
 			}
 		}
 
-		/* inline */
 		vec3 centroid() const
 		{
 			// With respect to XYZ axis - simple average
@@ -122,8 +130,8 @@ private:
 	{
 
 	public:
-		Octree(const Extents& sceneExtents);
 
+		Octree(const Extents& sceneExtents);
 		~Octree();
 
 		void insert(const Extents* extents);
@@ -172,8 +180,8 @@ private:
 	Extents __buildSceneExtents(vector<shared_ptr<const Mesh>>& meshes);
 
 
-	std::vector<Extents> extentsList;
-	Octree* octree = nullptr;
+	vector<Extents> extentsList;
+	unique_ptr<Octree> octree = nullptr;
 };
 
 

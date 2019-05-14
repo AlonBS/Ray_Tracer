@@ -38,7 +38,7 @@ private:
 	enum TexturePattern texturePattern;
 
 
-	vec2 _textureAt(const vec3& point);
+	vec2 _textureAt(const vec3& point) const;
 
 
 public:
@@ -52,7 +52,13 @@ public:
 
 	virtual ~Plain() {}
 
-	virtual bool intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties);
+	virtual bool intersectsRay(
+			const Ray &r,
+			GLfloat* dist,
+			vec3* point,
+			vec3* normal,
+			ObjectTexColors* texColors,
+			ObjectProperties* properties) const;
 
 	virtual void print() const;
 };

@@ -60,12 +60,14 @@ public:
 		this->fovX = 2 * glm::atan(glm::tan(this->fovY * 0.5f) * aspect);
 	}
 
-	Ray generateRay(GLfloat i, GLfloat j) {
+	Ray generateRay(GLfloat i, GLfloat j)
+	{
 
 		return static_cast<const Camera &>(*this).generateRay(i,j);
 	}
 
-	Ray generateRay(GLfloat i, GLfloat j) const {
+	Ray generateRay(GLfloat i, GLfloat j) const
+	{
 		GLfloat hw = width / 2;
 		GLfloat hh = height / 2;
 

@@ -38,7 +38,9 @@ typedef struct MeshTextures {
 	shared_ptr<const Image> normalsMap;
 	shared_ptr<const Image> generalTexture;
 
-	vector<shared_ptr<const Image>> envMapsTextures;
+	EnvMaps					envMaps;
+
+	//vector<shared_ptr<const Image>> envMapsTextures;
 
 }MeshTextures ;
 
@@ -55,8 +57,8 @@ private:
 
 	MeshTextures _textures;
 	bool _envMapped = false;
-	bool _refractiveMapping;
-	GLfloat _envMapRefIndex;
+//	bool _refractiveMapping;
+//	GLfloat _envMapRefIndex;
 
 //	Image* _meshAmbientTexture;
 //	Image* _meshDiffuseTexture;
@@ -77,7 +79,7 @@ public:
 
 	virtual ~Mesh();
 
-//	virtual bool intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties);
+	virtual bool intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties);
 	virtual bool intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties) const;
 
 
@@ -85,8 +87,8 @@ public:
 	vec3 getDiffuseTextureColor(vec2& uv) const ;
 	vec3 getSpecularTextureColor(vec2& uv) const;
 
-	const vector<unique_ptr<const Image>>& getTriangles() const;
-	const vector<unique_ptr<const Image>>& getTriangles();
+	const vector<unique_ptr<const Triangle>>& getTriangles() const;
+	const vector<unique_ptr<const Triangle>>& getTriangles();
 
 	void print() const;
 

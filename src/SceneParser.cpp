@@ -147,7 +147,7 @@ vector<Vertex> SceneParser::vertices{};
 //vector<glm::vec2> SceneParser::verticesNormTexT{};
 
 GLint SceneParser::lineNumber = 0;
-const Image* SceneParser::boundTexture = nullptr;
+shared_ptr<const Image> SceneParser::boundTexture = nullptr;
 bool SceneParser::textureIsBound = false;
 //Image* SceneParser::boundNormalMap = nullptr;
 EnvMaps SceneParser::boundEnvMaps {};
@@ -741,7 +741,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		string textureFile;
 		s >> textureFile;
 
-		unique_ptr<Image> texture = make_unique<Image>(0, 0);
+		shared_ptr<Image> texture = make_shared<Image>(0, 0);
 		texture->loadImage(textureFile);
 
 		scene->addTexture(texture);
@@ -777,7 +777,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		string envMapFile;
 		s >> envMapFile;
 
-		unique_ptr<Image> envMap = make_unique<Image>(0, 0);
+		shared_ptr<Image> envMap = make_shared<Image>(0, 0);
 		envMap->loadImage(envMapFile);
 		scene->addEnvMap(envMap);
 	}
@@ -789,7 +789,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		string envMapType;
 		s >> envMapType;
 
-		boundEnvMaps.maps = scene->getEnvMaps(values[0]);
+		boundEnvMaps.maps = scene->getEnvMapsImages(values[0]);
 		boundEnvMaps.refractiveMapping = (envMapType == "refract");
 		if (boundEnvMaps.refractiveMapping) {
 			readValues(s, values);
@@ -811,7 +811,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		fillObjectInfo(&op, &ot);
 
 		vector<shared_ptr<const Mesh>> modelMeshes{};
-		Model::loadModel(modelFile, op, ot, boundTexture, &boundEnvMaps, modelMeshes);
+		Model::loadModel(modelFile, op, ot, boundTexture, boundEnvMaps, modelMeshes);
 		scene->addMeshes(modelMeshes);
 	}
 }
@@ -858,7 +858,7 @@ SceneParser::handleLightsCommand(stringstream& s, string& cmd)
 		vec3 dir = vec3(values[0], values[1], values[2]);
 		vec3 color = normColor(vec3(values[3], values[4], values[5]));
 		GLfloat intensity = values[6];
-		DirectionalLight *dirLight = new DirectionalLight(color, intensity, dir, transformsStack.top());
+		unique_ptr<const DirectionalLight> dirLight = make_unique<const DirectionalLight>(color, intensity, dir, transformsStack.top());
 
 		scene->addDirectionalLight(dirLight);
 	}
@@ -871,7 +871,8 @@ SceneParser::handleLightsCommand(stringstream& s, string& cmd)
 		mat4 lightTransformation = lightTranslation * transformsStack.top(); // yes - left multiplied! - see note at sphere
 		vec3 color = normColor(vec3(values[3], values[4], values[5]));
 		GLfloat intensity = values[6];
-		PointLight *pointLight = new PointLight(color, intensity, pos, lightTransformation);
+		unique_ptr<const PointLight> pointLight = make_unique<const PointLight>(color, intensity, pos, lightTransformation);
+
 		scene->addPointLight(pointLight);
 	}
 
@@ -886,12 +887,12 @@ SceneParser::handleLightsCommand(stringstream& s, string& cmd)
 		GLfloat radius = values[7];
 
 		if (additionalParams.hardShadows) {
-			PointLight *pointLight = new PointLight(color, intensity, center, lightTransformation);
+			unique_ptr<const PointLight> pointLight = make_unique<const PointLight>(color, intensity, center, lightTransformation);
 			scene->addPointLight(pointLight);
 		}
 		else {
 
-			AreaLight *areaLight = new AreaLight(color, intensity, center, radius, lightTransformation, 16);
+			unique_ptr<const AreaLight> areaLight = make_unique<const AreaLight>(color, intensity, center, radius, lightTransformation, 16);
 			scene->addAreaLight(areaLight);
 		}
 

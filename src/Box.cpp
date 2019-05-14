@@ -5,19 +5,25 @@ using namespace glm;
 
 
 
-bool Box::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties)
+bool Box::intersectsRay(
+		const Ray &r,
+		GLfloat* dist,
+		vec3* point,
+		vec3* normal,
+		ObjectTexColors* texColors,
+		ObjectProperties* properties) const
 {
 
-	Ray tr = this->invTransform() * r; // Transformed ray
+	Ray tr = this->_transforms._invTransform * r; // Transformed ray
 	GLfloat tmin;
 	vec3 ip{}, ip2{};
 	vec3 n;
 
-	++rayTracerStats.numOfIntersectTests;
+	updateStats(INCREMENT_INTERSECTION_TESTS_COUNT);
 
 	// There's no need for a bounding box for a box. Still, we don't want code repetition, so we use this temp box.
 	// Note we transform the ray
-	AABB aabb{bounds[0], bounds[1]};
+	const AABB aabb{bounds[0], bounds[1]};
 	if (!aabb.intersectsRay(tr, &tmin)) {
 		return false;
 	}
@@ -25,11 +31,11 @@ bool Box::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, 
 	ip  = tr.origin + tmin * tr.direction;
 	n = _normalAt(ip);
 	// Normal transformation
-	n = normalize(this->invTransposeTrans() * n);
+	n = normalize(this->_transforms._invTransposeTrans * n);
 
 	// M * p - to transform point back
 	ip2 = ip;
-	ip = vec3(this->transform() * vec4(ip, 1.0f));
+	ip = vec3(this->_transforms._transform * vec4(ip, 1.0f));
 	// The distance is the length of the original intersection point with the origin of the non transformed ray.
 	*dist = length(ip - r.origin);
 
@@ -47,14 +53,14 @@ bool Box::intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, 
 		texColors->_specularTexColor = this->getSpecularTextureColor(uv);
 	}
 	if (properties) {
-		*properties = this->properties();
+		*properties = this->_properties;
 	}
 
-	++rayTracerStats.numOfHits;
+	updateStats(INCREMENT_HITS_COUNT);
 	return true;
 }
 
-vec3 Box::_normalAt(const vec3 &point)
+vec3 Box::_normalAt(const vec3 &point) const
 {
 
 	GLfloat xmin = bounds[0].x;
@@ -88,11 +94,11 @@ vec3 Box::_normalAt(const vec3 &point)
 	}
 
 	/* We should never get here */
-	assert(true);
+	//assert(false); -- TODO - FIX THIS
 	return vec3(0,0,0);
 }
 
-vec2 Box::_textureAt(const vec3& point)
+vec2 Box::_textureAt(const vec3& point) const
 {
 	vec2 uv {};
 

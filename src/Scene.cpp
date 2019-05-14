@@ -31,17 +31,17 @@ Scene::~Scene() {
 //		delete e;
 //	}
 
-	for (auto* p : _pointLights) {
-		delete p;
-	}
-
-	for (auto* d : _directionalLights) {
-		delete d;
-	}
-
-	for (auto* a : _areaLights) {
-		delete a;
-	}
+//	for (auto* p : _pointLights) {
+//		delete p;
+//	}
+//
+//	for (auto* d : _directionalLights) {
+//		delete d;
+//	}
+//
+//	for (auto* a : _areaLights) {
+//		delete a;
+//	}
 
 
 	_objects.clear();
@@ -51,7 +51,8 @@ Scene::~Scene() {
 	_skybox.clear();
 	_pointLights.clear();
 	_directionalLights.clear();
-	delete (bvh); bvh = nullptr;
+	_bvh = nullptr;
+//	delete (bvh); bvh = nullptr;
 }
 
 void Scene::handleAdditionalParams(AdditionalRenderParams& params)
@@ -69,6 +70,6 @@ void Scene::handleAdditionalParams(AdditionalRenderParams& params)
 
 void Scene::constructAccelerationStructures()
 {
-	bvh = new BVH(_meshes);
+	_bvh = make_unique<BVH>(_meshes);
 }
 

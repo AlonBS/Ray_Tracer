@@ -4,7 +4,13 @@
 #include "Cone.h"
 
 
-bool Cone::intersectsRay(const Ray& r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties)
+bool Cone::intersectsRay(
+		const Ray& r,
+		GLfloat* dist,
+		vec3* point,
+		vec3* normal,
+		ObjectTexColors* texColors,
+		ObjectProperties* properties) const
 {
 	// To find intersection between Ray and canonical Cone (aligned to the y-axis), we need to solve the following equation:
 	// 	Cylinder: x^2 + z^2 = y^2
@@ -14,7 +20,7 @@ bool Cone::intersectsRay(const Ray& r, GLfloat* dist, vec3* point, vec3* normal,
 	//  B: 2*o.x*d.x + 2*o.z*d.z - 2*o.y*d.y
 	// 	C: o.x^2 + o.z^2 - o.y^2
 
-	Ray tr = this->invTransform() * r; // Transformed ray
+	Ray tr = this->_transforms._invTransform * r; // Transformed ray
 	GLfloat A, B, C;
 	GLfloat discriminant, disc_root;
 	GLfloat t1 = INFINITY, t2 = INFINITY, t3 = INFINITY, t4 = INFINITY;
@@ -24,7 +30,8 @@ bool Cone::intersectsRay(const Ray& r, GLfloat* dist, vec3* point, vec3* normal,
 	bool minCapIntersection = false, maxCapIntersection = false;
 	GLfloat t_min = INFINITY, t_max = INFINITY;
 
-	++rayTracerStats.numOfIntersectTests;
+	updateStats(INCREMENT_INTERSECTION_TESTS_COUNT);
+	//++rayTracerStats.numOfIntersectTests;
 
 	A = (tr.direction.x*tr.direction.x) + (tr.direction.z*tr.direction.z) - (tr.direction.y*tr.direction.y);
 	B = (2*tr.origin.x*tr.direction.x) + (2*tr.origin.z*tr.direction.z) - (2*tr.origin.y*tr.direction.y);
@@ -106,11 +113,11 @@ bool Cone::intersectsRay(const Ray& r, GLfloat* dist, vec3* point, vec3* normal,
 
 	// This is the normal at intersection point. (The Cone is aligned with the y-axis)
 	vec3 n = _normalAt(ip, minCapIntersection, maxCapIntersection);
-	n = normalize(this->invTransposeTrans() * n);
+	n = normalize(this->_transforms._invTransposeTrans * n);
 
 	// M * p - to transform point back
 	ip2 = ip; // for texture - we need the non transformed position
-	ip = vec3(this->transform() * vec4(ip, 1.0f));
+	ip = vec3(this->_transforms._transform * vec4(ip, 1.0f));
 	// The distance is the length of the original intersection point with the origin of the non transformed ray.
 	*dist = length(ip - r.origin);
 
@@ -130,16 +137,16 @@ bool Cone::intersectsRay(const Ray& r, GLfloat* dist, vec3* point, vec3* normal,
 		texColors->_specularTexColor = this->getSpecularTextureColor(uv);
 	}
 	if (properties) {
-		*properties = this->properties();
+		*properties = this->_properties;
 	}
 
-	++rayTracerStats.numOfHits;
+	updateStats(INCREMENT_HITS_COUNT);
 	return true;
 }
 
 
 
-vec3 Cone::_normalAt(const vec3& p, bool minCapIntersect, bool maxCapIntersect)
+vec3 Cone::_normalAt(const vec3& p, bool minCapIntersect, bool maxCapIntersect) const
 {
 	if (minCapIntersect)
 		return vec3(0, -1, 0);
@@ -186,7 +193,7 @@ void Cone::computeBoundingBox()
 
 	for (vec3& v : verts) {
 
-		v = vec3 (this->transform() * vec4(v, 1.0f));;
+		v = vec3 (this->_transforms._transform * vec4(v, 1.0f));;
 
 		minBound = glm::min(v, minBound);
 		maxBound = glm::max(v, maxBound);
