@@ -148,8 +148,11 @@ BVH::Extents BVH::__buildSceneExtents(vector<shared_ptr<const Mesh>>& meshes)
 	extentsList.reserve(meshes.size());
 	for (uint32_t i = 0; i < meshes.size(); ++i) {
 
-		extentsList[i].build(meshes[i]);
-		sceneExtents.extendBy(extentsList[i]); // expand the scene extent of this object's extent
+		Extents e{};
+		e.build(meshes[i]);
+		sceneExtents.extendBy(e);
+
+		extentsList.push_back(e);
 	}
 
 	return sceneExtents;

@@ -1,7 +1,7 @@
 
 # Plane Scene - An example scene to show the syntax and usage 
 
-size 640 480 
+size 1280 720 
 camera 0 1 13 0 0 0 0 1 0 45
 
 attenuation 1 0.0 0.0

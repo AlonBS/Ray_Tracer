@@ -74,19 +74,19 @@ private:
 
 
 		Extents()
-		:mesh(nullptr)
 		{
+			mesh.reset();
 			for (uint8_t i = 0;  i < NUM_OF_SET_NORMALS; ++i) {
 				dists[i].dNear = INFINITY, dists[i].dFar = -INFINITY;
 			}
 		}
 
-		void build(shared_ptr<const Mesh>& mesh)
+		void build(shared_ptr<const Mesh>& meshA)
 		{
 			for (uint8_t i = 0; i < NUM_OF_SET_NORMALS; ++i)
 			{
 				dists[i].dNear = INFINITY, dists[i].dFar = -INFINITY;
-				for (auto& t : mesh->getTriangles())
+				for (auto& t : meshA->getTriangles())
 				{
 					for (auto& v : t->getVerticesPos())
 					{
@@ -97,8 +97,9 @@ private:
 
 				}
 			}
-
-			this->mesh = mesh; // Associate this Extents with the given mesh
+			//this->mesh.reset();
+			//this->mesh = make_shared<const Mesh>(*mesh.get());
+			this->mesh = meshA;
 		}
 
 		void extendBy(const Extents& other)
