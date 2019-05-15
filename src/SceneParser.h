@@ -68,19 +68,19 @@ private:
 
 
 	static void rightMultiply(const mat4 & M, stack<mat4> &transfstack);
-	static bool readValues(std::stringstream &s, vector<GLfloat>& values);
+	static bool readValues(std::istringstream &s, vector<GLfloat>& values);
 	static void fillObjectInfo(ObjectProperties* op, ObjectTransforms* ot, mat4* uniqueTrans=nullptr);
 
-	static vec3 readColor(stringstream& s);
+	static vec3 readColor(istringstream& s);
 	static vec3 normColor(vec3 c);
 	static void clearObjectProps();
 
-	static void handleGeneralCommand(stringstream&, string&);
-	static void handleCameraCommand(stringstream&, string&);
-	static void handleGeometryCommand(stringstream&, string&);
-	static void handleTransformationsCommand(stringstream&, string&);
-	static void handleLightsCommand(stringstream&, string&);
-	static void handleMaterialsCommand(stringstream&, string&);
+	static void handleGeneralCommand(istringstream&, string&);
+	static void handleCameraCommand(istringstream&, string&);
+	static void handleGeometryCommand(istringstream&, string&);
+	static void handleTransformationsCommand(istringstream&, string&);
+	static void handleLightsCommand(istringstream&, string&);
+	static void handleMaterialsCommand(istringstream&, string&);
 
 
 

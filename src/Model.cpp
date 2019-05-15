@@ -236,7 +236,6 @@ Model::processMesh(aiMesh *mesh, const aiScene *scene)
 std::shared_ptr<Image>
 Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type)
 {
-	cout << mat->GetTextureCount(type) << endl;
 	if (mat->GetTextureCount(type) == 0) {
 		return nullptr;
 	}

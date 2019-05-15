@@ -30,10 +30,9 @@ namespace fs = ::boost::filesystem;
 namespace po = ::boost::program_options;
 
 bool singleThreaded = false;
+bool fastRender = false;
 string resultFormat;
 fs::path outputDirectory;
-bool dryrun = false;
-
 
 // These are the preferred default values
 AdditionalRenderParams ap = {
@@ -41,7 +40,7 @@ AdditionalRenderParams ap = {
 		.hardShadows = false,
 		.flatShading = false,
 		.noAntiAliasing = false,
-		.noBumpMaps = false
+		.noBumpMaps = false,
 };
 
 
@@ -83,7 +82,7 @@ static void parse_args(int argc, char *argv[], vector<fs::path>& scenes)
 			("flat-shading", po::bool_switch(&ap.flatShading), "Indicate whether flat shading should be used. If set, face normals will be used, otherwise (and by default), normals are interpolated for a much smoother image.")
 			("no-anti-aliasing", po::bool_switch(&ap.noAntiAliasing), "Indicate if anti-aliasing should be disabled, or enabled, as by default")
 			("no-bump-maps", po::bool_switch(&ap.noBumpMaps), "Indicate if normals bump maps should be used (as by default), or not. If set, no bump maps will be used even if object has one defined.")
-			("dry", po::bool_switch(&dryrun), "Run as 'dryrun'. Use this to render complex scenes fast - no anti aliasing, hard shadows, flat shading, and no bump maps")
+			("fast", po::bool_switch(&fastRender), "Run quick rendering. Use this to render complex scenes fast - no anti aliasing, hard shadows, flat shading, and no bump maps")
 		;
 
 
@@ -162,11 +161,11 @@ static void parse_args(int argc, char *argv[], vector<fs::path>& scenes)
 	}
 
 
-	if (dryrun) {
+	if (fastRender) {
 		ap.flatShading = true;
 		ap.hardShadows = true;
 		ap.noAntiAliasing = true;
-//		ap.noBumpMaps = true;
+		ap.noBumpMaps = true;
 	}
 
 }
@@ -220,7 +219,23 @@ static void render_scene(string fileName)
 	delete scene;
 }
 
+shared_ptr<const int> b;
+void foo(shared_ptr<const int>& a)
+{
+	b = a;
+}
 
+int main2()
+{
+
+	shared_ptr<const int> a = make_shared<const int>(3);
+	foo(a);
+
+	cout << *a.get() << endl;
+	cout << *b.get() << endl;
+
+
+}
 
 int main(int argc, char *argv[])
 {

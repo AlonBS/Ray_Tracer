@@ -75,7 +75,7 @@ TODOs:
 
 
 
-version 5 notes:
+version 6 notes:
 - Fixed a bug where meshes textures were not removed
 - Fixed a bug where meshes textures cannot be shared
 - Fixed a bug where meshes where not cleaned propely. 
@@ -87,5 +87,7 @@ version 5 notes:
 
 - improved const mechanisms and interfaces 
 - Fixed bug when counting statistics. Also changed mechanism not to count anything if flag is off, to save expansive atomic locks. 
-
+- Removed triangles multiple (and stupid) decleration. (FInally no longer edx compatible)
+- fixed a bug for memory access violation when creating vertecies. 
+- ran valgrind again on all scenes to make sure no memory violations of any kind (except the known FreeImage() issue)
 

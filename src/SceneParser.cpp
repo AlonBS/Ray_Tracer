@@ -230,7 +230,7 @@ rightMultiply(const mat4 & M, stack<mat4> &transfstack)
 }
 
 bool
-SceneParser::readValues(stringstream &s, vector<GLfloat>& values)
+SceneParser::readValues(istringstream &s, vector<GLfloat>& values)
 {
 	values = std::vector<GLfloat> { std::istream_iterator<GLfloat>{s}, std::istream_iterator<GLfloat>{}};
 }
@@ -258,7 +258,7 @@ void SceneParser::fillObjectInfo(ObjectProperties* op, ObjectTransforms* ot, mat
 
 
 vec3
-SceneParser::readColor(stringstream& s)
+SceneParser::readColor(istringstream& s)
 {
 	string c;
 	s >> c;
@@ -346,7 +346,7 @@ SceneParser::readFile(const AdditionalRenderParams& params, const char* fileName
 			continue;
 		}
 
-		stringstream s(str);
+		istringstream s(str);
 		s >> cmd;
 
 		CommandType command = SceneParser::identifyCommand(cmd);
@@ -415,7 +415,7 @@ SceneParser::readFile(const AdditionalRenderParams& params, const char* fileName
 
 
 void
-SceneParser::handleGeneralCommand(stringstream& s, string& cmd)
+SceneParser::handleGeneralCommand(istringstream& s, string& cmd)
 {
 	if (cmd == Commands.size) {
 
@@ -437,7 +437,7 @@ SceneParser::handleGeneralCommand(stringstream& s, string& cmd)
 
 
 void
-SceneParser::handleCameraCommand(stringstream& s, string& cmd)
+SceneParser::handleCameraCommand(istringstream& s, string& cmd)
 {
 	(void) cmd; //Suppress warning - maybe we'll have more camera options in the future.
 	readValues(s, values);
@@ -454,7 +454,7 @@ SceneParser::handleCameraCommand(stringstream& s, string& cmd)
 
 
 void
-SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
+SceneParser::handleGeometryCommand(istringstream& s, string& cmd)
 {
 	if (cmd == Commands.sphere) {
 		readValues(s, values);
@@ -605,11 +605,11 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 		vertices.push_back(
 				Vertex
 				{
-					Position   : vec3(values[0],  values[1],  values[2]),
-					Normal	   : vec3(values[3],  values[4],  values[5]),
-					TexCoords  : vec2(values[6],  values[7]),
-					Tangent    : vec3(values[8],  values[9],  values[10]),
-					Bitangent  : vec3(values[11], values[12], values[13]),
+					Position   : values.size() > 0 ? vec3(values[0],  values[1],  values[2]) : vec3(0),
+					Normal	   : values.size() > 3 ? vec3(values[3],  values[4],  values[5]) : vec3(0),
+					TexCoords  : values.size() > 6 ? vec2(values[6],  values[7]) : vec3(0),
+					Tangent    : values.size() > 8 ? vec3(values[8],  values[9],  values[10]) : vec3(0),
+					Bitangent  : values.size() > 11 ? vec3(values[11], values[12], values[13]) : vec3(0),
 				}
 				);
 	}
@@ -818,7 +818,7 @@ SceneParser::handleGeometryCommand(stringstream& s, string& cmd)
 
 
 void
-SceneParser::handleTransformationsCommand(stringstream& s, string& cmd)
+SceneParser::handleTransformationsCommand(istringstream& s, string& cmd)
 {
 	if (cmd == Commands.translate) {
 		readValues(s, values);
@@ -850,7 +850,7 @@ SceneParser::handleTransformationsCommand(stringstream& s, string& cmd)
 
 
 void
-SceneParser::handleLightsCommand(stringstream& s, string& cmd)
+SceneParser::handleLightsCommand(istringstream& s, string& cmd)
 {
 	if (cmd == Commands.directional) {
 
@@ -915,7 +915,7 @@ SceneParser::handleLightsCommand(stringstream& s, string& cmd)
 
 
 void
-SceneParser::handleMaterialsCommand(stringstream& s, string& cmd)
+SceneParser::handleMaterialsCommand(istringstream& s, string& cmd)
 {
 	if (cmd == Commands.clearProps) {
 		clearObjectProps();
