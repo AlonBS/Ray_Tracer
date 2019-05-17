@@ -22,7 +22,7 @@ Object::Object(const ObjectProperties& properties, const ObjectTransforms& trans
 	_ambientTexture = nullptr;
 	_diffuseTexture = nullptr;
 	_speularTexture = nullptr;
-	_normalsMap = nullptr;
+	_normalMap = nullptr;
 
 	bbox = nullptr;
 }
@@ -37,21 +37,17 @@ Object::Object()
 	_ambientTexture = nullptr;
 	_diffuseTexture = nullptr;
 	_speularTexture = nullptr;
-	_normalsMap = nullptr;
+	_normalMap = nullptr;
 
 	bbox = nullptr;
 }
 
 
 
-Object::~Object() {
-	if (bbox) {
-		delete bbox; bbox = nullptr;
-	}
-}
+Object::~Object() {}
 
 
-void Object::setTextures(shared_ptr<const Image>& texture, shared_ptr<const Image>* normalsMap)
+void Object::setTextures(shared_ptr<const Image>& texture, shared_ptr<const Image>* normalMap)
 {
 	if (texture == nullptr)
 		return;
@@ -63,10 +59,9 @@ void Object::setTextures(shared_ptr<const Image>& texture, shared_ptr<const Imag
 	this->_diffuseTexture = texture;
 	this->_speularTexture = texture;
 
-	if (normalsMap == nullptr)
-		return;
+	if (normalMap)
+		this->_normalMap = *normalMap;
 
-	this->_normalsMap = *normalsMap;
 }
 
 
@@ -103,10 +98,10 @@ vec3 Object::getSpecularTextureColor(const vec2& uv) const
 }
 
 
-bool Object::hasNormalsMap() const { return this->_normalsMap != nullptr;}
 vec3 Object::getNormalFromMap(const vec2& uv) const
 {
-	return getTextureColor(this->_normalsMap.get(), uv);
+	// Note that the caller must be aware that if no normal map is bound, irrelevant value is returned
+	return getTextureColor(this->_normalMap.get(), uv);
 }
 
 
@@ -117,7 +112,7 @@ bool Object::bBoxIntersectsRay(const Ray& r, GLfloat* t_near) const
 		return true;
 	}
 
-	return bbox->intersectsRay(r, t_near);
+	return bbox.get()->intersectsRay(r, t_near);
 }
 
 bool Object::bBoxIntersectsRay(const Ray& tr, GLfloat* t_near)

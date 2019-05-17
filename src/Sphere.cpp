@@ -147,7 +147,7 @@ void Sphere::computeBoundingBox()
 		maxBound = glm::max(v, maxBound);
 	}
 
-	this->bbox = new AABB(minBound, maxBound);
+	this->bbox = make_unique<AABB>(minBound, maxBound);
 
 }
 

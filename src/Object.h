@@ -21,12 +21,6 @@ using namespace glm;
 class Object {
 
 private:
-
-	shared_ptr<const Image> _ambientTexture;
-	shared_ptr<const Image> _diffuseTexture;
-	shared_ptr<const Image> _speularTexture;
-	shared_ptr<const Image> _normalsMap;
-
 protected:
 
 	typedef struct GlobalObjectProperties {
@@ -39,17 +33,15 @@ protected:
 
 	ObjectProperties _properties;
 	ObjectTransforms _transforms;
+	shared_ptr<const Image> _ambientTexture;
+	shared_ptr<const Image> _diffuseTexture;
+	shared_ptr<const Image> _speularTexture;
+	shared_ptr<const Image> _normalMap;
 
-	//vec3 getTextureColor(Image *texture, vec2& uv);
-
-	AABB* bbox;
+	unique_ptr<const AABB> bbox;
 
 
 public:
-
-
-
-
 
 
 	Object();
@@ -64,8 +56,7 @@ public:
 	virtual vec3 getDiffuseTextureColor(const vec2& uv) const;
 	virtual vec3 getSpecularTextureColor(const vec2& uv) const;
 
-	bool hasNormalsMap() const;
-	vec3 getNormalFromMap(const vec2& uv) const ; // TODO - FIX THIS SHIT
+	vec3 getNormalFromMap(const vec2& uv) const;
 
 
 	virtual bool intersectsRay(const Ray &r, GLfloat* dist, vec3* point, vec3* normal, ObjectTexColors* texColors, ObjectProperties* properties) const = 0;

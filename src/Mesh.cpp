@@ -37,52 +37,28 @@ Mesh::Mesh(vector<Vertex>& vertices,
 
 : Object()
 {
-	super::setTextures(meshTextures.generalTexture);
+
+	super::setTextures(meshTextures.globalTexture, &meshTextures.globalNormalMap);
 	_properties = properties;
 
 
 	_textures.ambientTexture = meshTextures.ambientTexture;
 	_textures.diffuseTexture = meshTextures.diffuseTexture;
 	_textures.specularTexture = meshTextures.specularTexture;
-	_textures.normalsMap = meshTextures.normalsMap;
+	_textures.normalMap = meshTextures.normalMap;
 
 
 	_textures.envMaps = meshTextures.envMaps;
 	_envMapped = meshTextures.envMaps.maps.size() > 0;
-//	if (meshTextures.envMaps) {
-//
-//		_envMapped = meshTextures.envMaps->maps.size() > 0;
-//		if (_envMapped) {
-//			_textures.envMaps.refractiveMapping = meshTextures.envMaps->refractiveMapping;
-//			if (_refractiveMapping) {
-//				_envMapRefIndex = meshTextures.envMaps->refractiveIndex;
-//			}
-//			_textures.envMaps = meshTextures.envMaps;
-//		}
-//
-//	}
 
-//	_vertices = vertices; // Yes - this is shit, but a must for now
 	__triangulate(vertices, indices);
 }
 
 
+
 Mesh::~Mesh()
 {
-//	for (Triangle *t : _triangles) {
-//		delete(t);
-//		t = nullptr;
-//	}
-
 	_triangles.clear();
-
-
-//	__deleteTexture(_textures.ambientTexture);
-//	__deleteTexture(_textures.diffuseTexture);
-//	__deleteTexture(_textures.specularTexture);
-//	__deleteTexture(_textures.normalsMap);
-
-	// Other textures are held by scene (since can be shared by multiple objects)
 }
 
 
@@ -142,10 +118,11 @@ Mesh::intersectsRay(
 				if (normal) {
 					*normal = tN;
 
-					if (!_objectGlobalProperties.no_bump_maps && _textures.normalsMap) {
-
-						*normal = normalize(2.f*getTextureColor(_textures.normalsMap.get(), ttC) - 1.0f);
-						*normal = normalize(TBN * (*normal));
+					if (!_objectGlobalProperties.no_bump_maps) {
+						if (_textures.normalMap || super::_normalMap) {
+							*normal = normalize(2.f*getNormalFromMap(ttC) - 1.0f);
+							*normal = normalize(TBN * (*normal));
+						}
 					}
 				}
 
@@ -223,19 +200,24 @@ Mesh::intersectsRay(
 
 
 
-vec3 Mesh::getAmbientTextureColor(vec2& uv) const
+vec3 Mesh::getAmbientTextureColor(const vec2& uv) const
 {
 	return getTextureColor(_textures.ambientTexture.get(), uv) * super::getAmbientTextureColor(uv);
 }
 
-vec3 Mesh::getDiffuseTextureColor(vec2& uv) const
+vec3 Mesh::getDiffuseTextureColor(const vec2& uv) const
 {
 	return getTextureColor(_textures.diffuseTexture.get(), uv) * super::getDiffuseTextureColor(uv);
 }
 
-vec3 Mesh::getSpecularTextureColor(vec2& uv) const
+vec3 Mesh::getSpecularTextureColor(const vec2& uv) const
 {
 	return getTextureColor(_textures.specularTexture.get(), uv) * super::getSpecularTextureColor(uv);
+}
+
+vec3 Mesh::getNormalFromMap(const vec2& uv) const
+{
+	return getTextureColor(_textures.normalMap.get(), uv) * super::getNormalFromMap(uv);
 }
 
 

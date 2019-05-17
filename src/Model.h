@@ -25,6 +25,7 @@ public:
     					  const ObjectProperties& op,
 						  const ObjectTransforms& ot,
 						  shared_ptr<const Image> texture,
+						  shared_ptr<const Image> global_normalMap,
 						  EnvMaps& envMaps,
     					  vector<shared_ptr<const Mesh>>& modelMeshes);
 
@@ -45,7 +46,8 @@ private:
     static vector<shared_ptr<const Mesh>> _meshes;
     static ObjectProperties _objectProperties;
     static ObjectTransforms _objectTransforms;
-    static shared_ptr<const Image> _texture;
+    static shared_ptr<const Image> _globalTexture;
+    static shared_ptr<const Image> _globalNormalMap;
     static EnvMaps _envMaps;
 
 

@@ -85,14 +85,12 @@ private:
 
 
 
-
 	/*
 	 *  These values serve as buffer for commands that are fully determined
 	 *   when an object is created.
 	 */
 
 	static vector<GLfloat> values;
-	//static GLfloat values[MAX_POSSIBLE_VALUES];
 	static vec3 ambient;
 	static vec3 diffuse;
 	static vec3 specular;
@@ -110,18 +108,11 @@ private:
 	static stack<mat4> transformsStack;
 
 	static vector<Vertex> vertices;
-//	static vector<glm::vec3> verticesNormals;
-//
-//	static vector<glm::vec3> verticesTexV; // For Vertices with textures mapping
-//	static vector<glm::vec2> verticesTexT; // The texture mapping
-//
-//	static vector<glm::vec3> verticesNormTexV; // For vertices with normals and texture mapping
-//	static vector<glm::vec3> verticesNormTexN;
-//	static vector<glm::vec2> verticesNormTexT;
+
 
 	static shared_ptr<const Image> boundTexture;
+	static shared_ptr<const Image> boundNormalMap;
 	static bool textureIsBound;
-//	static const Image* boundNormalMap;
 	static EnvMaps boundEnvMaps;
 
 	/***********************************************************************/

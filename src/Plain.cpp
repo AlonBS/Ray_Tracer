@@ -55,13 +55,13 @@ bool Plain::intersectsRay(
 
 		vec2 uv = _textureAt(ip2);
 
-		if (!_objectGlobalProperties.no_bump_maps) {
-			if (hasNormalsMap()) {
-				*normal = normalize(2.f*this->getNormalFromMap(uv) - 1.0f); // Note we don't need to apply normals transformation here
-				*normal = normalize(this->_transforms._invTransposeTrans * *normal); // TODO - remove this
-//				printVec3("NORM", *normal);
-			}
-		}
+//		if (!_objectGlobalProperties.no_bump_maps) {
+//			if (hasNormalsMap()) {
+//				*normal = normalize(2.f*this->getNormalFromMap(uv) - 1.0f); // Note we don't need to apply normals transformation here
+//				*normal = normalize(this->_transforms._invTransposeTrans * *normal); // TODO - remove this
+////				printVec3("NORM", *normal);
+//			}
+//		}
 
 		texColors->_ambientTexColor  = this->getAmbientTextureColor(uv);
 		texColors->_diffuseTexColor  = this->getDiffuseTextureColor(uv);

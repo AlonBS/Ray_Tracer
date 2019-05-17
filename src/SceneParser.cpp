@@ -48,22 +48,17 @@ struct Commands {
 	const string maxVertNorms      = "maxVertNorms";
 	const string vertexSimple      = "vertexSimple";
 	const string vertex            = "vertex";
-//	const string vertexNormal      = "vertexNormal";
-//	const string vertexTex         = "vertexTex";
-//	const string vertexNormTex     = "vertexNormTex";
 	const string tri               = "tri";
-//	const string triNormal         = "triNormal";
-//	const string triTex            = "triTex";
-//	const string triNormTex        = "triNormTex";
 	const string texture           = "texture";
 	const string bindTexture       = "bindTexture";
 	const string unbindTexture     = "unbindTexture";
-	const string bindNormalsMap    = "bindNormalsMap";
-	const string unbindNormalsMap  = "unbindNormalsMap";
 	const string envMap            = "envMap";
 	const string bindEnvMaps       = "bindEnvMaps";
 	const string unbindEnvMaps     = "unbindEnvMaps";
-	const string model		       = "model";
+	const string bindNormalMap     = "bindNormalMap";
+	const string unbindNormalMap   = "unbindNormalMap";
+	const string model			   = "model";
+
 
 	// Transformations
 	const string translate         = "translate";
@@ -104,7 +99,7 @@ set<string> SceneParser::geometry{Commands.sphere, Commands.cylinder, Commands.b
 								  Commands.plain, Commands.maxVerts, Commands.maxVertNorms,
 								  Commands.vertexSimple, Commands.vertex, Commands.tri,
 								  Commands.texture, Commands.bindTexture, Commands.unbindTexture,
-								  Commands.bindNormalsMap, Commands.unbindNormalsMap,
+								  Commands.bindNormalMap, Commands.unbindNormalMap,
 								  Commands.envMap, Commands.bindEnvMaps, Commands.unbindEnvMaps,
 								  Commands.model};
 set<string> SceneParser::transformations {Commands.translate, Commands.rotate, Commands.scale,
@@ -137,22 +132,14 @@ GLuint 		SceneParser::maxDepth = RECURSION_DEFAULT_DEPTH;
 stack<mat4> SceneParser::transformsStack{};
 
 vector<Vertex> SceneParser::vertices{};
-//vector<glm::vec3> SceneParser::verticesNormals;
-//
-//vector<glm::vec3> SceneParser::verticesTexV{};
-//vector<glm::vec2> SceneParser::verticesTexT{};
-//
-//vector<glm::vec3> SceneParser::verticesNormTexV{};
-//vector<glm::vec3> SceneParser::verticesNormTexN{};
-//vector<glm::vec2> SceneParser::verticesNormTexT{};
 
 GLint SceneParser::lineNumber = 0;
-shared_ptr<const Image> SceneParser::boundTexture = nullptr;
+
+
 bool SceneParser::textureIsBound = false;
-//Image* SceneParser::boundNormalMap = nullptr;
+shared_ptr<const Image> SceneParser::boundTexture = nullptr;
+shared_ptr<const Image> SceneParser::boundNormalMap = nullptr;
 EnvMaps SceneParser::boundEnvMaps {};
-
-
 
 Scene* SceneParser::scene = nullptr;
 
@@ -388,15 +375,9 @@ SceneParser::readFile(const AdditionalRenderParams& params, const char* fileName
 	/* Buffers clean up */
 	lineNumber = 0;
 	vertices.clear();
-//	verticesNormals.clear();
-//	verticesTexV.clear();
-//	verticesTexT.clear();
-//	verticesNormTexV.clear();
-//	verticesNormTexN.clear();
-//	verticesNormTexT.clear();
 	boundTexture = nullptr;
 	textureIsBound = false;
-//	boundNormalMap = nullptr;
+	boundNormalMap = nullptr;
 	boundEnvMaps.maps.clear();
 	boundEnvMaps = {};
 	clearObjectProps();
@@ -476,8 +457,7 @@ SceneParser::handleGeometryCommand(istringstream& s, string& cmd)
 
 		unique_ptr<Object> sphere = make_unique<Sphere>(op, ot, center, radius);
 		if (textureIsBound) {
-//			sphere->setTextures(boundTexture, boundNormalMap);
-			sphere->setTextures(boundTexture);
+			sphere->setTextures(boundTexture, &boundNormalMap);
 		}
 		sphere->computeBoundingBox();
 		scene->addObject(sphere);
@@ -498,8 +478,7 @@ SceneParser::handleGeometryCommand(istringstream& s, string& cmd)
 
 		unique_ptr<Object> cylinder = make_unique<Cylinder>(op, ot, center, height, radius);
 		if (textureIsBound) {
-//			cylinder->setTextures(boundTexture, boundNormalMap);
-			cylinder->setTextures(boundTexture);
+			cylinder->setTextures(boundTexture, &boundNormalMap);
 		}
 		cylinder->computeBoundingBox();
 		scene->addObject(cylinder);
@@ -516,8 +495,7 @@ SceneParser::handleGeometryCommand(istringstream& s, string& cmd)
 
 		unique_ptr<Object> box = make_unique<Box>(op, ot, minBound, maxBound);
 		if (textureIsBound) {
-//			box->setTextures(boundTexture, boundNormalMap);
-			box->setTextures(boundTexture);
+			box->setTextures(boundTexture, &boundNormalMap);
 		}
 		scene->addObject(box);
 	}
@@ -538,8 +516,7 @@ SceneParser::handleGeometryCommand(istringstream& s, string& cmd)
 
 		unique_ptr<Object> cone = make_unique<Cone>(op, ot, center, minCap, maxCap);
 		if (textureIsBound) {
-//			cone->setTextures(boundTexture, boundNormalMap);
-			cone->setTextures(boundTexture);
+			cone->setTextures(boundTexture, &boundNormalMap);
 		}
 		cone->computeBoundingBox();
 		scene->addObject(cone);
@@ -573,8 +550,7 @@ SceneParser::handleGeometryCommand(istringstream& s, string& cmd)
 
 		unique_ptr<Object> plain = make_unique<Plain>(op, ot, tp);
 		if (textureIsBound) {
-//			plain->setTextures(boundTexture, boundNormalMap);
-			plain->setTextures(boundTexture);
+			plain->setTextures(boundTexture, &boundNormalMap);
 		}
 		scene->addObject(plain);
 	}
@@ -584,11 +560,6 @@ SceneParser::handleGeometryCommand(istringstream& s, string& cmd)
 		// New object is coming
 		vertices.clear();
 	}
-
-//	else if (cmd == Commands.maxVertNorms) {
-//		// New Object is coming
-//		verticesNormals.clear();
-//	}
 
 	else if (cmd == Commands.vertexSimple) {
 		readValues(s, values);
@@ -613,26 +584,6 @@ SceneParser::handleGeometryCommand(istringstream& s, string& cmd)
 				}
 				);
 	}
-
-
-//	else if (cmd == Commands.vertexNormal) {
-//		readValues(s, 6, values);
-//		verticesNormals.push_back(vec3(values[0], values[1], values[2]));
-//		verticesNormals.push_back(vec3(values[3], values[4], values[5]));
-//	}
-//
-//	else if (cmd == Commands.vertexTex) {
-//		readValues(s, 5, values);
-//		verticesTexV.push_back(vec3(values[0], values[1], values[2]));
-//		verticesTexT.push_back(vec2(values[3], values[4]));
-//	}
-//
-//	else if (cmd == Commands.vertexNormTex) {
-//		readValues(s, 8, values);
-//		verticesNormTexV.push_back(vec3(values[0], values[1], values[2]));
-//		verticesNormTexN.push_back(vec3(values[3], values[4], values[5]));
-//		verticesNormTexT.push_back(vec2(values[6], values[7]));
-//	}
 
 
 	else if (cmd == Commands.tri) {
@@ -663,77 +614,11 @@ SceneParser::handleGeometryCommand(istringstream& s, string& cmd)
 
 		unique_ptr<Object> triangle = make_unique<Triangle>(op, A, B, C);
 		if (textureIsBound) {
-//			triangle->setTextures(boundTexture, boundNormalMap);
-			triangle->setTextures(boundTexture);
+			triangle->setTextures(boundTexture, &boundNormalMap);
 		}
 		scene->addObject(triangle);
 
 	}
-
-
-//	// This is legacy and shouldn't really be supported
-//	else if (cmd == Commands.triNormal) {
-//		readValues(s, 3, values);
-//		ObjectProperties op{};
-//		fillObjectInfo(&op, nullptr);
-//
-//		mat3 invTranspose = mat3(transpose(inverse(transformsStack.top())));
-//
-//		vec3 A = vec3 (transformsStack.top() * vec4(verticesNormals[values[0] * 2], 1.0f));
-//		vec3 B = vec3 (transformsStack.top() * vec4(verticesNormals[values[1] * 2], 1.0f));
-//		vec3 C = vec3 (transformsStack.top() * vec4(verticesNormals[values[2] * 2], 1.0f));
-//		vec3 AN = invTranspose * verticesNormals[values[0] * 2 + 1];
-//		vec3 BN = invTranspose * verticesNormals[values[0] * 2 + 1];
-//		vec3 CN = invTranspose * verticesNormals[values[0] * 2 + 1];
-//
-//		Object *triangle = new Triangle(op, A, B, C, AN, BN, CN);
-//		scene->addObject(triangle);
-//	}
-//
-//	else if (cmd == Commands.triTex) {
-//		readValues(s, 3, values);
-//		vec3 A = vec3 (transformsStack.top() * vec4(verticesTexV[values[0]], 1.0f));
-//		vec3 B = vec3 (transformsStack.top() * vec4(verticesTexV[values[1]], 1.0f));
-//		vec3 C = vec3 (transformsStack.top() * vec4(verticesTexV[values[2]], 1.0f));
-//		vec2 Auv = vec2(verticesTexT[values[0]]);
-//		vec2 Buv = vec2(verticesTexT[values[1]]);
-//		vec2 Cuv = vec2(verticesTexT[values[2]]);
-//
-//		ObjectProperties op{};
-//		fillObjectInfo(&op, nullptr);
-//
-//		Object *triangle = new Triangle(op, A, B, C, Auv, Buv, Cuv);
-//		if (textureIsBound) {
-//			triangle->setTextures(boundTexture, boundNormalMap);
-//		}
-//		scene->addObject(triangle);
-//	}
-//
-//
-//	else if (cmd == Commands.triNormTex) {
-//		readValues(s, 3, values);
-//
-//		mat3 invTranspose = mat3(transpose(inverse(transformsStack.top())));
-//
-//		vec3 A = vec3 (transformsStack.top() * vec4(verticesNormTexV[values[0]], 1.0f));
-//		vec3 B = vec3 (transformsStack.top() * vec4(verticesNormTexV[values[1]], 1.0f));
-//		vec3 C = vec3 (transformsStack.top() * vec4(verticesNormTexV[values[2]], 1.0f));
-//		vec3 AN = invTranspose * verticesNormTexN[values[0]];
-//		vec3 BN = invTranspose * verticesNormTexN[values[1]];
-//		vec3 CN = invTranspose * verticesNormTexN[values[2]];
-//		vec2 Auv = vec2(verticesNormTexT[values[0]]);
-//		vec2 Buv = vec2(verticesNormTexT[values[1]]);
-//		vec2 Cuv = vec2(verticesNormTexT[values[2]]);
-//
-//		ObjectProperties op{};
-//		fillObjectInfo(&op, nullptr);
-//
-//		Object *triangle = new Triangle(op, A, B, C, AN, BN, CN, Auv, Buv, Cuv);
-//		if (textureIsBound) {
-//			triangle->setTextures(boundTexture, boundNormalMap);
-//		}
-//		scene->addObject(triangle);
-//	}
 
 
 	else if (cmd == Commands.texture) {
@@ -761,16 +646,16 @@ SceneParser::handleGeometryCommand(istringstream& s, string& cmd)
 		boundTexture = nullptr;
 	}
 
-//	else if (cmd == Commands.bindNormalsMap) {
-//
-//			readValues(s, values);
-//			boundNormalMap = scene->getTexture(values[0]);
-//	}
+	else if (cmd == Commands.bindNormalMap) {
 
-//	else if (cmd == Commands.unbindNormalsMap) {
-//
-//		boundNormalMap = nullptr;
-//	}
+			readValues(s, values);
+			boundNormalMap = scene->getTexture(values[0]);
+	}
+
+	else if (cmd == Commands.unbindNormalMap) {
+
+		boundNormalMap = nullptr;
+	}
 
 	else if (cmd == Commands.envMap) {
 
@@ -811,7 +696,14 @@ SceneParser::handleGeometryCommand(istringstream& s, string& cmd)
 		fillObjectInfo(&op, &ot);
 
 		vector<shared_ptr<const Mesh>> modelMeshes{};
-		Model::loadModel(modelFile, op, ot, boundTexture, boundEnvMaps, modelMeshes);
+		Model::loadModel(
+				modelFile,
+				op,
+				ot,
+				boundTexture,
+				boundNormalMap,
+				boundEnvMaps,
+				modelMeshes);
 		scene->addMeshes(modelMeshes);
 	}
 }

@@ -86,7 +86,7 @@ public:
 	void addEnvMap(shared_ptr<Image>& envMap) { _envMaps.push_back(move(envMap)); }
 	vector<shared_ptr<const Image>> getEnvMapsImages(uint i) const
 	{
-		return vector<shared_ptr<const Image>>(_envMaps.begin() +6*i, _envMaps.end() + 6*i + 6);
+		return vector<shared_ptr<const Image>>(_envMaps.begin() +6*i, _envMaps.begin() + 6*i + 6);
 //		assert (6*i < _envMaps.size());
 //		vector<const Image*> retVal{};
 //		for (int j = 6*i ; j < 6*i+6 ; ++j) {

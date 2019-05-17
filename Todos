@@ -91,4 +91,6 @@ version 6 notes:
 - fixed a bug for memory access violation when creating vertecies. 
 - ran valgrind again on all scenes to make sure no memory violations of any kind (except the known FreeImage() issue)
 - Fixed a bug where Extents of BVH weren't properly initialized, causing segmentation faluts on some compilers.
+- Fixed a bug where environment mapping were return correctly. 
+- Added normals mapping per object and per mapping. (You can have both but it doesn't really make sense)
 

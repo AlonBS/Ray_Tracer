@@ -20,34 +20,28 @@ using namespace std;
 vector<shared_ptr<const Mesh>> Model::_meshes {};
 ObjectProperties Model::_objectProperties{};
 ObjectTransforms Model::_objectTransforms{};
-shared_ptr<const Image> Model::_texture = nullptr;
+shared_ptr<const Image> Model::_globalTexture = nullptr;
+shared_ptr<const Image> Model::_globalNormalMap = nullptr;
 EnvMaps Model::_envMaps = {};
 vector<Model::Texture> Model::_loadedTextures{}; // We store all the textures loaded for this module, to avoid load duplication
 string Model::_directory{};
 
-
-//void Model::FreeTextures()
-//{
-//	for (Texture * t : _loadedTextures) {
-//		delete(t->texture);
-//		delete(t);
-//		t = nullptr;
-//	}
-//}
 
 
 void
 Model::loadModel(string const &path,
 				 const ObjectProperties& op,
 				 const ObjectTransforms& ot,
-				 shared_ptr<const Image> global_texture,
+				 shared_ptr<const Image> globalTexture,
+				 shared_ptr<const Image> globalNormalMap,
 				 EnvMaps& envMaps,
 				 OUT vector<shared_ptr<const Mesh>>& modelMeshes)
 
 {
 	_objectProperties = op;
 	_objectTransforms = ot;
-	_texture = global_texture;
+	_globalTexture = globalTexture;
+	_globalNormalMap = globalNormalMap;
 	_envMaps = envMaps;
 
 
@@ -223,8 +217,9 @@ Model::processMesh(aiMesh *mesh, const aiScene *scene)
 			ambientTexture  : ambientTexture,
 			diffuseTexture  : diffuseTexture,
 			specularTexture : specularTexture,
-			normalsMap      : normalsMap,
-			generalTexture  : _texture,
+			normalMap      : normalsMap,
+			globalTexture   : _globalTexture,
+			globalNormalMap : _globalNormalMap,
 			envMaps         : _envMaps
 	};
 	//return new Mesh(vertices, indices, op, ambientTexture, diffuseTexture, specularTexture, _texture, _envMaps);
