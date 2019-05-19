@@ -79,8 +79,10 @@ bool Sphere::intersectsRay(
 	intersection_point = tr.origin + t * tr.direction;
 	// The normal at intersection point (to the canonical sphere)
 	vec3 n = vec3(intersection_point - center);
+	vec3 N = n;
 	// The normal transformation fix
 	n = normalize(this->_transforms._invTransposeTrans * n);
+
 
 	// M * p - to transform point back
 	intersection_point = vec3(this->_transforms._transform * vec4(intersection_point, 1.0f));
@@ -98,10 +100,18 @@ bool Sphere::intersectsRay(
 		vec2 uv;
 		uv.x = 0.5 + atan2(n.x, n.z) / (2*PI);
 		uv.y = 0.5 + 0.5 * n.y;
-		//uv.y = 0.5 - asin(n.y) / PI;
+
 		texColors->_ambientTexColor  = this->getAmbientTextureColor(uv);
 		texColors->_diffuseTexColor  = this->getDiffuseTextureColor(uv);
 		texColors->_specularTexColor = this->getSpecularTextureColor(uv);
+
+		if (!_objectGlobalProperties.no_bump_maps && _normalMap) {
+
+			// note that around the polars, we'll get in correct results. But this is so rarely happens and when tested
+			// it didn't show any visual effect (especially when anti-aliasing). So I chose to left this out
+			vec3 T = normalize(cross(vec3(0,1,0), N));
+			*normal = __GetTBNAndNorm(N, T, uv); // We need the original normal, not the transformed one.
+		}
 	}
 	if (properties) {
 		*properties = this->_properties;

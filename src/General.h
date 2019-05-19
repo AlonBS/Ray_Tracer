@@ -274,6 +274,25 @@ getTextureColor(const Image *texture, const vec2& uv)
 	return texture->getPixel((int)(uv_clamped.x * w), (int) (uv_clamped.y * h));
 }
 
+
+inline void
+orthoBasis(const vec3& x, vec3& u, vec3& v, vec3& w)
+{
+	u = x;
+	v = normalize(vec3(0, -x.z, x.y));
+	if (equalToVec3(v, vec3(0,0,0))) {
+		v = normalize(vec3(-x.z, 0, x.x));
+	}
+
+	w = normalize(cross(u,v));
+
+//	u = x;
+//	v = abs(x.x) > abs(x.z) ? normalize(vec3(-x.y, x.x, 0.0)) : normalize(vec3(0.0, -x.z, x.y));
+//	w = normalize(cross(u,v));
+
+}
+
+
 // STATS RELATED
 
 typedef struct RayTracerStats {

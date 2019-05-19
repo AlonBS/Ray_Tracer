@@ -121,6 +121,7 @@ bool Cylinder::intersectsRay(
 
 	// This is the normal at intersection point. (The Cylinder is aligned with the y-axis)
 	vec3 n = _normalAt(ip, minCapIntersection, maxCapIntersection);
+	vec3 N = n;
 	n = normalize(this->_transforms._invTransposeTrans * n);
 
 	// M * p - to transform point back
@@ -143,6 +144,12 @@ bool Cylinder::intersectsRay(
 		texColors->_ambientTexColor  = this->getAmbientTextureColor(uv);
 		texColors->_diffuseTexColor  = this->getDiffuseTextureColor(uv);
 		texColors->_specularTexColor = this->getSpecularTextureColor(uv);
+
+		if (!_objectGlobalProperties.no_bump_maps && _normalMap) {
+			vec3 T = normalize(cross(vec3(0,1,0), N));
+			*normal = __GetTBNAndNorm(N, T, uv); // We need the original normal, not the transformed one.
+		}
+
 	}
 	if (properties) {
 		*properties = this->_properties;

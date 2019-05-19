@@ -66,13 +66,9 @@ private:
 	GLfloat computeFrenselProportion(const vec3& I, const vec3& N, const GLfloat& eta);
 
 
-
-	void orthoBasis(const vec3& x, vec3& u, vec3& v, vec3& w);
 	vec3 calculateReflections(Scene& scene, vec3& rayDir, Intersection& hit, GLuint depth);
 	vec3 calculateRefractions(Scene& scene, vec3& rayDir, Intersection& hit, GLuint depth);
 
-
-	void aaa(vec3& v, GLuint *index, vec2 *uv);
 
 };
 

@@ -45,7 +45,6 @@ typedef struct MeshTextures {
 
 	EnvMaps					envMaps;
 
-	//vector<shared_ptr<const Image>> envMapsTextures;
 
 }MeshTextures ;
 

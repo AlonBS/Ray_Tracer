@@ -22,13 +22,6 @@ private:
 		vec3 N;
 		mat3 TBN_A, TBN_B, TBN_C;
 
-//		vec3 A,B,C ; 			// This triangle vertices
-//		vec3 AN,BN,CN ; 		// Normals to the above vertices, respectively.
-//		vec2 Auv, Buv, Cuv; 	// Vertices texture uv-mapping
-//		vec3 N;     			// Face normal to the triangle
-//		vec3 Atan, Btan, Ctan;  // Tangent to vertices
-
-
 		bool __iRay2(
 				const Ray& r,
 				GLfloat* dist,
@@ -39,23 +32,14 @@ private:
 				vec2* texCoords=nullptr,
 				mat3* TBN=nullptr) const;
 
-		mat3 __calcTBNMat(const Vertex& v);
+		mat3 __calcTBNMat(const Vertex& v) const;
 
 public:
 
 	Triangle(Vertex& va, Vertex& vb, Vertex& vc); 	// This constructor is used when a triangle is a part of a mesh (and the properties are derived from the mesh and model
 	Triangle(ObjectProperties& op, Vertex& va, Vertex& vb, Vertex& vc);
-//	Triangle(ObjectProperties& op, vec3& va, vec3& vb, vec3& vc, vec2& auv, vec2& buv, vec2& cuv);
-//	Triangle(ObjectProperties& op, vec3& va, vec3& vb, vec3& vc, vec3& vaNorm, vec3& vbNorm, vec3& vcNorm);
-//	Triangle(ObjectProperties& op, vec3& va, vec3& vb, vec3& vc, vec3& vaNorm, vec3& vbNorm, vec3& vcNorm, vec2& auv, vec2& buv, vec2& cuv);
 
 	vector<vec3> getVerticesPos() const { return vector<vec3>{A.Position, B.Position, C.Position}; }
-	//vector<vec3> getVerticesPos() { return const_cast<vector<vec3>>(static_cast<const Triangle&>(*this).getVerticesPos()); }
-
-
-//	Triangle(vec3& va, vec3& vb, vec3& vc,
-//			 vec3& vaNorm, vec3& vbNorm, vec3& vcNorm,
-//			 vec2& auv, vec2& buv, vec2& cuv);
 
 
 	virtual ~Triangle();

@@ -30,6 +30,7 @@ bool Box::intersectsRay(
 
 	ip  = tr.origin + tmin * tr.direction;
 	n = _normalAt(ip);
+	vec3 N = n;
 	// Normal transformation
 	n = normalize(this->_transforms._invTransposeTrans * n);
 
@@ -51,6 +52,38 @@ bool Box::intersectsRay(
 		texColors->_ambientTexColor  = this->getAmbientTextureColor(uv);
 		texColors->_diffuseTexColor  = this->getDiffuseTextureColor(uv);
 		texColors->_specularTexColor = this->getSpecularTextureColor(uv);
+
+		if (!_objectGlobalProperties.no_bump_maps && _normalMap) {
+
+			// The minor issue at the polars when dealing with spheres etc. become a real issue on the top and bottom faces
+			// so we have to take a slightly different approach.
+			vec3 T;
+			if (N.z > EPSILON) { // This is the most common scenario
+				T = vec3(1,0,0);
+			}
+
+			else if (N.z < -EPSILON) {
+				T = vec3(-1,0,0);
+			}
+
+			else if (N.y > EPSILON) {
+				T = vec3(0,0,1);
+			}
+
+			else if (N.y < -EPSILON) {
+				T = vec3(0,0,-1);
+			}
+
+			else if (N.x > EPSILON) { // This is the most common scenario
+				T = vec3(0,-1,0);
+			}
+
+			else if (N.x > EPSILON) { // This is the most common scenario
+				T = vec3(0,1,0);
+			}
+			*normal = __GetTBNAndNorm(N, T, uv); // We need the original normal, not the transformed one.
+		}
+
 	}
 	if (properties) {
 		*properties = this->_properties;
@@ -125,6 +158,7 @@ vec2 Box::_textureAt(const vec3& point) const
 	// Again - we don't care too much about edges
 	return uv;
 }
+
 
 
 void Box::print() const

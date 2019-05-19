@@ -19,7 +19,7 @@
 #define DEFAULT_RESULT_FORMAT ".png"
 #define DEFAULT_SOFT_SHADOWS "on"
 
-#define CURRENT_VERSION "4.6"
+#define CURRENT_VERSION "6.0"
 
 #include <boost/filesystem.hpp>
 #include <boost/program_options.hpp>
@@ -219,23 +219,6 @@ static void render_scene(string fileName)
 	delete scene;
 }
 
-shared_ptr<const int> b;
-void foo(shared_ptr<const int>& a)
-{
-	b = a;
-}
-
-int main2()
-{
-
-	shared_ptr<const int> a = make_shared<const int>(3);
-	foo(a);
-
-	cout << *a.get() << endl;
-	cout << *b.get() << endl;
-
-
-}
 
 int main(int argc, char *argv[])
 {

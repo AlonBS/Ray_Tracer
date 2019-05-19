@@ -22,6 +22,7 @@ Current list of features supported:
 - Normals interpolation (by default) for smoother appearance of less detailed models. 
 - Glossy reflections and refractions
 - Environments mapping and skyboxs (Cubical mapping). Supports both reflective and refractive mappings
+- Normal mapping for meshes and primitives. Also include transormation to model space using TBN matrices. 
 
 
 
@@ -69,7 +70,12 @@ Usage:
 	                          smoother image.
   	  --no-anti-aliasing      Indicate if anti-aliasing should be disabled, or 
           	                  enabled, as by default
-
+	  --no-bump-maps          Indicate if normals bump maps should be used (as by 
+          	                  default), or not. If set, no bump maps will be used 
+                  	          even if object has one defined.
+	   --fast                 Runs quick rendering. Use this to render complex 
+	                          scenes fast - no anti aliasing, hard shadows, flat 
+	                          shading, and no bump maps
 
 
 
@@ -119,7 +125,8 @@ Primitives and Models:
 		transformed just like any other object. Also supports textures.
 	cone <center_v3> <minCap_f> <maxCap_f> - Defines a cone centered around the center point, 
 		where maxCap and minCap define top and button caps of the cone. This means
-		that its fairly easy to decide wheather its a single cone (where maxCap or minCap == 0) or double cone, or inifinite etc.). It is 			assumed that maxCap > minCap.
+		that its fairly easy to decide wheather its a single cone (where maxCap or minCap == 0) or double cone, or inifinite etc.). 
+		It isassumed that maxCap > minCap.
 	plain <texture-pattern_e> - Creates a plain passing through the origin(0,0,0) and aligned as XZ plain (that is, with normal (0,1,0).
 		Ofcourse this can be tranformed like anyother object to achieve various types. Notice that this plain is infinite. 
 		texture-pattern will define how a texture should be applied to this plain, if indeed this is a textured plain. Options are:
@@ -128,17 +135,9 @@ Primitives and Models:
 		"CE" - Clamp to edge. For values greater than 1 or smaller than 0, the value will be clamp to [0,1].
 		Note that scale for this object can be used to strech the texture, as it won't have any other effect "physically"
 	vertex <pos-v3> - Creates a single vertex, we can later be used to create a triangle.
-	vertexNormal <pos-v3> <norm-v3> - Defined a vertex as before, but also defined the surface normal.
-		Note the vertecies defined in this way are completely indepetnted of vertecies defined using the
-		'vertex' command. Meaning - you  can't create a mixed triangle.
-	vertexTex <pos-v3> <tex-v2> - Creates a single vertex, and associate it with textures mapping (values 
-		between 0 to 1). The right pixel will be direved according to this values, and with regards to the
-		currently bound texture (see below). 
 	tri <vertex_1_index_i> <vertex_2_index_i> <vertex_3_index_i> - Creates a triangle using 3 vertices
 		previously defined (using 'vertex' command. The numbering is the same as arrays. 
 		The first 'vertex' is indexed 0 etc. 
-	triNormal - Creates a triangle from vertices defined us the 'vertexNormal' command.
-	triTex - Creates a triangle from vertices defined by the 'vertexTex' command. 
 	maxverts <num-i> - Declares the number of vertices that will be declared following this command.
 		This is a legacy command, to be compatible with Edx.org/CG specifications. It is not needed. 
 	maxVertNorms <num-i> - same as above, but for the vertexNorm command.
@@ -176,6 +175,15 @@ Primitives and Models:
 		and/or those mapping were given before). 
 	unbindTexture - unbind the last bound texture. Any object created from this point on, will not have textures
 		applied to it. 
+	bindNormalMap <index_i> - Binds a previously defined texture with the given index to serve as a normal map. The index is of a
+                texture that was defined before, that can also serve as a regular texture (but this doesn't really make sense). It is also
+                possible to bind any image as a normal map, but it is recommended to bind texture and normal map that are related (see ./textures
+                for example). Once bound, the returned normal will be taked from this map instead of the one that should have been 
+		returned at the intersection point. 
+		Note that this servers as a 'global normal map' that will be relevant to all primitives, and to all meshes the comprise an object. 
+                It is also possible to define a 'per-mesh' normal map, by adding one using the "map_Bump <path>" within the .mtl file of that object.
+                So meshes can have both, but it really makes since to include either per mesh normal or global, but not both.  
+	unbindNormalMap - unbind the last bound normal map. Any object created from this point on, will not have this normal map to it.
 	envMap <path_s> - Loades and saves a texture specified with the given path, relative to execution directory. The texture
 		should be used for (cubical) environment mapping, so it is expected to see 6 such declerations, and it is assumed
 		that they will be mapped in this order: PosX, NegX, PosY, NegY, PosZ, NegZ (see Advanced_7_Skybox_and_env_map.rt).
@@ -367,6 +375,55 @@ The result image can be found in "./Rendered_Scenes/ExampleSphere_result.png
 
 Version History:
 =================
+
+6.0:
+-----
+- Yes, I skipped version 5 since I've put so many features in this, so I actually combined two planed version. 
+- Added normal mapping on primitives and meshes:
+  On meshes: this is supported by adding a normal map (a texture) to the .mtl file that comes with the model. 
+  The keywork used for this is "map_Bump <path>". Note that this is not my syntax, but of .mtl files. This means
+  that I also ask of Assimp importer to calculate tangents and bi-tangents in order to later transform the extracted
+  normal using the infamous TBN matrix.
+  Important Note: traditional OpenGl approcach for TBN transforms means to transform the entire lights etc. in the scene
+  and not the object, this is because it is more efficient since this could be done within the vertex shader, and not the
+  fragment shader. However, I chose not to do this because I didn't need to. Obviously I don't have shaders at all, but I
+  could achieve the same effect by creating a TBN matrix per vertex of a triangle (upon its creation), and when calculating
+  the normal at a given point P, I used the uv coordinate to interpolate these TBN matrices that achieve the 'final' TBN 
+  matrix. and this is done per vertex - so effeicitly, just list vertex shader. 
+  On Primitives: This is supported by adding 2 new keywords: "bindNormalMap" and "unbindNormalMap". (See above for full
+  explaination). Basically, you need to bind a previously defined texture, to serve as a normal map for the global texture
+  on that object. Once normal map is bound, a normal from this map will be extracted, trasnformed using a calculated TBN 
+  matrix, and used for the lighting calculations. I added this feature for all primitives currently supported.
+- Important note: Since a mesh is also an object, it can have a global texture and one per mesh. It is also possible to
+  bind a normal map on a model, that has already normal map on one (or all) of its meshes. When talking about textures this
+  makes sense - to allow adding a global texture to per-mesh defined texture, but when dealing with normal, it doesn't really
+  make sense because there's no good rule how to apply the 2 normals. However, I still left it for the simple reason to allow 
+  the user to define a global normal map on the entire Object (all of its meshes), just like global texture. 
+- Also added multiple scenes with all the normal mapping examples for primitives. There were some corner cases that had to
+  be taked care of careflly.  
+- For this version I also dove deep into more advanced c++ features. Specifically, I got tired of all the memory managemnt,
+  so I switch to smart pointers (Unique and Shared primiarlly). I also used move mechanisms alot, and applied some 'const' 
+  guidelines as suggested by Scott Meyers (In Effective C++). For this reason, almost everyfile once refactored and a lot of  
+  code moved and removed (hopefully for the last time for now).
+- Revised the code for triangles and removed all the stupid duplications that were caused due to my desire to stay compatible
+  with Edx course. From now on - this is no longer supported, and there only 2 ways to create a triangle now. (And still, it 
+  is recommended to use meshes instead). This means that the following keywords are removed: "vertexNormal", "vertexTex", "triNormal", "triTex" and "maxVertNorms".
+  They were replaced with a "vertex" and "vertexSimple" keywords. (see above). I also updated all the scenes not to include these
+  keywords anymore.
+- Bug fixes:
+  a) Fixed a bug where meshes textures were not removed between session
+  b) Fixed a bug where meshes textures cannot be shared
+  c) Fixed a bug where meshes where not cleaned propely. 
+  d) fixed a bug for memory access violation when creating verticies. 
+  e) Fixed a bug where Extents of BVH weren't properly initialized, causing segmentation faluts on some compilers.
+  f) Fixed a bug where environment mapping were return correctly. 
+  g) some minor fixes in the Makefile. 
+- Added to flags for ray_tracer arguments: --no-bump-maps, --fast (see above)
+- Fixed bug when counting statistics. Also changed mechanism not to count anything if flag is off, to save expansive atomic locks. 
+- ran valgrind again on all scenes to make sure no memory violations of any kind (except the known FreeImage() issue - see below)
+- Added known issue of valgrind. 
+
+
 
 4.6:
 - Added refractive environment mapping. By default, reflective mapping will be used.
@@ -575,7 +632,10 @@ the
 
 Known Issues:
 ==============
-Under old version of gcc (7 or less), compilation sometime causes internal compiler error due to usage of BOOST lib, when using
-parrallel compilation. This problem seemed to be fixed on later version of gcc (8 or later).
+- Under old version of gcc (7 or less), compilation sometime causes internal compiler error due to usage of BOOST lib, when using
+parrallel compilation. This problem seemed to be fixed on later version of gcc (8 or later).-
+- If you run valgrind on any of the scenes supplied, or one you created, you'll see this line: "still reachable: 1,496 bytes in 31 blocks".
+This is a known issue, which is due to the usage of FreeImage library. 
+
 
 

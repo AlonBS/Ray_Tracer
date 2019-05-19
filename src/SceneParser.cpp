@@ -45,7 +45,6 @@ struct Commands {
 	const string cone		       = "cone";
 	const string plain		       = "plain";
 	const string maxVerts          = "maxVerts";
-	const string maxVertNorms      = "maxVertNorms";
 	const string vertexSimple      = "vertexSimple";
 	const string vertex            = "vertex";
 	const string tri               = "tri";
@@ -96,7 +95,7 @@ AdditionalRenderParams SceneParser::additionalParams{};
 set<string> SceneParser::general{Commands.size, Commands.maxdepth, Commands.skybox};
 string 	    SceneParser::camera = Commands.camera;
 set<string> SceneParser::geometry{Commands.sphere, Commands.cylinder, Commands.box, Commands.cone,
-								  Commands.plain, Commands.maxVerts, Commands.maxVertNorms,
+								  Commands.plain, Commands.maxVerts,
 								  Commands.vertexSimple, Commands.vertex, Commands.tri,
 								  Commands.texture, Commands.bindTexture, Commands.unbindTexture,
 								  Commands.bindNormalMap, Commands.unbindNormalMap,

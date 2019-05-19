@@ -41,6 +41,9 @@ protected:
 	unique_ptr<const AABB> bbox;
 
 
+	vec3 __GetTBNAndNorm(vec3 N, vec3 T, const vec2& uv) const;
+
+
 public:
 
 

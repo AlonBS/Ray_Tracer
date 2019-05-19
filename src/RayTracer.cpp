@@ -176,9 +176,6 @@ vec3 RayTracer::recursiveRayTrace(Scene& scene, Ray & ray, GLuint depth)
 		return COLOR_BLACK;
 	}
 
-//	vec3 o = vec3(0,0,10);
-//	vec3 d = vec3(0,0,-1);
-//	ray = Ray(o,d);
 
 	Intersection hit = intersectScene(scene, ray);
 	if (!hit.isValid) {
@@ -213,7 +210,6 @@ Intersection RayTracer::intersectScene(Scene & scene, Ray& ray)
 
 	Intersection hit;
 	hit.isValid = false;
-
 
 	// Currently - primitive objects are not divided within the bounding volume hierarchies.
 	// And so, we first search for an intersection with any of
@@ -471,21 +467,6 @@ RayTracer::computeFrenselProportion(const vec3& I, const vec3& N, const GLfloat&
 	}
 }
 
-
-
-void RayTracer::orthoBasis(const vec3& x,
-						   vec3& u,
-						   vec3& v,
-						   vec3& w)
-{
-	u = x;
-	v = normalize(vec3(0, -x.z, x.y));
-	if (equalToVec3(v, vec3(0,0,0))) {
-		v = normalize(vec3(-x.z, 0, x.x));
-	}
-
-	w = normalize(cross(u,v));
-}
 
 
 vec3

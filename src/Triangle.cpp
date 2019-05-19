@@ -20,7 +20,7 @@ Triangle::Triangle(Vertex& va, Vertex& vb, Vertex& vc)
 
 
 Triangle::Triangle(ObjectProperties& op, Vertex& va, Vertex& vb, Vertex& vc)
-: Object(), A((va)), B((vb)), C((vc)) //A(std::move(va)), B(std::move(vb)), C(std::move(vc))
+: Object(), A((std::move(va))), B((std::move(vb))), C((std::move(vc)))
 {
 	Object::_properties = op;
 	N = normalize(cross(C.Position-B.Position,A.Position-B.Position)); // Compute the face normal
@@ -29,58 +29,6 @@ Triangle::Triangle(ObjectProperties& op, Vertex& va, Vertex& vb, Vertex& vc)
 	TBN_C = __calcTBNMat(C);
 
 }
-
-
-
-
-//Triangle::Triangle(ObjectProperties& op, vec3& va, vec3& vb, vec3& vc, vec2& auv, vec2& buv, vec2& cuv)
-//: Object(), A(va), B(vb), C(vc), Auv(auv), Buv(buv), Cuv(cuv)
-//{
-//
-//	Object::_properties = op;
-//	N = normalize(cross(C-B,A-B)); // Compute the face normal
-//	AN = vec3(0.0f, 0.0f, 0.0f);
-//	BN = vec3(0.0f, 0.0f, 0.0f);
-//	CN = vec3(0.0f, 0.0f, 0.0f);
-//
-//}
-//
-//
-//
-//Triangle::Triangle(ObjectProperties& op, vec3& va, vec3& vb, vec3& vc, vec3& vaNorm, vec3& vbNorm, vec3& vcNorm)
-//: Object(), A(va), B(vb), C(vc), AN(vaNorm), BN(vbNorm), CN(vcNorm)
-//{
-//	Object::_properties = op;
-//	N = normalize(cross(C-B,A-B)); // Compute the face normal
-//
-//}
-//
-//
-//Triangle::Triangle(ObjectProperties& op,
-//				   vec3& va, vec3& vb, vec3& vc,
-//			 	   vec3& vaNorm, vec3& vbNorm, vec3& vcNorm,
-//				   vec2& auv, vec2& buv, vec2& cuv)
-//: Object(), A(va), B(vb), C(vc),
-//  	  	    AN(vaNorm), BN(vbNorm), CN(vcNorm),
-//  	  	  	Auv(auv), Buv(buv), Cuv(cuv)
-//{
-//	Object::_properties = op;
-//	N = normalize(cross(C-B,A-B)); // Compute the face normal
-//}
-//
-//
-//
-//
-//
-//Triangle::Triangle(vec3& va, vec3& vb, vec3& vc,
-//			 	   vec3& vaNorm, vec3& vbNorm, vec3& vcNorm,
-//				   vec2& auv, vec2& buv, vec2& cuv)
-//: Object(), A(va), B(vb), C(vc),
-//  	  	    AN(vaNorm), BN(vbNorm), CN(vcNorm),
-//  	  	  	Auv(auv), Buv(buv), Cuv(cuv)
-//{
-//	N = normalize(cross(C-B,A-B)); // Compute the face normal
-//}
 
 
 Triangle::~Triangle()
@@ -111,7 +59,6 @@ Triangle::intersectsRayM(
 		mat3* TBN) const
 {
 	return __iRay2(r, dist, point, normal, nullptr, nullptr, texCoords, TBN);
-//	res2 = __iRay2(r, &dist2, &point2, &norm2, nullptr, nullptr, &texCoords2);
 }
 
 
@@ -222,7 +169,7 @@ Triangle::__iRay2(
 }
 
 
-mat3 Triangle::__calcTBNMat(const Vertex& v)
+mat3 Triangle::__calcTBNMat(const Vertex& v) const
 {
 	vec3 T = normalize(v.Tangent);
 	vec3 N = normalize(v.Normal);

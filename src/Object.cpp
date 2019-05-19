@@ -121,3 +121,34 @@ bool Object::bBoxIntersectsRay(const Ray& tr, GLfloat* t_near)
 }
 
 
+vec3 Object::__GetTBNAndNorm(vec3 N, vec3 T, const vec2& uv) const
+{
+
+	N = this->_transforms._invTransposeTrans * N;
+	T = this->_transforms._invTransposeTrans * T;
+	T = normalize(T - dot(T, N) * N);
+	vec3 B = normalize(cross(N,T));
+	mat3 TBN = mat3(T,B,N);
+
+	vec3 norm = normalize(2.f*getNormalFromMap(uv) - 1.0f);
+	return normalize(TBN * norm);
+}
+
+
+
+
+//vec3 Object::__GetTBNAndNorm(vec3& N, vec3& T, const vec2& uv) const
+//{
+//
+//	T = normalize(this->_transforms._invTransposeTrans * cross(vec3(0,1,0), N));
+//	N = this->_transforms._invTransposeTrans * N;
+//	T = normalize(T - dot(T, N) * N);
+//	vec3 B = normalize(cross(N,T));
+//	mat3 TBN = mat3(T,B,N);
+//
+//	vec3 norm = normalize(2.f*getNormalFromMap(uv) - 1.0f);
+//	return normalize(TBN * norm);
+//}
+//
+
+
