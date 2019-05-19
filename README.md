@@ -134,7 +134,10 @@ Primitives and Models:
 		"MR" (Default) - Mirrored repeated pattern. Same as before, but will be mirrored when integer part it odd.
 		"CE" - Clamp to edge. For values greater than 1 or smaller than 0, the value will be clamp to [0,1].
 		Note that scale for this object can be used to strech the texture, as it won't have any other effect "physically"
-	vertex <pos-v3> - Creates a single vertex, we can later be used to create a triangle.
+	vertex <pos-v3> [<norm-v3>] [<texCoord-v2>] [<tangent-v3>] [<bitangent-v3>]  - Creates a single vertex, we can later be used to create a triangle.
+		Apart from "pos" - all values are optional. You can specify normal and texcoors etc. Note that currenlty, the order is that same as written,
+		and if tex coords are specified, then so is normal must be specified. 
+	vertexSimple <pos-v3> - Creates a single vertex with only a position (This saves some calculation if possible)
 	tri <vertex_1_index_i> <vertex_2_index_i> <vertex_3_index_i> - Creates a triangle using 3 vertices
 		previously defined (using 'vertex' command. The numbering is the same as arrays. 
 		The first 'vertex' is indexed 0 etc. 
@@ -325,15 +328,10 @@ The result image can be found in "./Rendered_Scenes/ExampleSphere_result.png
 	maxVerts 4 #legacy command - not mandatory
 
 	# Define 4 verticies (with texture mapping coordinates) to later simulate a wooden floor
-	vertexTex +8 0 +8 1 1 # index is 0
-	vertexTex +8 0 -8 0 1 # index is 1
-	vertexTex -8 0 +8 1 0 # index is 2
-	vertexTex -8 0 -8 0 0 # index is 3
-
-	#vertex +8 0 +8
-	#vertex +8 0 -8
-	#vertex -8 0 +8
-	#vertex -8 0 -8 
+	vertex +8 0 +8 1 1 # index is 0
+	vertex +8 0 -8 0 1 # index is 1
+	vertex -8 0 +8 1 0 # index is 2
+	vertex -8 0 -8 0 0 # index is 3
 
 	# create the floor
 	pushTransform
@@ -344,10 +342,10 @@ The result image can be found in "./Rendered_Scenes/ExampleSphere_result.png
 		diffuse 0.1 0.1 0.1
 		specular .8 0.8 0.8
 		shininess 16
-		triTex 0 1 2 # actually create a triangle with texture. The newly created triangle will have
+		tri 0 1 2 # actually create a triangle with texture. The newly created triangle will have
 			     # the bound texture and the last specified materials properties (and transformations)
 			     # the verticies to used are by index, which was assigen when those were created (vertexTex cmd)
-		triTex 1 3 2
+		tri 1 3 2
 
 		unbindTexture
 
