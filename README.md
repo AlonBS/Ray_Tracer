@@ -370,6 +370,28 @@ The result image can be found in "./Rendered_Scenes/ExampleSphere_result.png
 
 
 
+Selected Scenes Examples:
+
+1) Primitives with textures and soft shadows: 
+![ExampleCone_soft_result](https://user-images.githubusercontent.com/6772259/58382641-5148d500-7fd5-11e9-80a2-ffc510628c6c.png)
+
+2) Complex mesh on top of infinite textured plain:
+![ExamplePlant_soft_result](https://user-images.githubusercontent.com/6772259/58382654-72a9c100-7fd5-11e9-95e6-aaa228f6c962.png)
+
+3) Flat shading vs. smooth shading (same number of vertices in mesh):
+![Advanced_3_smooth_vs_flat_shading_flat_result](https://user-images.githubusercontent.com/6772259/58382662-953bda00-7fd5-11e9-8b52-a9b53f556155.png)
+![Advanced_3_smooth_vs_flat_shading_smooth_result](https://user-images.githubusercontent.com/6772259/58382664-979e3400-7fd5-11e9-952d-80f285e28009.png)
+
+4) Glossy reflections and refractions:
+![Advanced_5_Glossy_Refractions_30_per_blur_w_AA_result](https://user-images.githubusercontent.com/6772259/58382668-abe23100-7fd5-11e9-9e03-511413dcd8ba.png)
+
+5) Refraction through glass medium:
+![Advanced_6_Refraction_In_Medium_Glass_No_Blur](https://user-images.githubusercontent.com/6772259/58382671-bdc3d400-7fd5-11e9-97d6-506848468e37.png)
+
+6) Environment mapping and sky boxes. (Both reflective and refractive mapping on the infamous Utah teapot):
+![Advanced_7_Skybox_and_env_map_no_AA](https://user-images.githubusercontent.com/6772259/58382683-e9df5500-7fd5-11e9-96b6-66ae9e15b265.png)
+![Advanced_8_Skybox_and_refr_env_map_w_skybox](https://user-images.githubusercontent.com/6772259/58382684-ed72dc00-7fd5-11e9-9f6a-df28188fcd32.png)
+
 
 Version History:
 =================
