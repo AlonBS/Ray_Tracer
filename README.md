@@ -371,6 +371,7 @@ The result image can be found in "./Rendered_Scenes/ExampleSphere_result.png
 
 
 Selected Scenes Examples:
+==========================
 
 1) Primitives with textures and soft shadows: 
 ![ExampleCone_soft_result](https://user-images.githubusercontent.com/6772259/58382641-5148d500-7fd5-11e9-80a2-ffc510628c6c.png)
